@@ -1,6 +1,6 @@
 {
   "name": "review",
-  "description": "A two-mode review command combining Claude Code review, repository checks, and risk-aware reporting.",
+  "description": "A two-mode review command combining specialized review agents, repository checks, and evidence-based reporting.",
   "version": "0.1.0",
   "author": { "name": "takuto-san" },
   "license": "MIT"

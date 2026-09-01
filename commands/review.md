@@ -1,136 +1,145 @@
 ---
-description: Review local changes or a GitHub pull request with Claude Code, repository checks, and risk-aware reporting
+description: Review local changes or a GitHub pull request using specialized review agents, repository checks, and evidence-based verification
 argument-hint: "[PR number or URL]"
-allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Bash(npm:*), Bash(npx:*), Bash(pnpm:*), Bash(yarn:*), Bash(pytest:*), Bash(uv:*), Bash(poetry:*), Bash(mvn:*), Bash(gradle:*), Bash(./gradlew:*), Bash(make:*), Agent, Skill
+allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
 
 # Review
 
-Review the target supplied in `$ARGUMENTS`. The review is read-only: do not
-modify code, install dependencies, or post GitHub comments unless the user
+Review the target supplied in `$ARGUMENTS`.
+
+This plugin implements its own review workflow. Do not invoke external code
+review plugins or treat their output as a prerequisite.
+
+The review is read-only. Do not modify source files, install dependencies,
+change repository configuration, or post GitHub comments unless the user
 explicitly requests it.
 
-## 1. Select the mode and target
+Detailed review criteria are defined in `REVIEW.md`. Detailed responsibilities
+and output schemas are defined by the agents under `agents/`.
 
-- When `$ARGUMENTS` is empty, use **developer mode**. Review the current
-  branch's commits ahead of its upstream together with uncommitted changes.
-- When `$ARGUMENTS` contains a pull-request number or URL, use **reviewer
-  mode**. Resolve its repository, base SHA, head SHA, title, description,
-  linked issue, changed files, and CI status with `gh`.
-- Reject ambiguous arguments instead of guessing the target.
+## 1. Resolve the review target
 
-In reviewer mode, do not replace or alter the user's current working tree.
-Use the pull-request target supported by the review capability. If mechanical
-checks require a checkout, use an isolated temporary worktree and remove it
-after collecting the results.
+Select one mode.
 
-## 2. Understand the change
+### Developer mode
 
-Read the applicable `CLAUDE.md`, `REVIEW.md`, contribution guidance, build
-files, package manifests, and CI workflows. Inspect the diff and surrounding
-code.
+When `$ARGUMENTS` is empty, review commits ahead of the current branch's
+upstream, staged changes, unstaged changes, and relevant untracked source files.
 
-Classify Change Scope:
+Resolve the repository root, current and upstream branches, base and head SHAs,
+changed files, additions, deletions, and complete diff. If no reviewable changes
+exist, stop and report that there is nothing to review.
 
-- **Focused**: one self-contained change
-- **Split recommended**: independent changes can reasonably be separated
-- **Review blocked**: the scope or missing context prevents a reliable review
+### Reviewer mode
 
-Summarize the purpose, affected components, externally visible behavior, and
-important risks. Select only review concerns that apply to this change.
+When `$ARGUMENTS` contains a pull-request number or URL, resolve with `gh` the
+repository, PR number, title, description, base and head branches and SHAs,
+linked issues, changed files, additions, deletions, CI and check status, and
+draft, closed, or merged state.
 
-## 3. Run Claude Code review
+Reject ambiguous arguments instead of guessing. Do not alter the user's current
+working tree. If code must be checked out, create an isolated temporary worktree
+at the resolved head SHA and remove it after collecting the results.
 
-Invoke Claude Code's official `code-review` capability for the selected
-target. Pass the PR number or URL in reviewer mode; use the current diff in
-developer mode.
+Create one shared target context. Every agent must receive the same repository,
+base SHA, head SHA, diff, changed files, and PR metadata.
 
-Do not recreate, quote, or modify the official capability's implementation.
-If it is unavailable, record the reason and continue with the checks that can
-still run. A missing official review must be reported as unverified.
+## 2. Analyze Change Scope
 
-## 4. Run mechanical checks
+Run `change-scope-analyst` with the shared target context, PR metadata, changed
+files, diff statistics, and resolved SHAs.
 
-Discover the repository's existing commands from CI workflows, manifests,
-Makefiles, and repository guidance. Run all applicable existing commands for:
+The agent must only analyze reviewability, Change Groups, scope classification,
+and uncertainties. It must not produce code-quality findings.
 
-1. static analysis or lint
-2. type checking
-3. unit tests
+If the result is `review_blocked`, continue only with checks that can still
+produce reliable evidence. The final report must state that the review is
+incomplete.
 
-Prefer the same commands used by CI. Record the exact command, exit status,
-and concise result. Do not invent scripts, silently change configuration, or
-claim that a command passed when it was not executed.
+## 3. Build the review plan
 
-For an external or otherwise untrusted pull request, do not execute
-repository-controlled code until the user explicitly approves it. Report the
-blocked checks and why approval is required.
+Run `review-plan-builder` with the shared target context, Change Scope result,
+PR description, linked issues, available requirements, changed files, diff,
+and the repository's `REVIEW.md`.
 
-## 5. Decide whether an adversarial review is needed
+The agent must consider all eight quality characteristics but select only the
+criteria relevant to this change. Preserve every generated review item and its
+`primary_layer` assignment. Do not add generic review items that were not
+selected by the plan.
 
-Request an additional Codex adversarial review only when the change includes
-one or more of the following:
+## 4. Run the review layers
 
-- authentication, authorization, secrets, personal data, or payments
-- destructive data operations, schema migrations, or rollback behavior
-- concurrency, queues, retries, caching, or distributed state
-- a breaking public API, protocol, event, or storage-format change
-- a substantial responsibility or architecture change
-- a realistic failure mode involving data loss or prolonged outage
-- a disputed or low-confidence finding that benefits from independent
-  challenge
+After the review plan is complete, run these agents in parallel:
 
-When the Codex integration is installed, invoke its configured wrapper with
-the target and a narrow focus derived from the risks above. Do not run a
-second generic review. If Codex is unavailable, mark this optional check as
-unavailable; do not fail the entire review.
+- `mechanical-reviewer`
+- `structural-reviewer`
+- `contextual-reviewer`
 
-## 6. Validate findings
+Give every agent the shared target context, Change Scope result, only the review
+items assigned to its `primary_layer`, relevant supporting-layer information,
+and applicable repository guidance.
 
-Keep a finding only when all of the following are present:
+Additionally, give CI and check status to `mechanical-reviewer`, the full diff
+and codebase context to `structural-reviewer`, and PR descriptions, issues,
+requirements, and documentation to `contextual-reviewer`.
 
-- a concrete location in changed code
-- a realistic trigger or execution path
-- an observable impact
-- evidence that the change introduced or exposed the problem
+Do not ask an agent to perform another layer's primary responsibility.
 
-Remove duplicates, style preferences, generated-file findings, lockfile
-findings, unrelated pre-existing issues, and errors already reported clearly
-by mechanical checks.
+### Mechanical checks
 
-Do not automatically turn an AI finding into a request to the author. Present
-it to the human reviewer for confirmation.
+The `mechanical-reviewer` must discover and run the repository's existing
+commands for applicable static analysis, lint, type checking, compilation,
+Unit tests, and safe build or integration checks. Prefer commands used by CI.
 
-## 7. Report
+Do not install dependencies, add tools, change configuration, or execute
+destructive commands. For an external or otherwise untrusted pull request, do
+not execute repository-controlled code without explicit user approval. Record
+blocked commands and their reasons as insufficient evidence.
 
-Output exactly these sections:
+## 5. Verify the review results
 
-### Review Summary
+After all review layers finish, run `finding-verifier` with the shared target
+context, Change Scope result, complete review plan, all three review results,
+mechanical commands, and the repository's `REVIEW.md`.
 
-State the target, purpose, overall result, and whether required checks ran.
+The verifier must not perform another general review. It verifies candidate
+findings against actual code, validates realistic failure paths and evidence,
+rejects speculation and unrelated pre-existing issues, removes duplicates,
+corrects classifications, and confirms whether applicable static analysis and
+Unit tests ran.
 
-### Change Scope
+Only `finding-verifier.verified_results` may be passed to the final report.
+Rejected results must not be presented as active findings. If required checks
+did not run, preserve the reason and mark the review as incomplete.
 
-Show the scope classification and its evidence.
+## 6. Produce the final report
 
-### Needs Your Attention
+Run `review-synthesizer` last with only the Change Scope result, review plan,
+`finding-verifier.verified_results`, and
+`finding-verifier.review_prerequisites`.
 
-Include only:
+The synthesizer must format existing verified evidence. It must not discover,
+add, remove, or re-evaluate findings.
 
-- **Potential problem**
-- **Human decision**
-- **Could not verify**
+Return exactly these sections:
 
-For each potential problem, include the conclusion, trigger, impact, affected
-review concern, code location, and what the reviewer should confirm.
+1. `Review Summary`
+2. `Change Scope`
+3. `Needs Your Attention`
+4. `Review Coverage`
 
-### Review Coverage
+Do not expose internal agent names, processing layers, intermediate YAML,
+rejected candidates, or orchestration details. Do not declare LGTM, Approve,
+or Changes Requested. The final decision belongs to the human reviewer.
 
-Group applicable concerns from `REVIEW.md` and show:
+## Completion requirements
 
-| Concern | Result | Evidence |
-|---|---|---|
-| Applicable concern | Verified result or limitation | Code location, command, or source |
+Present the review as complete only when the target was resolved unambiguously,
+Change Scope was evaluated, the review plan was generated from `REVIEW.md`, all
+applicable review layers completed, applicable static analysis and Unit tests
+ran or have justified limitations, candidate findings were independently
+verified, and the final report contains only verified results.
 
-Finish with the commands executed and their pass, fail, blocked, or unavailable
-status.
+If any requirement is missing, clearly mark the review as incomplete and state
+the reason.
