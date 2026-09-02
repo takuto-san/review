@@ -101,14 +101,16 @@ review/
 ## Usage
 
 ```text
+/review:review
+/review:review 123
 Review my local changes
 Review this PR: https://github.com/owner/repository/pull/123
 ```
 
-The review Skill is selected automatically from a natural-language review
-request and is hidden from the `/` command menu. A PR number or URL anywhere
-in the request selects Reviewer mode; a request to review current or local
-changes without a PR target selects Developer mode.
+The review Skill can be invoked directly for local changes or a numeric PR
+number, and it can also be selected automatically from a natural-language
+review request. A PR URL is supported only as part of a natural-language
+request, not as a direct `/review:review` argument.
 
 Before review begins, the `context` agent follows only references explicitly
 connected to the review target and converts the required information into a

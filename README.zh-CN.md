@@ -95,11 +95,13 @@ review/
 ## 使用方法
 
 ```text
+/review:review
+/review:review 123
 审查我的本地更改
 请审查这个PR https://github.com/owner/repository/pull/123
 ```
 
-审查Skill根据自然语言请求自动选择，并从`/`命令菜单中隐藏。请求中任意位置包含PR编号或URL时使用Reviewer mode；没有PR目标但要求审查当前或本地更改时使用Developer mode。
+本地更改或数字PR编号可以通过`/review:review`直接指定，也支持根据自然语言请求自动选择。PR URL不能作为`/review:review`的直接参数，应使用“请审查这个PR URL”之类的自然语言请求。
 
 审查开始前，`context`代理只获取审查目标明确引用的信息，并将其转换为精简且与信息源无关的Evidence Packet。Notion、Confluence、Google Docs、GitHub、Web或仓库文档中的原始内容不会被直接传递给审查代理。
 

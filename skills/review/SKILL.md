@@ -1,13 +1,13 @@
 ---
 name: review
 description: Review local code changes or a GitHub Pull Request using context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
-user-invocable: false
+argument-hint: "[PR number]"
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
 
 # Review
 
-Review the target identified in the user's natural-language request.
+Review the target supplied in `$ARGUMENTS` or identified in the user's natural-language request.
 
 This plugin implements its own review workflow. Do not invoke external code
 review plugins or treat their output as a prerequisite.
@@ -29,10 +29,15 @@ surrounding natural language as review instructions, not as part of the URL. If
 multiple PR URLs or conflicting targets are present, reject the request as
 ambiguous instead of guessing.
 
+When the user invokes this Skill directly, accept either no arguments for
+Developer mode or one numeric PR number for Reviewer mode. Do not accept a PR
+URL as a direct Skill argument; ask the user to provide the URL as part of a
+natural-language review request instead.
+
 ### Developer mode
 
-When the user's request does not identify a PR and asks to review local or
-current changes, review commits ahead of the current
+When `$ARGUMENTS` is empty and the user's request does not identify a PR, review
+commits ahead of the current
 branch's upstream, staged changes, unstaged changes, and relevant untracked
 source files.
 
@@ -42,8 +47,8 @@ exist, stop and report that there is nothing to review.
 
 ### Reviewer mode
 
-When the user's request contains a pull-request number or URL, resolve with
-`gh` the
+When `$ARGUMENTS` contains one numeric PR number, or the user's natural-language
+request contains a pull-request number or URL, resolve with `gh` the
 repository, PR number, title, description, base and head branches and SHAs,
 linked issues, changed files, additions, deletions, CI and check status, and
 draft, closed, or merged state.

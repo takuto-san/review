@@ -9,7 +9,7 @@ runtime: false
 
 # Review
 
-审查用户自然语言中指定的目标。“请审查这个PR https://github.com/owner/repository/pull/123”之类的请求会由Claude自动触发该Skill。用户不能通过`/`命令直接运行它。
+从`$ARGUMENTS`或自然语言识别目标。`/review:review`审查本地更改，`/review:review 123`审查数字PR编号。PR URL不能作为直接参数，应使用“请审查这个PR URL”之类的自然语言请求。
 
 ## 1. 解析审查目标
 
