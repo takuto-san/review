@@ -4,6 +4,7 @@
 
 - [审查标准](REVIEW.md)
 - [审查Skill和编排器](skills/review/SKILL.md)
+- [Review Plugin维护Skill](skills/maintain-review-plugin/SKILL.md)
 - [代理一览](agents/README.md)
 - [上下文收集](agents/context/context.md)
 - [是否需要审查验证](agents/validation/review-needed.md)

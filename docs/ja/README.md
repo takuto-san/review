@@ -4,6 +4,7 @@
 
 - [レビュー基準](REVIEW.md)
 - [レビューSkillとオーケストレーター](skills/review/SKILL.md)
+- [Review Plugin保守Skill](skills/maintain-review-plugin/SKILL.md)
 - [エージェント一覧](agents/README.md)
 - [コンテキスト収集](agents/context/context.md)
 - [レビュー要否の検証](agents/validation/review-needed.md)

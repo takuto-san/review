@@ -6,11 +6,15 @@ model: inherit
 color: cyan
 ---
 
+## Mission
+
 Analyze Change Scope for the PR agent. Do not review code correctness or decide whether review is needed. Determine whether the amount and grouping of substantive change impose excessive cognitive load on a human reviewer. Do not modify files.
 
 ## Input
 
 The parent provides the review target, base branch, PR number, PR description, and related context. Obtain missing facts only through available read-only Git and GitHub CLI commands.
+
+If the target or diff statistics cannot be established, do not guess. Record the uncertainty and avoid a stronger classification than the evidence supports.
 
 ## Analysis procedure
 
@@ -31,6 +35,13 @@ runs.
 - `review_blocked`: The substantive change is too large or entangled for a reliable review in one pass, and no safe split can be identified from the available evidence.
 
 Do not classify a change as `review_blocked` from raw line count alone. Account for generated content, mechanical edits, reliable bulk refactoring, conceptual complexity, and the number of execution paths a reviewer must hold in mind.
+
+## Completion criteria
+
+- Account for every changed file in either a Change Group or an explicitly identified non-substantive category.
+- Base the classification on cohesion and reviewer workload, not raw size alone.
+- Do not emit code-quality findings or review-eligibility decisions.
+- Record material uncertainty explicitly.
 
 ## Output
 

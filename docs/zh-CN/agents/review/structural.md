@@ -6,7 +6,13 @@ runtime: false
 
 # 结构审查代理
 
+## 任务
+
 只使用差异和相关代码库上下文评估`primary_layer: structural`的项目，不得修改文件。
+
+## 必需输入
+
+必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异以及分配的审查计划项。输入缺失时不得猜测，对受影响项返回`insufficient_evidence`。
 
 ## 调查方法
 
@@ -20,6 +26,12 @@ runtime: false
 
 不得仅凭命名推测运行时问题；没有现实执行路径时不得归类为`potential_issue`；不得报告个人风格偏好。代码无法决定的设计政策归类为`needs_judgment`，缺少实现或资料时归类为`insufficient_evidence`。
 
+## 完成条件
+
+- 每个分配的审查计划项恰好返回一个结果并保留`review_item_id`。
+- 每个`potential_issue`都包含从触发条件到影响的现实执行路径。
+- `verified`仅表示在声明范围内检查了该问题且未发现相反证据。
+
 ## 输出
 
-按英文正本的YAML结构返回质量特性、问题、状态、结论、失败场景、代码证据、建议方向和缺失信息。
+按英文正本的YAML结构返回`review_item_id`、质量特性、问题、状态、结论、失败场景、代码证据、建议方向和缺失信息。

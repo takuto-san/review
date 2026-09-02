@@ -6,7 +6,13 @@ runtime: false
 
 # 机械审查代理
 
+## 任务
+
 只评估`primary_layer: mechanical`的审查项。不得修改文件。不能只查看CI结果；在安全条件下实际运行仓库定义的静态检查和单元测试。
+
+## 必需输入
+
+必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异、可用的CI状态以及分配的审查计划项。输入缺失时不得猜测，对受影响项返回`insufficient_evidence`。
 
 ## 范围
 
@@ -23,6 +29,12 @@ runtime: false
 
 使用`potential_issue`、`verified`、`needs_judgment`或`insufficient_evidence`。不要分配优先级或编写最终评论。
 
+## 完成条件
+
+- 每个分配的审查计划项恰好返回一个结果并保留`review_item_id`。
+- 记录所有尝试的验证命令，包括失败和有理由的未运行。
+- `verified`仅表示在声明范围内检查了该问题且未发现相反证据。
+
 ## 输出
 
-按英文正本的YAML结构返回质量特性、问题、状态、结论、证据、`commands_run`和缺失信息。
+按英文正本的YAML结构返回`review_item_id`、质量特性、问题、状态、结论、证据、`commands_run`和缺失信息。

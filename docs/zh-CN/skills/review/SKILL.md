@@ -31,7 +31,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 5. 生成审查计划
 
-编排器读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`mechanical`、`structural`或`contextual`层。保留选择理由、辅助层和预期证据。
+编排器读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`mechanical`、`structural`或`contextual`层。为每项分配`RP-001`形式的稳定`review_item_id`，并保留选择理由、辅助层和预期证据。每个审查代理必须对每个分配项返回一个结果；证据不足时返回`insufficient_evidence`，不得省略。
 
 ## 6. 运行三层审查
 
@@ -43,9 +43,11 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 向机械层提供CI，向结构层提供差异和代码库，向上下文层提供Evidence Packet。未经明确批准，不执行外部或不可信PR中的代码。
 
+每次委派都必须显式提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异或其明确位置、分配项以及代理特定的必需输入。不得假设subagent能从父对话恢复编排状态。
+
 ## 7. 验证审查结果
 
-向`review:comment:comment`传递Evidence Packet、Change Scope、计划、全部结果、命令和`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。
+向`review:comment:comment`传递Evidence Packet、Change Scope、计划、全部结果、命令和`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`review_item_id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
 
 ## 8. 生成最终报告
 

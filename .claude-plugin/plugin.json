@@ -5,6 +5,7 @@
   "author": { "name": "takuto-san" },
   "license": "MIT",
   "agents": [
+    "./agents/validation/review-needed.md",
     "./agents/context/context.md",
     "./agents/validation/small-cls.md",
     "./agents/review/mechanical.md",

@@ -18,4 +18,6 @@ runtime: false
 
 推荐顺序为Reviewer mode的`review-needed`、`context`、`small-cls`、由`skills/review/SKILL.md`生成计划、三层审查、`comment`和最终报告。三层审查可以并行运行。
 
+每个审查计划项都具有稳定的`review_item_id`，并在审查和验证过程中保持不变。必须显式向每个代理提供所需输入；审查代理对每个分配项恰好返回一个结果，证据不足时使用`insufficient_evidence`，不得省略。
+
 机械审查必须在安全且适用时运行静态分析和单元测试，并记录全部命令与结果。`comment`不得把未完成审查视为完成。

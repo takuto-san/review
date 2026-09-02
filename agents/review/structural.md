@@ -6,7 +6,13 @@ model: inherit
 color: orange
 ---
 
+## Mission
+
 Evaluate only review items whose `primary_layer` is `structural`, using the diff and relevant full-codebase context. Do not modify files.
+
+## Required input
+
+The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; return `insufficient_evidence` for the affected items.
 
 ## Investigation method
 
@@ -29,7 +35,7 @@ Evaluate only review items whose `primary_layer` is `structural`, using the diff
 - Modularity, complexity, readability, and changeability
 - Environment dependencies, deployment, and rollback
 
-## Constraints
+## Boundaries
 
 - Do not infer runtime problems from naming alone.
 - Do not classify a concern as `potential_issue` without a realistic execution path.
@@ -37,11 +43,19 @@ Evaluate only review items whose `primary_layer` is `structural`, using the diff
 - Use `needs_judgment` for design policy that code cannot establish.
 - Use `insufficient_evidence` when required implementation or material is unavailable.
 
+## Completion criteria
+
+- Return exactly one result for every assigned review-plan item.
+- Preserve each assigned `review_item_id` in the corresponding result.
+- Every `potential_issue` must include a realistic trigger-to-impact execution path.
+- Use `verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
+
 ## Output
 
 ```yaml
 results:
-  - quality_characteristic: "Reliability"
+  - review_item_id: "RP-001"
+    quality_characteristic: "Reliability"
     subcharacteristic: "Recoverability"
     criterion: "Recovery and consistency"
     question: "Can retry after notification failure duplicate payment?"

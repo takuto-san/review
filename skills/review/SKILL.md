@@ -122,9 +122,14 @@ one primary layer:
   migration decisions, and documentation
 
 When another layer provides useful evidence, record it as a supporting layer.
-Preserve the selected criterion, concrete question, selection reason, primary
-layer, supporting layers, and expected evidence. Do not add generic review
-items merely for completeness.
+Assign each selected item a stable identifier such as `RP-001`. Preserve the
+review item ID, selected criterion, concrete question, selection reason,
+primary layer, supporting layers, and expected evidence. Do not add generic
+review items merely for completeness.
+
+Every review agent must return exactly one result for every item assigned to
+it and preserve the item's `review_item_id`. Missing evidence must produce an
+`insufficient_evidence` result rather than omission.
 
 ## 6. Run the review layers
 
@@ -145,6 +150,12 @@ diff and codebase context to the structural reviewer, and PR descriptions,
 issues, requirements, and documentation to the contextual reviewer.
 
 Do not ask an agent to perform another layer's primary responsibility.
+
+For each delegation, explicitly include the repository root, review target,
+base and head SHAs, changed files, complete diff or an unambiguous location for
+it, assigned review items, and any agent-specific inputs required by its
+definition. Do not assume that a subagent can recover orchestration state from
+the parent conversation.
 
 ### Mechanical checks
 
@@ -172,6 +183,10 @@ Unit tests ran.
 Only the comment agent's `verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
 did not run, preserve the reason and mark the review as incomplete.
+
+The verifier must account for every `review_item_id` from the review plan. An
+item may be represented by a verified result, a rejected result, or an explicit
+incomplete reason, but it must not disappear silently.
 
 ## 8. Produce the final report
 

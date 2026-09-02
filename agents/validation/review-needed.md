@@ -6,6 +6,8 @@ model: inherit
 color: cyan
 ---
 
+## Mission
+
 Determine whether the requested pull request needs a new review. This is an
 eligibility check, not a code review or a Change Scope analysis. Do not modify
 files.
@@ -19,6 +21,8 @@ The parent provides the repository, pull request number, state, draft status,
 base and head SHAs, changed files, diff statistics, and available review
 metadata. Obtain missing facts only through read-only Git and GitHub CLI
 commands.
+
+If the PR identity, state, or current head SHA cannot be established, do not guess. Return `review_required` and record the uncertainty because skipping requires positive evidence.
 
 ## Decision procedure
 
@@ -43,6 +47,13 @@ review. Those questions belong exclusively to `small-cls`.
 If the evidence required to skip is missing or ambiguous, return
 `review_required` and record the uncertainty. Skipping must be supported by
 positive evidence.
+
+## Completion criteria
+
+- Evaluate conditions in the documented order and stop at the first match.
+- Set `should_review` consistently with `review_status`.
+- Support every skip decision with positive evidence.
+- Report uncertainties without turning them into a skip decision.
 
 ## Output
 

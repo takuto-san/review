@@ -4,7 +4,20 @@ English | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
 Automated review for local changes and GitHub pull requests using specialized agents, repository checks, and evidence-based finding verification.
 
-## Overview
+## Table of Contents
+
+- [1. Overview](#1-overview)
+- [2. Architecture](#2-architecture)
+  - [Directory Structure](#directory-structure)
+  - [Review Workflow](#review-workflow)
+- [3. Usage](#3-usage)
+- [4. Installation](#4-installation)
+- [5. Usage Guide](#5-usage-guide)
+- [6. Configuration](#6-configuration)
+- [7. Technical Details](#7-technical-details)
+- [8. Project Information](#8-project-information)
+
+## 1. Overview
 
 The Review Plugin gathers relevant context, evaluates whether a change is reviewable, builds a change-specific plan, and audits the implementation from mechanical, structural, and contextual perspectives. A separate verification stage removes speculative or duplicate findings before producing the final report.
 
@@ -15,9 +28,63 @@ It supports two modes:
 
 This is a clean-room implementation inspired by multi-stage review workflows. Context collection, planning, review, finding verification, and report generation are implemented entirely by this plugin.
 
-## Commands
+## 2. Architecture
 
-### `/review:review`
+### Directory Structure
+
+```text
+review/
+├── .claude-plugin/
+│   └── plugin.json
+├── agents/
+│   ├── context/
+│   │   └── context.md
+│   ├── validation/
+│   │   ├── review-needed.md
+│   │   └── small-cls.md
+│   ├── review/
+│   │   ├── mechanical.md
+│   │   ├── structural.md
+│   │   └── contextual.md
+│   ├── comment/
+│   │   └── comment.md
+│   └── README.md
+├── skills/
+│   └── review/
+│       └── SKILL.md
+├── docs/
+│   ├── ja/
+│   └── zh-CN/
+├── REVIEW.md
+├── README.md
+├── README.ja.md
+├── README.zh-CN.md
+└── LICENSE
+```
+
+### Review Workflow
+
+```mermaid
+%%{init: {"flowchart": {"curve": "stepAfter"}}}%%
+flowchart TD
+    A[Resolve local changes or PR] --> B{PR needs review?}
+    B -->|No| X[Report skip reason]
+    B -->|Yes or local changes| C[Collect relevant context]
+    C --> D[Create Evidence Packet]
+    D --> E[Evaluate reviewer workload]
+    E --> F[Build change-specific review plan]
+    F --> G1[Mechanical review]
+    F --> G2[Structural review]
+    F --> G3[Contextual review]
+    G1 --> H[Verify and deduplicate findings]
+    G2 --> H
+    G3 --> H
+    H --> I[Produce final report]
+```
+
+## 3. Usage
+
+### Command: `/review:review`
 
 Performs an evidence-based review of local changes or a GitHub pull request.
 
@@ -52,7 +119,7 @@ Review this PR: https://github.com/owner/repository/pull/123
 
 A pull request URL is supported in a natural-language request, but not as a direct `/review:review` argument.
 
-Features:
+### Features
 
 - Developer and Reviewer modes
 - Review-need validation for pull requests
@@ -63,7 +130,7 @@ Features:
 - Independent verification and deduplication of findings
 - Explicit review coverage, evidence, and limitations
 
-Review report format:
+### Review Report Format
 
 ```text
 ## Review Summary
@@ -90,14 +157,14 @@ Focused — one self-contained change
 | Recoverability | Recovery and consistency | Retry path inspected | src/example.ts:35 |
 ```
 
-Result classifications:
+#### Result Classifications
 
 - **Potential problem**: changed code, a realistic trigger, and observable impact indicate a possible defect.
 - **Human decision**: code facts are known, but product, design, or business judgment is required.
 - **Verified by AI**: the applicable scope was inspected and no issue was found for that concern.
 - **Could not verify**: required specifications, measurements, permissions, or execution evidence are unavailable.
 
-False positives filtered:
+#### False Positives Filtered
 
 - Pre-existing issues not materially affected by the change
 - Hypothetical problems without a realistic execution path
@@ -105,7 +172,18 @@ False positives filtered:
 - Personal style preferences and vague general advice
 - Duplicate or unsupported findings
 
-## Installation
+## 4. Installation
+
+### Prerequisites
+
+The following environment and access are required to run the review:
+
+- Claude Code with plugin and agent support
+- A Git repository for Developer mode
+- GitHub CLI (`gh`) installed and authenticated for Reviewer mode
+- Access to the target repository and pull request
+- Repository-defined test or analysis commands for mechanical verification
+- Compatible read-only tools when external evidence is required
 
 Load the plugin directly during development:
 
@@ -119,9 +197,9 @@ Validate it before use:
 claude plugin validate /path/to/review --strict
 ```
 
-## Best Practices
+## 5. Usage Guide
 
-### Using `/review:review`
+### Best Practices for `/review:review`
 
 - Keep pull request descriptions focused on intent, behavior, and constraints.
 - Link relevant issues, specifications, and decisions explicitly.
@@ -129,7 +207,7 @@ claude plugin validate /path/to/review --strict
 - Treat findings as evidence for a human decision, not as automatic approval or rejection.
 - Keep repository-defined tests and static-analysis commands aligned with CI.
 
-### When to use
+#### When to Use
 
 - Local changes before opening a pull request
 - Pull requests with meaningful behavior or architecture changes
@@ -137,16 +215,16 @@ claude plugin validate /path/to/review --strict
 - Changes whose requirements or compatibility must be checked against linked sources
 - Refactors whose behavior and codebase impact need independent verification
 
-### When not to use
+#### When Not to Use
 
 - When there are no commits or working-tree changes to review
 - For formatting-only or generated-file changes already enforced by automation
 - As a substitute for missing product requirements or human judgment
 - When the target cannot be accessed with the available read-only tools
 
-## Workflow Integration
+### Workflow Integration
 
-### Standard local review workflow
+#### Standard Local Review Workflow
 
 ```text
 # Make changes in a local repository
@@ -156,7 +234,7 @@ claude plugin validate /path/to/review --strict
 # Fix confirmed problems and rerun the review
 ```
 
-### Standard pull request workflow
+#### Standard Pull Request Review Workflow
 
 ```text
 # Review by pull request number
@@ -170,79 +248,7 @@ Review this PR: https://github.com/owner/repository/pull/123
 
 The review is read-only by default. It does not modify source files, install dependencies, change repository configuration, or post GitHub comments unless the user explicitly requests a separate action.
 
-## Requirements
-
-- Claude Code with plugin and agent support
-- A Git repository for Developer mode
-- GitHub CLI (`gh`) installed and authenticated for Reviewer mode
-- Access to the target repository and pull request
-- Repository-defined test or analysis commands for mechanical verification
-- Compatible read-only tools when external evidence is required
-
-## Troubleshooting
-
-### No changes found
-
-Issue: Developer mode reports that there is nothing to review.
-
-Solution:
-
-- Confirm that the current branch has commits ahead of its upstream.
-- Check for staged, unstaged, or relevant untracked source files.
-- Run the command from the intended Git repository.
-
-### Pull request cannot be resolved
-
-Issue: Reviewer mode cannot load the requested pull request.
-
-Solution:
-
-- Verify that `gh auth status` succeeds.
-- Confirm that the repository has the correct GitHub remote.
-- Check that the pull request number or URL belongs to the current repository.
-- Provide exactly one unambiguous pull request target.
-
-### Review is marked incomplete
-
-Issue: One or more checks could not be completed.
-
-Solution:
-
-- Read the `Could not verify` entries for the missing prerequisite or evidence.
-- Make referenced specifications accessible through a compatible read-only source.
-- Restore missing dependencies if existing repository checks require them.
-- Approve execution separately when an untrusted pull request requires repository-controlled code to run.
-
-### Tests or static analysis did not run
-
-Issue: Mechanical verification records commands as blocked or unavailable.
-
-Solution:
-
-- Document the repository's test, lint, type-check, and build commands.
-- Ensure required dependencies are already installed; the review does not install them.
-- Check that the commands are safe to run in the current environment.
-
-### Too many or too few findings
-
-Issue: The review focus does not match the repository's needs.
-
-Solution:
-
-- Update `REVIEW.md` with concrete applicability and verification criteria.
-- Add explicit repository guidance near the affected code.
-- Improve the pull request description and link authoritative requirements.
-
-## Tips
-
-- Use focused pull requests; cohesive changes are easier to verify reliably.
-- Explain why the change exists, not only what files changed.
-- Link requirements directly so only relevant sections are retrieved.
-- Preserve reproducible CI commands in the repository.
-- Review `Could not verify` results instead of guessing through evidence gaps.
-- Use Review Coverage to see successful checks and limitations.
-
-## Configuration
+## 6. Configuration
 
 ### Customizing review criteria
 
@@ -275,39 +281,11 @@ Agent responsibilities and output contracts are defined under `agents/`:
 
 Keep orchestration and final-report rules in `skills/review/SKILL.md`.
 
-## Technical Details
+Give every review-plan item a stable `review_item_id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `insufficient_evidence` instead of silently omitting an assigned item.
 
-### Directory structure
+When changing `agents/`, `skills/`, or the plugin manifest, use `skills/maintain-review-plugin/SKILL.md` to keep the English runtime definitions, Japanese and Simplified Chinese documentation, and all three root READMEs synchronized.
 
-```text
-review/
-├── .claude-plugin/
-│   └── plugin.json
-├── agents/
-│   ├── context/
-│   │   └── context.md
-│   ├── validation/
-│   │   ├── review-needed.md
-│   │   └── small-cls.md
-│   ├── review/
-│   │   ├── mechanical.md
-│   │   ├── structural.md
-│   │   └── contextual.md
-│   ├── comment/
-│   │   └── comment.md
-│   └── README.md
-├── skills/
-│   └── review/
-│       └── SKILL.md
-├── docs/
-│   ├── ja/
-│   └── zh-CN/
-├── REVIEW.md
-├── README.md
-├── README.ja.md
-├── README.zh-CN.md
-└── LICENSE
-```
+## 7. Technical Details
 
 ### Agent architecture
 
@@ -318,25 +296,6 @@ review/
 - 3 specialized agents review mechanical, structural, and contextual concerns in parallel.
 - 1 comment agent verifies candidates and produces the verified result set.
 - The review skill formats the final report without adding or reevaluating findings.
-
-### Review workflow
-
-```mermaid
-flowchart TD
-    A[Resolve local changes or PR] --> B{PR needs review?}
-    B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Collect relevant context]
-    C --> D[Create Evidence Packet]
-    D --> E[Evaluate reviewer workload]
-    E --> F[Build change-specific review plan]
-    F --> G1[Mechanical review]
-    F --> G2[Structural review]
-    F --> G3[Contextual review]
-    G1 --> H[Verify and deduplicate findings]
-    G2 --> H
-    G3 --> H
-    H --> I[Produce final report]
-```
 
 ### Context handling
 
@@ -352,11 +311,13 @@ Reviewer mode uses `gh` for:
 
 If a checkout is required, the workflow uses an isolated temporary worktree and removes it after evidence collection.
 
-## Author
+## 8. Project Information
+
+### Author
 
 takuto-san
 
-## Version
+### Version
 
 0.1.0
 

@@ -6,7 +6,13 @@ model: inherit
 color: green
 ---
 
+## Mission
+
 Evaluate only review items whose `primary_layer` is `mechanical`. Do not modify files. Do not stop at reading CI results: run the repository-defined static checks and unit tests when it is safe to do so.
+
+## Required input
+
+The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, CI status when available, and the review-plan items assigned to this agent. If required input is missing, do not guess; return `insufficient_evidence` for the affected items.
 
 ## Scope
 
@@ -25,13 +31,20 @@ Evaluate only review items whose `primary_layer` is `mechanical`. Do not modify 
 
 Do not introduce tools or dependencies. Do not run destructive commands or commands requiring unavailable external environments. Record those limitations as `insufficient_evidence`.
 
-## Constraints
+## Boundaries
 
 - Do not duplicate a problem already reported clearly by CI; cite it as coverage evidence when useful.
 - Re-run safe local static checks and unit tests even when CI ran them, or state why this was impossible.
 - Test existence alone does not prove adequate behavioral coverage.
 - Do not speculate about design, requirements, or future policy.
 - Skip expensive, destructive, or environment-dependent commands and record the limitation.
+
+## Completion criteria
+
+- Return exactly one result for every assigned review-plan item.
+- Preserve each assigned `review_item_id` in the corresponding result.
+- Record every verification command attempted, including failures and justified omissions.
+- Use `verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
 
 ## Status
 
@@ -44,7 +57,8 @@ Do not introduce tools or dependencies. Do not run destructive commands or comma
 
 ```yaml
 results:
-  - quality_characteristic: "Maintainability"
+  - review_item_id: "RP-001"
+    quality_characteristic: "Maintainability"
     subcharacteristic: "Testability"
     criterion: "Test quality"
     question: "Is behavior after notification failure covered by tests?"

@@ -18,4 +18,6 @@ runtime: false
 
 推奨順序はReviewer modeの`review-needed`、`context`、`small-cls`、`skills/review/SKILL.md`による計画作成、3層レビュー、`comment`、最終レポートです。3層レビューは並列実行できます。
 
+各レビュー計画項目には一意な`review_item_id`を付け、レビューから検証まで維持します。各エージェントには必要な入力を明示的に渡し、レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返します。証拠が不足する項目は省略せず`insufficient_evidence`とします。
+
 機械的レビューは安全かつ適用可能な静的解析とUnitテストを実行し、全コマンドと結果を記録します。`comment`は未完了のレビューを完了扱いにしません。
