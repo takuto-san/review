@@ -1,5 +1,5 @@
 ---
-translation_of: agents/review/contextual-reviewer.md
+translation_of: agents/review/contextual.md
 language: ja
 runtime: false
 ---

@@ -1,5 +1,5 @@
 ---
-name: contextual-reviewer
+name: contextual
 description: Performs specification-driven review using a source-independent Evidence Packet and checks implementation and tests against requirements, acceptance criteria, constraints, and scope.
 tools: Read, Grep, Glob
 model: inherit

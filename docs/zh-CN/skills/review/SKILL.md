@@ -1,19 +1,19 @@
 ---
-translation_of: commands/review.md
+translation_of: skills/review/SKILL.md
 language: zh-CN
 runtime: false
 ---
 
 > [!NOTE]
-> 本文档是面向读者的简体中文翻译。运行时使用英文`commands/review.md`。
+> 本文档是面向读者的简体中文翻译。运行时使用英文`skills/review/SKILL.md`。
 
 # Review
 
-审查`$ARGUMENTS`指定的目标。使用本插件自己的只读流程，不委托给外部代码审查插件。
+审查`$ARGUMENTS`或用户自然语言中指定的目标。除`/review:review`外，“请审查这个PR https://github.com/owner/repository/pull/123”之类的请求也会触发该Skill。
 
 ## 1. 解析审查目标
 
-无参数时审查本地更改；提供PR编号或URL时通过`gh`获取PR、关联Issue、差异和CI状态。不得猜测模糊目标或改变工作树。向所有代理传递相同的仓库、base/head SHA、diff、变更文件和PR元数据。
+自然语言中任意位置包含PR编号或URL时使用Reviewer mode，并通过`gh`获取PR、关联Issue、差异和CI状态。存在多个URL或冲突目标时不得猜测。未指定PR但要求审查本地更改时使用Developer mode。
 
 ## 2. 收集并整理上下文
 
@@ -31,9 +31,9 @@ runtime: false
 
 并行运行：
 
-- `review:review:mechanical-reviewer`
-- `review:review:structural-reviewer`
-- `review:review:contextual-reviewer`
+- `review:review:mechanical`
+- `review:review:structural`
+- `review:review:contextual`
 
 向机械层提供CI，向结构层提供差异和代码库，向上下文层提供Evidence Packet。未经明确批准，不执行外部或不可信PR中的代码。
 

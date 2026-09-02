@@ -1,5 +1,5 @@
 ---
-translation_of: agents/review/mechanical-reviewer.md
+translation_of: agents/review/mechanical.md
 language: zh-CN
 runtime: false
 ---

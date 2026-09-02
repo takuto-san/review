@@ -1,5 +1,5 @@
 ---
-name: mechanical-reviewer
+name: mechanical
 description: Evaluates mechanical review items selected by the review plan, including tests, CI, static checks, and objective diff facts. Does not perform architecture review.
 tools: Read, Grep, Glob, Bash
 model: inherit

@@ -1,5 +1,5 @@
 ---
-translation_of: agents/review/structural-reviewer.md
+translation_of: agents/review/structural.md
 language: zh-CN
 runtime: false
 ---

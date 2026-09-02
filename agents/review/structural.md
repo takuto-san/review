@@ -1,5 +1,5 @@
 ---
-name: structural-reviewer
+name: structural
 description: Reviews architecture, execution paths, dependencies, state, security, performance, reliability, and maintainability using full-codebase context. Use for structural review items only.
 tools: Read, Grep, Glob, Bash
 model: inherit

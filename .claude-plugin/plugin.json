@@ -7,9 +7,9 @@
   "agents": [
     "./agents/context/context.md",
     "./agents/validation/small-cls.md",
-    "./agents/review/mechanical-reviewer.md",
-    "./agents/review/structural-reviewer.md",
-    "./agents/review/contextual-reviewer.md",
+    "./agents/review/mechanical.md",
+    "./agents/review/structural.md",
+    "./agents/review/contextual.md",
     "./agents/comment/comment.md"
   ]
 }

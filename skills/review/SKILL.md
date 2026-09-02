@@ -1,12 +1,13 @@
 ---
-description: Review local changes or a GitHub pull request using specialized review agents, repository checks, and evidence-based verification
+name: review
+description: Review local code changes or a GitHub Pull Request using context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
 argument-hint: "[PR number or URL]"
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
 
 # Review
 
-Review the target supplied in `$ARGUMENTS`.
+Review the target supplied in `$ARGUMENTS` or identified in the user's natural-language request.
 
 This plugin implements its own review workflow. Do not invoke external code
 review plugins or treat their output as a prerequisite.
@@ -22,10 +23,18 @@ and output schemas are defined by the agents under `agents/`.
 
 Select one mode.
 
+Recognize an explicit GitHub Pull Request URL anywhere in the user's request,
+including `Review this PR: https://github.com/owner/repo/pull/123`. Treat
+surrounding natural language as review instructions, not as part of the URL. If
+multiple PR URLs or conflicting targets are present, reject the request as
+ambiguous instead of guessing.
+
 ### Developer mode
 
-When `$ARGUMENTS` is empty, review commits ahead of the current branch's
-upstream, staged changes, unstaged changes, and relevant untracked source files.
+When neither `$ARGUMENTS` nor the user's request identifies a PR, and the user
+asks to review local or current changes, review commits ahead of the current
+branch's upstream, staged changes, unstaged changes, and relevant untracked
+source files.
 
 Resolve the repository root, current and upstream branches, base and head SHAs,
 changed files, additions, deletions, and complete diff. If no reviewable changes
@@ -33,7 +42,8 @@ exist, stop and report that there is nothing to review.
 
 ### Reviewer mode
 
-When `$ARGUMENTS` contains a pull-request number or URL, resolve with `gh` the
+When `$ARGUMENTS` or the user's request contains a pull-request number or URL,
+resolve with `gh` the
 repository, PR number, title, description, base and head branches and SHAs,
 linked issues, changed files, additions, deletions, CI and check status, and
 draft, closed, or merged state.
@@ -101,9 +111,9 @@ items merely for completeness.
 
 After the review plan is complete, run these agents in parallel:
 
-- `review:review:mechanical-reviewer`
-- `review:review:structural-reviewer`
-- `review:review:contextual-reviewer`
+- `review:review:mechanical`
+- `review:review:structural`
+- `review:review:contextual`
 
 Give every agent the shared target context, Change Scope result, only the review
 items assigned to its `primary_layer`, relevant supporting-layer information,

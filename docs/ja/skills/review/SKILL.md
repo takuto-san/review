@@ -1,19 +1,19 @@
 ---
-translation_of: commands/review.md
+translation_of: skills/review/SKILL.md
 language: ja
 runtime: false
 ---
 
 > [!NOTE]
-> この文書は人間向けの日本語訳です。実行時には英語版`commands/review.md`を使用します。
+> この文書は人間向けの日本語訳です。実行時には英語版`skills/review/SKILL.md`を使用します。
 
 # Review
 
-`$ARGUMENTS`で指定された対象をレビューします。このプラグイン独自のワークフローを使用し、外部のコードレビュープラグインへ委譲しません。レビューは読み取り専用です。
+`$ARGUMENTS`またはユーザーの自然言語から特定した対象をレビューします。`/review:review`だけでなく、「このPRをレビューして https://github.com/owner/repository/pull/123」のような依頼でも起動します。レビューは読み取り専用です。
 
 ## 1. レビュー対象の解決
 
-引数がなければDeveloper modeとしてローカル変更を、PR番号またはURLがあればReviewer modeとして`gh`でPR、関連Issue、差分、CI状態を取得します。曖昧な対象は推測せず、作業ツリーを変更しません。全エージェントへ同じrepository、base/head SHA、diff、変更ファイル、PRメタデータを渡します。
+自然言語のどこにPR番号またはURLが含まれていてもReviewer modeとして認識し、`gh`でPR、関連Issue、差分、CI状態を取得します。複数URLや競合する対象があれば推測しません。PRが指定されずローカル変更のレビューを依頼された場合はDeveloper modeを使用します。
 
 ## 2. コンテキストの収集と整理
 
@@ -31,9 +31,9 @@ runtime: false
 
 次を並列実行します。
 
-- `review:review:mechanical-reviewer`
-- `review:review:structural-reviewer`
-- `review:review:contextual-reviewer`
+- `review:review:mechanical`
+- `review:review:structural`
+- `review:review:contextual`
 
 機械層にはCI情報、構造層には差分とコードベース、文脈層にはEvidence Packetを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
 
