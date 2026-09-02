@@ -74,7 +74,7 @@ flowchart TD
     A[ローカル変更またはPRを特定] --> B{PRにレビューが必要か}
     B -->|不要| X[スキップ理由を報告]
     B -->|必要またはローカル変更| C[関連コンテキストを収集]
-    C --> D[Evidence Packetを作成]
+    C --> D[レビューコンテキストを収集]
     D --> E[レビュワー負荷を評価]
     E --> F[変更固有のレビュー計画を作成]
     F --> G1[Mechanical review]
@@ -131,7 +131,7 @@ Pull Request URLは自然言語の依頼では指定できますが、`/review:r
 - ISO/IEC 25010の品質特性に基づく変更固有の計画
 - Mechanical・Structural・Contextual reviewの並列実行
 - 明示的に参照された情報源からの読み取り専用コンテキスト収集
-- 生文書の代わりに簡潔なEvidence Packetを使用
+- 生文書の代わりに簡潔なレビューコンテキストを使用
 - Findingの独立検証と重複排除
 - レビュー範囲、証拠、制約の明示
 
@@ -279,7 +279,7 @@ claude plugin validate /path/to/review --strict
 
 エージェントの責務と出力契約は`agents/`以下で定義します。
 
-- `agents/context/context.md` — コンテキスト収集とEvidence Packetの作成
+- `agents/context/context.md` — 簡潔なレビューコンテキストの収集
 - `agents/validation/review-needed.md` — Pull Requestのレビュー要否
 - `agents/validation/small-cls.md` — Change Scopeとレビュワー負荷
 - `agents/review/mechanical.md` — 客観的なリポジトリチェック
@@ -307,7 +307,7 @@ claude plugin validate /path/to/review --strict
 
 ### コンテキストの扱い
 
-context agentはレビュー対象に関連付けられた参照だけをたどります。後続処理にはNotion、Confluence、Google Docs、GitHub、Web、リポジトリ内文書の生データではなく、簡潔なEvidence Packetを渡します。取得できない情報や情報源の矛盾は、Packetと最終カバレッジに明示します。
+context agentはレビュー対象に関連付けられた参照だけをたどります。後続処理にはNotion、Confluence、Google Docs、GitHub、Web、リポジトリ内文書の生データではなく、簡潔なコンテキストを渡します。取得できない情報や情報源の矛盾は、コンテキストと最終カバレッジに明示します。
 
 ### GitHub連携
 

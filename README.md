@@ -70,7 +70,7 @@ flowchart TD
     A[Resolve local changes or PR] --> B{PR needs review?}
     B -->|No| X[Report skip reason]
     B -->|Yes or local changes| C[Collect relevant context]
-    C --> D[Create Evidence Packet]
+    C --> D[Collect review context]
     D --> E[Evaluate reviewer workload]
     E --> F[Build change-specific review plan]
     F --> G1[Mechanical review]
@@ -126,7 +126,7 @@ A pull request URL is supported in a natural-language request, but not as a dire
 - Change-specific planning based on ISO/IEC 25010 quality characteristics
 - Parallel mechanical, structural, and contextual review
 - Read-only context collection from explicitly referenced sources
-- Compact Evidence Packets instead of raw source documents
+- Compact review context instead of raw source documents
 - Independent verification and deduplication of findings
 - Explicit review coverage, evidence, and limitations
 
@@ -271,7 +271,7 @@ Only criteria applicable to the current change are selected.
 
 Agent responsibilities and output contracts are defined under `agents/`:
 
-- `agents/context/context.md` — context collection and Evidence Packet creation
+- `agents/context/context.md` — compact review-context collection
 - `agents/validation/review-needed.md` — pull request review eligibility
 - `agents/validation/small-cls.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
@@ -298,7 +298,7 @@ Give every review-plan item a stable `review_item_id` such as `RP-001` and prese
 
 ### Context handling
 
-The context agent follows only references connected to the review target. Later stages receive a compact Evidence Packet rather than raw Notion, Confluence, Google Docs, GitHub, web, or repository documents. Missing and conflicting sources remain explicit in the packet and final coverage.
+The context agent follows only references connected to the review target. Later stages receive compact context rather than raw Notion, Confluence, Google Docs, GitHub, web, or repository documents. Missing and conflicting sources remain explicit in the context and final coverage.
 
 ### GitHub integration
 

@@ -9,7 +9,7 @@ runtime: false
 
 ## ミッション
 
-あなたはPRレビューを始める人間のレビュワーと同じように、変更の目的と判断に必要な情報を収集・整理する担当です。レビューやFindingの作成は行わず、後続のエージェントが利用する最小限のEvidence Packetを返してください。ファイルや外部情報を変更してはいけません。
+あなたはPRレビューを始める人間のレビュワーと同じように、変更の目的と判断に必要な情報を収集・整理する担当です。レビューやFindingの作成は行わず、後続のエージェントが利用する最小限のコンテキストを返してください。ファイルや外部情報を変更してはいけません。
 
 ## 必須入力
 
@@ -32,7 +32,7 @@ runtime: false
 4. Issueの記述だけで各問いに答えられるか確認する。
 5. 情報が不足する問いについてだけ、明示された参照先の該当箇所を取得する。
 6. 問いに答えるのに十分なEvidenceを得た時点で取得を止める。
-7. 生の文書や検索結果ではなく、出典付きの短いEvidence Packetへ正規化する。
+7. 生の文書や検索結果ではなく、出典付きの短いコンテキストへ正規化する。
 
 ## 取得してはいけない情報
 
@@ -49,43 +49,45 @@ runtime: false
 - RequirementとAcceptance Criterionに安定したレビュー用IDと正確な出典位置がある。
 - 外部情報源は明示された参照からのみ取得している。
 - 不足、アクセス不能、過大、矛盾する情報源を明記している。
-- Evidence Packetには後続のレビュー質問に必要な情報だけが含まれる。
+- コンテキストには後続のレビュー質問に必要な情報だけが含まれる。
 
 ## 出力
 
 ```yaml
-evidence_packet:
-  purpose: "変更が解決する問題"
-  scope:
-    included: []
-    excluded: []
-  requirements:
-    - id: "REQ-001"
-      statement: "観測可能な要求"
-      source:
-        uri: "媒体に依存しない参照先"
-        locator: "見出し、ブロック、行番号など"
-        authority: normative | informative | historical
-  acceptance_criteria:
-    - id: "AC-001"
-      requirement_ids: ["REQ-001"]
-      expected_behavior: "判定可能な期待結果"
-      source:
-        uri: "参照先"
-        locator: "位置"
-  constraints: []
-  open_questions: []
+context:
+  intent:
+    purpose: "変更が解決する問題"
+    scope:
+      included: []
+      excluded: []
+  specification:
+    requirements:
+      - id: "REQ-001"
+        statement: "観測可能な要求"
+        acceptance_criteria:
+          - id: "AC-001"
+            expected_behavior: "判定可能な期待結果"
+            source:
+              uri: "媒体に依存しない参照先"
+              locator: "見出し、ブロック、行番号など"
+        source:
+          uri: "媒体に依存しない参照先"
+          locator: "見出し、ブロック、行番号など"
+          authority: normative | informative | historical
+    constraints: []
+  gaps:
+    ambiguities: []
+    conflicts: []
+    unresolved_references:
+      - uri: "取得できなかった参照先"
+        locator: "取得対象箇所"
+        reason: "利用可能なツールがない、権限がない、位置が不明など"
+        affected_requirement_ids: []
   review_questions:
     - id: "CQ-001"
       requirement_ids: ["REQ-001"]
       question: "後続レビューが確認する具体的な問い"
       reason: "この変更で確認が必要な理由"
-  unresolved_references:
-    - uri: "取得できなかった参照先"
-      locator: "取得対象箇所"
-      reason: "利用可能なツールがない、権限がない、位置が不明など"
-      affected_requirement_ids: []
-  source_conflicts: []
 ```
 
 Requirement IDが資料に存在しない場合は、出典と対応関係を維持できる一時IDを付け、そのIDがレビュー用であることを明示してください。出典のない要約を仕様上の事実として扱ってはいけません。

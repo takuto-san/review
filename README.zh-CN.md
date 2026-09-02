@@ -74,7 +74,7 @@ flowchart TD
     A[解析本地更改或PR] --> B{PR是否需要审查}
     B -->|否| X[报告跳过原因]
     B -->|是或本地更改| C[收集相关上下文]
-    C --> D[生成Evidence Packet]
+    C --> D[收集审查上下文]
     D --> E[评估审查者负担]
     E --> F[生成变更专属审查计划]
     F --> G1[Mechanical review]
@@ -131,7 +131,7 @@ Pull Request URL可以用于自然语言请求，但不能作为`/review:review`
 - 基于ISO/IEC 25010质量特性的变更专属计划
 - 并行执行Mechanical、Structural和Contextual review
 - 从明确引用的来源中进行只读上下文收集
-- 使用精简的Evidence Packet而非原始文档
+- 使用精简的审查上下文而非原始文档
 - 独立验证Finding并去重
 - 明确展示审查覆盖范围、证据和限制
 
@@ -279,7 +279,7 @@ claude plugin validate /path/to/review --strict
 
 代理职责和输出约定定义在`agents/`目录中：
 
-- `agents/context/context.md` — 上下文收集和Evidence Packet生成
+- `agents/context/context.md` — 精简审查上下文收集
 - `agents/validation/review-needed.md` — Pull Request审查必要性
 - `agents/validation/small-cls.md` — Change Scope和审查者负担
 - `agents/review/mechanical.md` — 客观仓库检查
@@ -307,7 +307,7 @@ claude plugin validate /path/to/review --strict
 
 ### 上下文处理
 
-context agent只跟随与审查目标相关联的引用。后续阶段接收精简的Evidence Packet，而不是Notion、Confluence、Google Docs、GitHub、Web或仓库文档的原始内容。缺失信息和来源冲突会明确保留在Packet和最终覆盖报告中。
+context agent只跟随与审查目标相关联的引用。后续阶段接收精简上下文，而不是Notion、Confluence、Google Docs、GitHub、Web或仓库文档的原始内容。缺失信息和来源冲突会明确保留在上下文和最终覆盖报告中。
 
 ### GitHub集成
 

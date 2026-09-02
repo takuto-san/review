@@ -8,7 +8,7 @@ runtime: false
 
 | エージェント | 責務 |
 |---|---|
-| `context` | 明示された参照から必要な情報だけを収集し、媒体非依存のEvidence Packetを作成する |
+| `context` | 明示された参照から必要な情報だけを収集し、媒体非依存のコンテキストを作成する |
 | `review-needed` | closed、draft、trivial、already-reviewedのPRをskipする |
 | `small-cls` | 規模、Change Group、凝集性によるレビュワー負荷を判定する |
 | `mechanical` | CI相当のテスト、静的解析、客観的な検証を実行する |
