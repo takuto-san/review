@@ -1,10 +1,18 @@
 # review
 
+English | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
+
 A Claude Code plugin for reviewing local changes and GitHub pull requests.
 
 This is a clean-room implementation inspired by multi-stage review workflows.
-Its review planning, specialized review layers, finding verification, and
-report synthesis are implemented entirely by this plugin's Claude Code agents.
+Its context collection, review planning, specialized review layers, finding
+verification, and report generation are implemented entirely by this plugin.
+
+## Documentation
+
+- [Runtime specification (English)](REVIEW.md)
+- [日本語ドキュメント](docs/ja/README.md)
+- [简体中文文档](docs/zh-CN/README.md)
 
 ## Workflow
 
@@ -53,7 +61,12 @@ review/
 ├── commands/
 │   └── review.md
 ├── REVIEW.md
+├── docs/
+│   ├── ja/
+│   └── zh-CN/
 ├── README.md
+├── README.ja.md
+├── README.zh-CN.md
 └── LICENSE
 ```
 

@@ -1,296 +1,198 @@
 # PR Agent Review Instructions
 
-## 目的
+## Purpose
 
-このファイルは、PRエージェントがPull Requestをレビューするときに使用する
-品質特性、レビュー観点、判定基準を定義する。
+This document defines the quality characteristics, review concerns, and decision criteria used by the PR review agents. ISO/IEC 25010 is used to check coverage; the actual concerns are concrete questions a human code reviewer would investigate.
 
-ISO/IEC 25010の製品品質モデルをレビュー範囲の網羅性を確認するために使用し、
-実際のレビュー観点は、一般的なコードレビューで人間が確認すべき内容に
-具体化する。
+Do not apply every concern to every PR. Select concerns dynamically from the purpose, changes, and impact of the review target.
 
-すべての品質特性やレビュー観点を毎回適用してはならない。
-PRの目的、変更内容、影響範囲に応じて、関係する項目だけを動的に選択する。
+# Review policy
 
----
+- Review problems introduced or exposed by this change.
+- Inspect relevant callers, callees, tests, configuration, and contracts, not only the diff.
+- Compare implementation with the PR purpose, Issue, specification, and acceptance criteria.
+- Report a problem only with a concrete code location and realistic failure path.
+- Do not assert a problem when evidence is insufficient.
+- Classify product, design, or specification choices as `Human decision`.
+- Classify unavailable information or execution evidence as `Could not verify`.
+- Normally omit formatting, lint, and simple type errors already detected by CI.
+- Do not block a PR for personal style preferences.
+- Report a pre-existing problem only when this change materially expands its impact.
+- Judge whether overall codebase health is maintained or improved, not whether the code is perfect.
 
-# レビュー方針
+# Selecting review concerns
 
-- このPRによって追加または変更された問題をレビューする
-- 差分だけでなく、関連する呼び出し元、呼び出し先、テスト、設定を確認する
-- PRの目的、Issue、仕様、受け入れ条件と実装の整合性を確認する
-- 問題を報告する場合は、具体的なコード位置と現実的な失敗経路を示す
-- 根拠が不足する場合は、問題と断定しない
-- 設計や仕様上の判断が必要な場合は「人間による判断」とする
-- 情報や実行結果が不足する場合は「確認不可」とする
-- CIで検出できるフォーマット、Lint、単純な型エラーは原則報告しない
-- 個人的なスタイルの好みでPRをブロックしない
-- 既存問題は、今回の変更によって影響が拡大する場合のみ報告する
-- コードが完璧かではなく、コードベース全体の健全性が維持または改善されるかを判断する
+At the start of review, consider all eight quality characteristics:
 
----
+1. Functional suitability
+2. Reliability
+3. Performance efficiency
+4. Usability
+5. Security
+6. Compatibility
+7. Maintainability
+8. Portability
 
-# レビュー観点の選択方法
+Use this procedure:
 
-レビュー開始時に、以下の8つの品質特性をすべて検討する。
+1. Understand the PR purpose and major changes.
+2. Divide changes into functional, refactoring, configuration, data, infrastructure, or other coherent groups.
+3. Select affected quality characteristics and subcharacteristics.
+4. Select concerns whose applicability conditions match the change.
+5. Turn each concern into a concrete, PR-specific question.
+6. Assign it to the mechanical, structural, or contextual review layer.
+7. Show the selected concerns and results in Review Coverage.
 
-1. 機能適合性
-2. 信頼性
-3. 性能効率性
-4. 使用性
-5. セキュリティ
-6. 互換性
-7. 保守性
-8. 移植性
-
-次の手順で、適用するレビュー観点を選択する。
-
-1. PRの目的と主要な変更を把握する
-2. 変更を機能、リファクタリング、設定、データ、インフラなどのまとまりに分ける
-3. 影響を受ける品質特性を選択する
-4. 品質特性の中から関係する副特性を選択する
-5. 「適用する変更」に該当するレビュー観点を選択する
-6. 「確認内容」を基に、PR固有のチェック項目を生成する
-7. 選択した観点と結果をReview Coverageに表示する
-
-観点を選択するときは、次の情報を参照する。
-
-- PRの説明
-- 関連するIssue、仕様、受け入れ条件
-- 変更されたファイル
-- 関連する呼び出し元と呼び出し先
-- 既存のアーキテクチャと実装パターン
-- 追加または変更されたテスト
-- API、DB、イベント、設定、外部サービスへの影響
-
----
+Use the PR description, linked Issues and acceptance criteria, changed files, callers and callees, established architecture, tests, APIs, databases, events, configuration, and external-service impact.
 
 # Change Scope
 
-コードレビューの前に、PRが1つの自己完結した変更になっているか確認する。
+Before reviewing code, determine whether the PR is one self-contained change.
 
-| レビュー観点 | 適用する変更 | 確認内容 |
+| Concern | Apply when | Verify |
 |---|---|---|
-| Change size | すべてのPR | 変更ファイル数、追加行数、削除行数、合計変更行数がレビュー可能な規模か |
-| Change cohesion | 複数の機能やディレクトリに変更が及ぶ場合 | 変更が1つの目的に集中しているか。複数の関心ごとが混在していないか |
-| Change separation | 機能追加、リファクタリング、設定変更が混在する場合 | 独立してマージ可能な変更へ分割できないか |
-| Review context | PRの意図を差分だけで理解できない場合 | PR説明、Issue、テスト、既存コードから変更理由を理解できるか |
+| Change size | Every PR | Whether file count, additions, deletions, and substantive changed lines are reviewable |
+| Change cohesion | Multiple features or directories change | Whether all changes serve one purpose |
+| Change separation | Features, refactoring, and configuration are mixed | Whether independently mergeable changes should be split |
+| Review context | Intent is unclear from the diff | Whether the PR, Issue, tests, and existing code explain the reason for change |
 
-Change Scopeは次のいずれかに分類する。
+Classify scope as:
 
-- Focused: 1つの自己完結した変更である
-- Split recommended: 複数の独立した変更へ分割できる可能性がある
-- Review blocked: 変更範囲が広く、信頼できるレビューが困難である
+- `Focused`: one self-contained change
+- `Split recommended`: multiple independent changes can reasonably be separated
+- `Review blocked`: scope or missing context prevents a trustworthy review
 
----
+# Functional suitability
 
-# 機能適合性
-
-システムが、明示された目的とユーザーのニーズを満たす機能を
-正しく提供できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 機能完全性 | Requirements coverage | 機能、API、ビジネスロジックを追加・変更する場合 | Issue、仕様、受け入れ条件に必要な振る舞いが実装されているか<br>必要な処理や状態が欠けていないか<br>PR説明、実装、テストに矛盾がないか |
-| 機能正確性 | Correctness and edge cases | 計算、条件分岐、状態変更、データ変換を変更する場合 | 正常系で正しい結果を返すか<br>境界値、空値、欠損値、不正値を処理できるか<br>重要な分岐と状態遷移が正しいか<br>並行処理による誤った結果が発生しないか |
-| 機能適切性 | User and developer needs | ユーザー操作や公開インターフェースを変更する場合 | 変更がユーザーの目的を適切に達成するか<br>呼び出し元に不要な手順や複雑性を要求していないか<br>現在必要のない機能を追加していないか |
+| Functional completeness | Requirements coverage | Features, APIs, or business logic change | Required behavior and states are implemented; PR, specification, implementation, and tests agree |
+| Functional correctness | Correctness and edge cases | Calculations, branches, state, or transformations change | Normal behavior, boundaries, null or invalid input, critical branches, state transitions, and concurrency results are correct |
+| Functional appropriateness | User and developer needs | User workflows or public interfaces change | The change achieves the user goal without unnecessary steps or speculative functionality |
 
----
+# Reliability
 
-# 信頼性
-
-システムが特定の条件下で必要な機能を継続的かつ正しく実行し、
-障害時にも安全な状態を維持できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 成熟性 | Error handling | 例外処理、外部依存、失敗する可能性のある処理を変更する場合 | 想定されるエラーを処理しているか<br>例外を握りつぶしていないか<br>呼び出し元へ適切なエラーを返すか<br>正常時と異常時の状態が明確か |
-| 可用性 | Availability | 起動処理、ヘルスチェック、依存サービスを変更する場合 | 起動、停止、再起動時に安全な状態を維持するか<br>一時的な障害で利用不能になり続けないか<br>ヘルスチェックが実際の稼働状態を反映するか |
-| 障害許容性 | Failure isolation | 外部サービス、キュー、非同期処理、共有リソースを変更する場合 | 依存先障害がシステム全体へ不要に波及しないか<br>適切なタイムアウトがあるか<br>リソース枯渇によって処理が停止し続けないか<br>失敗を安全に分離できるか |
-| 回復性 | Recovery and consistency | DB更新、状態変更、リトライ、ロールバックを伴う場合 | 途中失敗から回復できるか<br>部分的な保存状態が残らないか<br>再試行によって処理が重複しないか<br>データと状態を安全に復旧できるか |
+| Maturity | Error handling | Exceptions, external dependencies, or fallible work change | Expected errors are handled, not swallowed, and returned appropriately with clear state |
+| Availability | Availability | Startup, health checks, or dependencies change | Startup, shutdown, restart, transient failure, and health reporting remain safe |
+| Fault tolerance | Failure isolation | Services, queues, async work, or shared resources change | Dependency failure is contained; timeouts and exhaustion are handled safely |
+| Recoverability | Recovery and consistency | Persistence, retries, rollback, or state changes occur | Partial failure can recover; partial state and duplicate effects are prevented |
 
----
+# Performance efficiency
 
-# 性能効率性
-
-使用するリソース量に対して、適切な応答時間、処理能力、容量を
-提供できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 時間効率性 | Response time and throughput | DB、外部API、ループ、検索、集計、ソートを変更する場合 | 不要な反復や重複計算がないか<br>不要なDB・API呼び出しがないか<br>N+1クエリが発生しないか<br>応答時間やスループットを悪化させないか |
-| 資源効率性 | Resource usage | メモリ、接続、スレッド、ファイル、ストリームを扱う場合 | リソースが確実に解放されるか<br>不要なメモリ保持がないか<br>接続やスレッドを過剰に消費しないか<br>データを重複して保持していないか |
-| 容量満足性 | Capacity and scalability | 大量データ、同時実行、バッチ、キュー、ページングを変更する場合 | 現実的な最大件数を処理できるか<br>無制限にデータを読み込まないか<br>同時実行数の増加を考慮しているか<br>必要なページング、分割処理、レート制限があるか |
+| Time behavior | Response time and throughput | Databases, APIs, loops, search, aggregation, or sorting change | No unnecessary repetition, duplicate calls, N+1 queries, or material latency regression |
+| Resource utilization | Resource usage | Memory, connections, threads, files, or streams are used | Resources are released and are not retained, duplicated, or consumed excessively |
+| Capacity | Capacity and scalability | Large data, concurrency, batches, queues, or pagination change | Realistic maxima, paging, bounded loading, concurrency, and rate limits are handled |
 
----
+# Usability
 
-# 使用性
-
-ユーザーが変更された機能を理解し、効率的かつ安全に利用できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 適切度認識性 | Purpose and feedback | UI、CLI、APIレスポンス、利用手順を変更する場合 | 機能の目的と利用方法を理解できるか<br>操作結果が明確に伝わるか<br>ユーザーが次に取るべき行動を判断できるか |
-| 習得性 | Learnability | 新しい操作、設定、公開APIを追加する場合 | 既存の知識やパターンを利用できるか<br>学習に必要な説明や例があるか<br>利用方法が必要以上に複雑でないか |
-| 運用操作性 | Operability | UI操作、CLI、管理機能、設定方法を変更する場合 | 操作と制御が分かりやすいか<br>主要な操作を効率的に実行できるか<br>既存の操作方法と一貫しているか |
-| ユーザーエラー防止性 | Error prevention | 入力フォーム、削除、更新、危険な操作を変更する場合 | 不正な入力や誤操作を防止できるか<br>破壊的な操作に適切な確認があるか<br>エラーから回復する方法が示されるか |
-| UI快美性 | UI consistency | 画面、コンポーネント、レイアウトを変更する場合 | 既存のデザインや表示規則と一貫しているか<br>重要な情報が見つけやすいか<br>表示崩れや予期しない挙動がないか |
-| アクセシビリティ | Accessible interaction | UI、入力、画像、色、キーボード操作を変更する場合 | キーボードで操作できるか<br>色だけに情報を依存していないか<br>ラベル、代替テキスト、フォーカスが適切か<br>支援技術の利用を妨げないか |
+| Appropriateness recognizability | Purpose and feedback | UI, CLI, API responses, or instructions change | Purpose, result, and next action are understandable |
+| Learnability | Learnability | New operations, settings, or public APIs appear | Existing patterns, explanations, and examples make use learnable without needless complexity |
+| Operability | Operability | UI, CLI, administration, or configuration changes | Controls are efficient, understandable, and consistent |
+| User error protection | Error prevention | Inputs, deletion, updates, or dangerous actions change | Invalid input and mistakes are prevented; confirmation and recovery are appropriate |
+| User interface aesthetics | UI consistency | Screens, components, or layout change | Existing visual rules are followed and important information remains discoverable |
+| Accessibility | Accessible interaction | UI, inputs, images, color, or keyboard behavior changes | Keyboard use, non-color cues, labels, alternatives, focus, and assistive technology are supported |
 
----
+# Security
 
-# セキュリティ
-
-データ、権限、秘密情報、システム境界を適切に保護できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 機密性 | Sensitive data protection | 個人情報、認証情報、決済情報、秘密情報を扱う場合 | 権限のない利用者がデータへアクセスできないか<br>ログ、エラー、レスポンスへ機密情報を出していないか<br>保存時と通信時に必要な保護があるか |
-| インテグリティ | Input and data protection | 外部入力、DB更新、ファイル操作、コマンド実行を変更する場合 | システム境界で入力を検証しているか<br>SQLインジェクション、XSS、コマンド注入、パストラバーサルを防止しているか<br>データの不正な変更を防止できるか |
-| 否認防止性 | Action evidence | 決済、契約、権限変更など重要な操作を追加する場合 | 操作が実行された事実を証明できるか<br>重要な記録が後から不正に変更されないか<br>必要な時刻と結果が記録されるか |
-| 責任追跡性 | Auditability | ログ、監査履歴、管理操作、イベント記録を変更する場合 | 誰が、いつ、何を実行したか追跡できるか<br>相関IDなどで処理を追跡できるか<br>監査情報に必要な内容が含まれるか |
-| 真正性 | Authentication | ログイン、トークン、署名、サービス間通信を変更する場合 | ユーザーや通信相手の正当性を確認しているか<br>トークン、署名、証明書を正しく検証しているか<br>認証を回避できる経路がないか |
+| Confidentiality | Sensitive data protection | Personal, authentication, payment, or secret data is handled | Unauthorized access and leakage through logs, errors, responses, storage, or transport are prevented |
+| Integrity | Input and data protection | External input, persistence, files, or commands change | Boundary validation prevents injection, XSS, traversal, command execution, and unauthorized modification |
+| Non-repudiation | Action evidence | Payments, contracts, or critical privilege changes occur | Important actions can be proven and records resist improper alteration |
+| Accountability | Auditability | Logs, audit history, administration, or events change | Actor, time, action, result, and correlation can be traced without exposing secrets |
+| Authenticity | Authentication | Login, tokens, signatures, or service communication changes | Identities, tokens, signatures, and certificates are verified without bypass paths |
 
-認可については、機密性およびインテグリティの両方に関係するものとして確認する。
+For authorization, verify checks occur before protected work, cannot be bypassed through another path, validate owner or tenant, and grant least privilege.
 
-- 保護対象の処理前に認可されているか
-- 別の呼び出し経路から認可を回避できないか
-- データの所有者またはテナントが確認されているか
-- 必要最小限の権限だけが付与されているか
+# Compatibility
 
----
-
-# 互換性
-
-既存の利用者、他システム、データ形式、共有環境との連携を
-維持できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 共存性 | Shared environment | 共有DB、ポート、ファイル、キャッシュ、計算資源を変更する場合 | 他のコンポーネントへ悪影響を与えないか<br>共有リソースを占有し続けないか<br>設定名やポートが競合しないか |
-| 相互運用性 | API and data compatibility | API、イベント、メッセージ、DBスキーマ、シリアライズ形式を変更する場合 | 既存の呼び出し元との互換性を維持するか<br>送受信するデータの契約が一致しているか<br>フィールドの追加、削除、型変更の影響を考慮しているか<br>非互換変更と移行方法が明示されているか |
+| Co-existence | Shared environment | Shared databases, ports, files, caches, or compute change | Other components are not harmed, resources are not monopolized, and names or ports do not collide |
+| Interoperability | API and data compatibility | APIs, events, messages, schemas, or serialization change | Existing consumers and contracts remain compatible, or breaking changes and migration are explicit |
 
----
+# Maintainability
 
-# 保守性
-
-将来の開発者がコードを理解し、安全かつ効率的に変更・検証できること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| モジュール性 | Design and responsibilities | クラス、モジュール、レイヤー、依存関係を追加・変更する場合 | 各要素が明確な責務を持つか<br>既存のアーキテクチャに適合するか<br>変更が適切な場所に配置されているか<br>不要な依存や結合を追加していないか |
-| 再利用性 | Appropriate abstraction | 共通処理、ライブラリ、抽象化を追加する場合 | 同じ処理を不必要に重複していないか<br>既存の部品を利用できないか<br>現在必要のない過剰な汎用化をしていないか |
-| 解析性 | Readability and diagnosability | 人間が記述したコードや障害処理を変更する場合 | 名前から目的と役割を理解できるか<br>制御フローを無理なく追跡できるか<br>コメントが判断理由を説明しているか<br>障害原因を特定するログや情報があるか |
-| 修正性 | Complexity and change impact | 大きな関数、分岐、状態、依存関係を変更する場合 | コードが必要以上に複雑でないか<br>変更の影響範囲が限定されているか<br>既存の振る舞いを壊さずに変更できる構造か<br>機能追加と無関係なリファクタリングが混在していないか |
-| 試験性 | Test quality | 振る舞いやテストを追加・変更する場合 | 変更に適した単体、結合、E2Eテストがあるか<br>テストが不具合発生時に実際に失敗するか<br>正常系、異常系、境界値を確認しているか<br>テストの前提と期待結果が正しいか<br>実装詳細ではなく維持すべき振る舞いを検証しているか |
+| Modularity | Design and responsibilities | Classes, modules, layers, or dependencies change | Responsibilities and placement are clear; architecture is respected; unnecessary coupling is avoided |
+| Reusability | Appropriate abstraction | Shared logic or abstraction is introduced | Duplication is avoided without premature or excessive generalization |
+| Analysability | Readability and diagnosability | Human-written code or failure handling changes | Names and flow are understandable; comments explain reasons; failures can be diagnosed |
+| Modifiability | Complexity and change impact | Large functions, branches, state, or dependencies change | Complexity and impact remain bounded; unrelated refactoring is not mixed in |
+| Testability | Test quality | Behavior or tests change | Appropriate unit, integration, or end-to-end tests fail on defects and cover normal, error, and boundary behavior rather than implementation details |
 
----
+# Portability
 
-# 移植性
-
-異なる環境への導入、実行、移行、置き換えを安全に行えること。
-
-| 副特性 | レビュー観点 | 適用する変更 | 確認内容 |
+| Subcharacteristic | Concern | Apply when | Verify |
 |---|---|---|---|
-| 適応性 | Environment portability | OS、ランタイム、コンテナ、環境設定を変更する場合 | 特定環境へ不要に依存していないか<br>環境差分が設定として外部化されているか<br>パス、文字コード、改行、タイムゾーンを考慮しているか |
-| 設置性 | Deployment and upgrade | デプロイ、インストール、アップグレードを変更する場合 | 新規導入とアップグレードの両方が可能か<br>デプロイ途中も安全な状態を維持するか<br>必要な設定と移行手順が存在するか<br>安全にロールバックできるか |
-| 置換性 | Component replacement | 依存ライブラリ、サービス、コンポーネントを置き換える場合 | 置き換え前後の機能差を考慮しているか<br>既存データや設定を引き継げるか<br>段階的な切り替えと切り戻しが可能か |
+| Adaptability | Environment portability | OS, runtime, container, or environment configuration changes | Environment differences are externalized; paths, encoding, line endings, and time zones are considered |
+| Installability | Deployment and upgrade | Deployment, installation, or upgrades change | Fresh install and upgrade work; transitions and rollback remain safe and documented |
+| Replaceability | Component replacement | Libraries, services, or components are replaced | Capability differences, existing data, configuration, staged rollout, and rollback are handled |
 
----
+# Result classifications
 
-# レビュー結果の分類
+## Potential problem
 
-選択したレビュー観点を、次のいずれかに分類する。
+Changed code, a realistic trigger, and observable impact indicate a possible defect. A human reviewer decides whether to send the finding to the author.
 
-## 問題の可能性
+## Human decision
 
-問題を示す具体的なコードと、現実的な失敗経路がある。
+Code facts are known, but product requirements, design, user needs, or business judgment are required.
 
-レビュワーは根拠を確認し、作成者への指摘にするか判断する。
+## Verified by AI
 
-## 人間による判断
+The applicable scope was inspected and no issue was found for this concern. State exactly what was checked; do not imply an absolute safety guarantee.
 
-コード上の事実は確認できるが、設計、仕様、ユーザー要求、
-事業上の判断が必要である。
+## Could not verify
 
-レビュワーが設計を承認するか、作成者へ質問する。
+Required specifications, measurements, environment, permissions, or material are unavailable. State what is missing and what must be confirmed.
 
-## AIによる確認済み
+## Not applicable
 
-適用範囲を確認し、そのレビュー観点に関する問題を発見しなかった。
+The concern does not apply to this change. Normally omit it from Review Coverage.
 
-結果には、具体的に何を確認できたかを記載する。
+# Writing findings
 
-## 確認不可
+A potential problem must include:
 
-判断に必要な仕様、計測結果、実行環境、権限、資料が不足している。
+1. A concise conclusion
+2. A concrete trigger and execution path
+3. The affected quality characteristic and concern
+4. Supporting changed-code locations
+5. Observable impact
+6. What the reviewer should confirm
 
-不足している情報と、確認が必要な内容を記載する。
+Explain what is wrong, why it matters, when it occurs, and a feasible resolution direction. Do not report vague advice or claims unsupported by code. Never automatically turn an AI finding into an author request.
 
-## 適用対象外
+# Output format
 
-このPRの変更内容にはレビュー観点が適用されない。
-
-Review Coverageには原則として表示しない。
-
----
-
-# Findingの記述方法
-
-問題の可能性を報告する場合は、次の内容を含める。
-
-1. 問題の結論
-2. 問題が発生する具体的な条件または実行経路
-3. 影響を受ける品質特性とレビュー観点
-4. 結論を支えるコード位置
-5. 想定される影響
-6. レビュワーに確認してほしいこと
-
-コメントは、次の内容が分かるように記述する。
-
-- 何が問題か
-- なぜ問題か
-- どのような状況で問題になるか
-- どのように解決できるか
-
-曖昧なコメントや、コードから根拠を確認できない一般論を報告してはならない。
-
-AIのFindingをそのまま作成者への指摘として確定してはならない。
-レビュワーが内容を確認し、妥当と判断した場合にのみ
-「Please fix」などの未解決コメントへ変換する。
-
----
-
-# 出力形式
-
-レビュワー向けの結果は、次の4セクションで出力する。
+Produce exactly these sections:
 
 1. Review Summary
 2. Change Scope
 3. Needs Your Attention
 4. Review Coverage
 
-Review Coverageは品質特性ごとに分割し、次の形式で表示する。
+Group Review Coverage by quality characteristic:
 
-| 副特性 | レビュー観点 | Result | Evidence |
+| Subcharacteristic | Concern | Result | Evidence |
 |---|---|---|---|
-| 対象となる副特性 | 適用したレビュー観点 | 具体的な確認結果 | 関連するコード位置 |
+| Applicable subcharacteristic | Selected concern | Concrete verified result or limitation | Code location, command, or source |
 
-Needs Your Attentionには、次の項目だけを表示する。
+Needs Your Attention contains only Potential problem, Human decision, and Could not verify.
 
-- 問題の可能性
-- 人間による判断
-- 確認不可
+# Do not report
 
----
-
-# 報告しない項目
-
-- CIで検出できるフォーマット、Lint、単純な型エラー
-- 自動生成ファイル
-- ロックファイル
-- 今回のPRと無関係な既存問題
-- 現実的な発生経路を説明できない仮想的な問題
-- コード上の根拠がない一般論
-- 個人的なスタイルの好み
-- 変更内容と関係のない大規模なリファクタリング提案
+- Formatting, lint, or simple type errors already detected by CI
+- Generated files or lockfiles
+- Pre-existing issues unrelated to the change
+- Hypothetical problems without a realistic path
+- General advice without code evidence
+- Personal style preferences
+- Large refactoring proposals unrelated to the change
