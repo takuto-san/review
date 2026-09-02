@@ -13,7 +13,7 @@ runtime: false
 
 ## 必須入力
 
-リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、利用可能なCI状態、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`insufficient_evidence`とします。
+リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、利用可能なCI状態、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`outcome: insufficient_evidence`とします。
 
 ## 対象
 
@@ -30,7 +30,7 @@ runtime: false
 4. 必要に応じて、リポジトリで標準化されている結合テストやビルド検証を実行する。
 5. 実行したコマンド、終了状態、主要な失敗内容をEvidenceとして記録する。
 
-独自の検証ツールを新規導入しないでください。依存関係の追加、外部環境の変更、データの破壊を伴うコマンドは実行せず、`insufficient_evidence`として必要な実行環境を記載してください。
+独自の検証ツールを新規導入しないでください。依存関係の追加、外部環境の変更、データの破壊を伴うコマンドは実行せず、`outcome: insufficient_evidence`として必要な実行環境を記載してください。
 
 ## 境界
 
@@ -38,21 +38,24 @@ runtime: false
 - CIが実行済みでも、ローカルで安全に再現できる静的解析とUnitテストは実行する。実行できない場合は理由を明記する。
 - テストが存在するだけで、振る舞いが十分に検証されていると判断しない。
 - 設計の妥当性、ユーザー要求、将来方針を推測しない。
-- コマンド実行が高コスト、破壊的、または環境依存の場合は実行せず`insufficient_evidence`とする。
+- コマンド実行が高コスト、破壊的、または環境依存の場合は実行せず`outcome: insufficient_evidence`とする。
 
 ## 完了条件
 
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
-- 各結果に`review_item_id`を維持する。
+- 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
 - 失敗や正当な未実行を含め、試行した全検証コマンドを記録する。
-- `verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
+- `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
 
-## 状態
+## 判定結果とステータス
 
-- `potential_issue`: 具体的な不一致または失敗が確認できた。
-- `verified`: 対象範囲を確認し、問題を発見しなかった。
-- `needs_judgment`: 客観的事実はあるが人間の判断が必要。
-- `insufficient_evidence`: 必要な結果や環境がない。
+- `outcome`はレビュー計画項目の処理結果を表し、`reported`、`verified`、`insufficient_evidence`のいずれかとする。
+- `status`は`outcome`が`reported`の場合だけ含める。値は`Please Fix`、`Needs Judgment`、`Nit`の3つに限る。
+- `Please Fix`: マージ前に修正すべき具体的な不具合または要件違反。
+- `Needs Judgment`: 人間の判断または回答が必要な項目。設計意図を開発者へ確認する場合も、AIが判断を保留してレビュワーへ意見を求める場合も含む。
+- `Nit`: マージを妨げない、任意の軽微な改善。
+- `Needs Judgment`には必ず`human_question`を設定し、質問先を`developer`、`reviewer`、`both`のいずれかで示す。
+- 問題が見つからなかった項目を`Nit`にしない。
 
 ## 出力
 
@@ -60,29 +63,39 @@ runtime: false
 {
   "results": [
     {
-      "review_item_id": "RP-001",
-      "quality_characteristic": "保守性",
-      "subcharacteristic": "試験性",
-      "criterion": "Test quality",
-      "question": "通知失敗時の振る舞いがテストされているか",
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "conclusion": "確認できた事実を一文で記載",
-      "evidence": [
-        {
-          "location": "path/to/file:line",
-          "summary": "結論を支える事実"
-        }
-      ],
-      "commands_run": [
-        {
-          "command": "リポジトリで定義された検証コマンド",
-          "outcome": "passed | failed | not_run",
-          "summary": "主要な結果または実行できなかった理由"
-        }
-      ],
-      "missing_information": [
+      "id": "RP-001",
+      "rubric": {
+        "category": "Maintainability",
+        "subcategory": "Testability",
+        "criterion": "Test quality",
+        "question": "Is behavior after notification failure covered by tests?"
+      },
+      "outcome": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "result": {
+        "conclusion": "One-sentence observed result",
+        "evidence": [
+          {
+            "path": "path/to/file:line",
+            "summary": "Fact supporting the conclusion"
+          }
+        ],
+        "commands_run": [
+          {
+            "command": "Repository-defined verification command",
+            "outcome": "passed | failed | not_run",
+            "summary": "Main result or reason it was not run"
+          }
+        ],
+        "reviewer": "mechanical",
+        "missing_information": [
 
-      ]
+        ]
+      }
     }
   ]
 }

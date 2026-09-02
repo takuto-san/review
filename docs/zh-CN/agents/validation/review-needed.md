@@ -36,3 +36,22 @@ PR是否过大、是否内聚或是否易于审查只由`small-cls`判断。缺�
 ## 输出
 
 以JSON返回`review_status`、`should_review`、理由、PR状态、draft状态、head SHA、实质变更状态、当前审查者、已审查head SHA和不确定性，不得输出代码质量Finding。
+
+```json
+{
+  "review_status": "review_required | closed | draft | trivial | already_reviewed",
+  "should_review": "true | false",
+  "reason": "Short evidence-based explanation",
+  "evidence": {
+    "pr_state": "OPEN | CLOSED | MERGED",
+    "is_draft": false,
+    "head_sha": "Full head SHA",
+    "substantive_changes": "true | false | unknown",
+    "current_reviewer": "Login or unknown",
+    "reviewed_head_sha": "Full SHA or none"
+  },
+  "uncertainties": [
+
+  ]
+}
+```

@@ -16,37 +16,37 @@ The delegated task must provide the collected context, Change Scope result, comp
 
 ## Verification procedure
 
-1. Confirm that each result maps to a quality characteristic, subcharacteristic, and criterion in `REVIEW.md`.
+1. Confirm that each result's `rubric` maps to a category, subcategory, and criterion in `REVIEW.md`.
 2. Confirm that the collected context, Change Scope, and review plan are present.
 3. Confirm completion of every applicable review layer.
 4. Confirm that static analysis and unit tests ran and that commands and results were recorded, or preserve the reason they did not run.
-5. For every `potential_issue`, verify a realistic path from changed code to failure.
+5. For every `Please Fix`, verify a realistic path from changed code to failure.
 6. Confirm that evidence directly supports the conclusion.
 7. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
 8. Merge results with the same root cause.
-9. Reclassify design or specification decisions as `needs_judgment` and missing information as `insufficient_evidence`.
-10. Ensure that `verified` does not claim safety beyond the inspected scope.
+9. Reclassify design or specification decisions as `Needs Judgment`; keep missing information as `outcome: insufficient_evidence` when no concrete decision question can be formed.
+10. Ensure that `outcome: verified` does not claim safety beyond the inspected scope.
 11. For specification results, require a requirement or acceptance criterion, its source location, implementation location, and a concrete mismatch.
-12. Treat missing, unavailable, or conflicting specifications as `needs_judgment` or `insufficient_evidence`, not automatically as code defects.
+12. Treat conflicting specifications as `Needs Judgment` and unavailable specifications as `outcome: insufficient_evidence`, not automatically as code defects.
 
 Do not explore sources absent from the Issue or collected context. A specification-based PR comment candidate requires a requirement or acceptance-criterion ID, precise source, implementation location, realistic failure scenario, and observable impact.
 
 ## Completion criteria
 
-- Account for every `review_item_id` in the review plan exactly once in `verified_results`, `rejected_results`, or `incomplete_reasons`.
+- Account for every review-plan `id` exactly once in `verified_results`, `rejected_results`, or `incomplete_reasons`.
 - Do not introduce a concern that is absent from the supplied layer results.
 - Merge results that share one root cause and retain traceability to all affected review items.
 - Mark the review incomplete whenever a required layer, input, or applicable verification check is missing.
 
-## Severity
+## Status
 
-Assign severity only to a confirmed `potential_issue`.
+Use exactly one status for every reported result:
 
-- `critical`: Authentication bypass, sensitive-data exposure, data loss, or another issue that must be addressed before merge.
-- `major`: Functional failure, realistic outage, compatibility break, or serious maintainability or performance issue.
-- `minor`: Limited impact that does not necessarily block merge.
+- `Please Fix`: A confirmed issue that should be corrected before merge.
+- `Needs Judgment`: A human decision or answer is required, whether directed to the developer, reviewer, or both.
+- `Nit`: A minor, optional improvement that does not block merge.
 
-Severity does not prescribe reviewer action. Never assign it to `needs_judgment` or `insufficient_evidence`.
+Every `Needs Judgment` must preserve a concrete `human_question` and its audience. Do not turn `outcome: verified` or `outcome: insufficient_evidence` into a `Nit`.
 
 ## Output
 
@@ -56,37 +56,48 @@ Return exactly one JSON object matching this structure:
 {
   "verified_results": [
     {
-      "review_item_ids": [
+      "ids": [
         "RP-001"
       ],
-      "quality_characteristic": "Reliability",
-      "subcharacteristic": "Recoverability",
-      "criterion": "Recovery and consistency",
+      "rubric": {
+        "category": "Reliability",
+        "subcategory": "Recoverability",
+        "criterion": "Recovery and consistency"
+      },
       "requirement_ids": [
 
       ],
       "acceptance_criterion_ids": [
 
       ],
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "severity": "critical | major | minor | null",
-      "conclusion": "Concise validated conclusion",
-      "failure_scenario": [
+      "outcome": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "result": {
+        "conclusion": "Concise validated conclusion",
+        "scenario": [
 
-      ],
-      "evidence": [
-        {
-          "location": "path/to/file:line",
-          "summary": "Evidence"
-        }
-      ],
-      "reviewer_question": "What the human reviewer should confirm",
-      "suggested_review_comment": "Proposed author comment when needed"
+        ],
+        "evidence": [
+          {
+            "path": "path/to/file:line",
+            "summary": "Evidence"
+          }
+        ],
+        "suggestion": "Proposed author comment when needed",
+        "reviewer": "comment",
+        "missing_information": [
+
+        ]
+      }
     }
   ],
   "rejected_results": [
     {
-      "review_item_ids": [
+      "ids": [
         "RP-002"
       ],
       "original_conclusion": "Rejected candidate",

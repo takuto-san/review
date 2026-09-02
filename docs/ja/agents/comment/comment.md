@@ -21,16 +21,16 @@ runtime: false
 2. 収集済みコンテキスト、Change Scope、レビュー計画が入力に含まれているか確認する。
 3. 機械的・構造的・文脈的レビューが完了しているか確認する。
 4. 静的解析とUnitテストが実行され、コマンドと結果が機械的レビューに記録されているか確認する。実行されていなければ理由を確認する。
-5. `potential_issue`について、変更されたコードから現実的に到達可能な失敗経路があるか確認する。
+5. `Please Fix`について、変更されたコードから現実的に到達可能な失敗経路があるか確認する。
 6. Evidenceが結論を直接支えているか確認する。
 7. PR以前から存在する問題、CIが既に明確に報告する問題、推測的な懸念を除外する。
 8. 同じ根本原因を示す結果を統合する。
-9. 設計・仕様判断であれば`needs_judgment`、情報不足なら`insufficient_evidence`へ修正する。
-10. `verified`について、確認範囲を超えた安全保証になっていないか確認する。
+9. 設計・仕様判断であれば`Needs Judgment`へ修正する。具体的な判断質問を作れない情報不足は`result: insufficient_evidence`のままとする。
+10. `result: verified`について、確認範囲を超えた安全保証になっていないか確認する。
 11. 仕様に基づく結果について、RequirementまたはAcceptance Criterion、仕様の出典位置、実装位置、具体的な差分が示されているか確認する。
-12. 仕様が存在しない、参照先を取得できない、情報源が矛盾する場合は、コード不具合と断定せず`needs_judgment`または`insufficient_evidence`へ分類する。
+12. 情報源が矛盾する場合は`Needs Judgment`、仕様が存在しないか参照先を取得できない場合は`result: insufficient_evidence`とし、コード不具合と断定しない。
 
-Issueや収集済みコンテキストに含まれない情報源を新たに探索してはいけません。仕様由来の`potential_issue`をPRコメント候補にするには、Requirement IDまたはAcceptance Criterion ID、正確な出典、実装位置、現実的な失敗シナリオ、観測可能な影響が必要です。
+Issueや収集済みコンテキストに含まれない情報源を新たに探索してはいけません。仕様由来の`Please Fix`をPRコメント候補にするには、Requirement IDまたはAcceptance Criterion ID、正確な出典、実装位置、現実的な失敗シナリオ、観測可能な影響が必要です。
 
 ## 完了条件
 
@@ -39,15 +39,15 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
 - 同じ根本原因の結果を統合し、影響する全レビュー項目への追跡可能性を維持する。
 - 必須の層、入力、検証チェックが不足する場合はレビューを未完了とする。
 
-## 重要度
+## ステータス
 
-重要度は、問題が確認された`potential_issue`にだけ付けます。
+報告する結果には次のいずれか1つだけを設定します。
 
-- `critical`: 認証回避、機密情報漏えい、データ損失、重大な本番障害など、マージ前に必ず対応すべき問題。
-- `major`: 機能不正、現実的な障害、互換性破壊、重大な保守・性能問題。
-- `minor`: 影響が限定的で、マージを必ずしも妨げない問題。
+- `Please Fix`: マージ前に修正すべき、確認済みの問題。
+- `Needs Judgment`: 人間の判断または回答が必要な項目。質問先が開発者、レビュワー、その両方のいずれでも使用する。
+- `Nit`: マージを妨げない、任意の軽微な改善。
 
-重要度はレビュワーの行動を表しません。`needs_judgment`や`insufficient_evidence`に重要度を付けないでください。
+`Needs Judgment`では、具体的な`human_question`と質問先を維持します。`result: verified`や`result: insufficient_evidence`を`Nit`へ変換しないでください。
 
 ## 出力
 
@@ -58,8 +58,8 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
       "review_item_ids": [
         "RP-001"
       ],
-      "quality_characteristic": "信頼性",
-      "subcharacteristic": "回復性",
+      "quality_characteristic": "Reliability",
+      "subcharacteristic": "Recoverability",
       "criterion": "Recovery and consistency",
       "requirement_ids": [
 
@@ -67,20 +67,23 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
       "acceptance_criterion_ids": [
 
       ],
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "severity": "critical | major | minor | null",
-      "conclusion": "検証後の簡潔な結論",
+      "result": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "conclusion": "Concise validated conclusion",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
       "failure_scenario": [
 
       ],
       "evidence": [
         {
           "location": "path/to/file:line",
-          "summary": "根拠"
+          "summary": "Evidence"
         }
       ],
-      "reviewer_question": "レビュワーに確認してほしいこと",
-      "suggested_review_comment": "作成者へ送るコメント案。必要な場合のみ"
+      "suggested_review_comment": "Proposed author comment when needed"
     }
   ],
   "rejected_results": [
@@ -88,8 +91,8 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
       "review_item_ids": [
         "RP-002"
       ],
-      "original_conclusion": "除外した候補",
-      "reason": "除外理由"
+      "original_conclusion": "Rejected candidate",
+      "reason": "Reason for rejection"
     }
   ],
   "review_prerequisites": {

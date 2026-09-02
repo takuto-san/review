@@ -12,7 +12,7 @@ Perform specification-driven contextual review only for items whose `primary_lay
 
 ## Required input
 
-The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; return `insufficient_evidence` for the affected items.
+The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; use `outcome: insufficient_evidence` for the affected items.
 
 ## Context to use
 
@@ -20,7 +20,7 @@ The delegated task must provide the review target, changed files, complete diff,
 - Normalized context
 - Test names and expectations
 
-Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; return `insufficient_evidence` and identify what is missing.
+Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; use `outcome: insufficient_evidence` and identify what is missing.
 
 ## Review concerns
 
@@ -37,17 +37,26 @@ Do not independently access external sources or explore references absent from t
 - Never invent undocumented requirements.
 - Preserve requirement IDs, acceptance-criterion IDs, and source locations.
 - Never treat an uncited summary as a normative specification.
-- Classify source conflicts as `needs_judgment`; do not resolve them yourself.
+- Classify source conflicts as `Needs Judgment`; do not resolve them yourself.
 - Code correctness alone does not prove that a product decision is correct.
-- Use `needs_judgment` for ambiguous requirements and pose a concrete decision question.
-- Use `insufficient_evidence` when required material is unavailable.
+- Use `Needs Judgment` for ambiguous requirements and pose a concrete decision question to the developer, reviewer, or both.
+- Use `outcome: insufficient_evidence` when required material is unavailable and no concrete human decision question can be formed.
 
 ## Completion criteria
 
 - Return exactly one result for every assigned review-plan item.
-- Preserve each assigned `review_item_id` in the corresponding result.
+- Preserve each assigned review-plan `id` in the corresponding result.
 - Preserve requirement IDs, acceptance-criterion IDs, and precise source locations.
-- Use `verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
+- Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
+
+## Result and status
+
+- `outcome` records coverage: `reported`, `verified`, or `insufficient_evidence`.
+- Include `status` only when `outcome` is `reported`. Its only allowed values are `Please Fix`, `Needs Judgment`, and `Nit`.
+- `Please Fix` identifies a concrete defect or requirement violation that should be corrected before merge.
+- `Needs Judgment` means a human decision or answer is required, regardless of whether the question is directed to the developer, reviewer, or both.
+- `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
+- Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
 
 ## Output
 
@@ -57,35 +66,44 @@ Return exactly one JSON object matching this structure:
 {
   "results": [
     {
-      "review_item_id": "RP-001",
-      "quality_characteristic": "Functional suitability",
-      "subcharacteristic": "Functional completeness",
-      "criterion": "Requirements coverage",
-      "question": "Does the PR satisfy every acceptance criterion?",
+      "id": "RP-001",
+      "rubric": {
+        "category": "Functional suitability",
+        "subcategory": "Functional completeness",
+        "criterion": "Requirements coverage",
+        "question": "Does the PR satisfy every acceptance criterion?"
+      },
       "requirement_ids": [
         "REQ-001"
       ],
       "acceptance_criterion_ids": [
         "AC-001"
       ],
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "conclusion": "One-sentence result",
-      "evidence": [
-        {
-          "location": "source URI and locator | path/to/file:line",
-          "summary": "Supporting evidence"
-        }
-      ],
-      "implementation_locations": [
+      "outcome": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "result": {
+        "conclusion": "One-sentence result",
+        "evidence": [
+          {
+            "path": "source URI and locator | path/to/file:line",
+            "summary": "Supporting evidence"
+          }
+        ],
+        "implementation_locations": [
 
-      ],
-      "test_locations": [
+        ],
+        "test_locations": [
 
-      ],
-      "decision_for_reviewer": "Concrete question requiring human judgment",
-      "missing_information": [
+        ],
+        "reviewer": "contextual",
+        "missing_information": [
 
-      ]
+        ]
+      }
     }
   ]
 }

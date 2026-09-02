@@ -16,7 +16,18 @@ runtime: false
 
 ## 验证步骤
 
-确认结果对应`REVIEW.md`，收集后的上下文、Change Scope和计划完整，各审查层和必要命令已完成。验证`potential_issue`具有从变更代码到失败的现实路径且证据直接支持结论；排除既有问题、CI已明确报告的问题和推测；合并同一根因；把设计或规格选择改为`needs_judgment`，把缺少资料改为`insufficient_evidence`。
+1. 确认每个结果都映射到`REVIEW.md`中的质量特性、子特性和标准。
+2. 确认已提供收集后的上下文、Change Scope和审查计划。
+3. 确认所有适用审查层均已完成。
+4. 确认静态分析和单元测试已运行，且命令和结果已有记录；否则保留未运行原因。
+5. 对每个`Please Fix`，验证从变更代码到故障的现实路径。
+6. 确认证据直接支持结论。
+7. 拒绝既有问题、CI已明确说明的问题和推测性问题。
+8. 合并根因相同的结果。
+9. 将设计或规格决策重新归类为`Needs Judgment`；无法形成具体决策问题的缺失信息保持为`result: insufficient_evidence`。
+10. 确保`result: verified`不声称超出检查范围的安全性。
+11. 对规格类结果，要求提供Requirement或Acceptance Criterion、来源位置、实现位置和具体不一致。
+12. 将规格冲突归类为`Needs Judgment`，将不可用规格归类为`result: insufficient_evidence`，不得自动视为代码缺陷。
 
 规格类评论必须包含Requirement或Acceptance Criterion ID、精确来源、实现位置、现实失败场景和可观察影响。不得探索Issue或收集后的上下文以外的信息源。
 
@@ -27,10 +38,75 @@ runtime: false
 - 合并同一根因的结果，并保持对所有受影响审查项的可追踪性。
 - 必需层、输入或适用验证缺失时，将审查标记为未完成。
 
-## 严重性
+## 状态
 
-仅对确认的`potential_issue`使用`critical`、`major`或`minor`。严重性不代表审查者应采取的行动，也不得用于`needs_judgment`或`insufficient_evidence`。
+每个已报告结果必须使用且只能使用一个状态：
+
+- `Please Fix`：合并前应修正的已确认问题。
+- `Needs Judgment`：需要人工决定或回答，无论问题面向开发者、审查者还是双方。
+- `Nit`：不阻止合并的次要可选改进。
+
+每个`Needs Judgment`必须保留具体的`human_question`及其受众。不得将`result: verified`或`result: insufficient_evidence`转换为`Nit`。
 
 ## 输出
 
-以JSON按英文正本结构返回`verified_results`、`rejected_results`和`review_prerequisites`。验证和拒绝结果必须包含`review_item_ids`，并保留证据、审查者问题和必要时的建议评论。
+返回与以下结构一致的单一JSON对象：
+
+```json
+{
+  "verified_results": [
+    {
+      "review_item_ids": [
+        "RP-001"
+      ],
+      "quality_characteristic": "Reliability",
+      "subcharacteristic": "Recoverability",
+      "criterion": "Recovery and consistency",
+      "requirement_ids": [
+
+      ],
+      "acceptance_criterion_ids": [
+
+      ],
+      "result": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "conclusion": "Concise validated conclusion",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "failure_scenario": [
+
+      ],
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "Evidence"
+        }
+      ],
+      "suggested_review_comment": "Proposed author comment when needed"
+    }
+  ],
+  "rejected_results": [
+    {
+      "review_item_ids": [
+        "RP-002"
+      ],
+      "original_conclusion": "Rejected candidate",
+      "reason": "Reason for rejection"
+    }
+  ],
+  "review_prerequisites": {
+    "scope_analysis_completed": "true | false",
+    "review_plan_completed": "true | false",
+    "mechanical_review_completed": "true | false",
+    "structural_review_completed": "true | false",
+    "contextual_review_completed": "true | false",
+    "static_analysis_run": "true | false",
+    "unit_tests_run": "true | false",
+    "incomplete_reasons": [
+
+    ]
+  }
+}
+```

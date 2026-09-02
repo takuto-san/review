@@ -37,3 +37,22 @@ PRが大きすぎるか、凝集しているか、レビューしやすいかは
 ## 出力
 
 `review_status`、`should_review`、根拠、PR状態、draft状態、head SHA、実質的変更の有無、現在のレビュワー、レビュー済みhead SHA、不確実性を返します。コード上の問題や品質Findingは出しません。
+
+```json
+{
+  "review_status": "review_required | closed | draft | trivial | already_reviewed",
+  "should_review": "true | false",
+  "reason": "Short evidence-based explanation",
+  "evidence": {
+    "pr_state": "OPEN | CLOSED | MERGED",
+    "is_draft": false,
+    "head_sha": "Full head SHA",
+    "substantive_changes": "true | false | unknown",
+    "current_reviewer": "Login or unknown",
+    "reviewed_head_sha": "Full SHA or none"
+  },
+  "uncertainties": [
+
+  ]
+}
+```

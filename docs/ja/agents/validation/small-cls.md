@@ -55,14 +55,14 @@ runtime: false
   },
   "change_groups": [
     {
-      "name": "短い具体名",
-      "purpose": "このまとまりが何を変えるか",
+      "name": "Short concrete name",
+      "purpose": "What this group changes",
       "files": 0,
       "additions": 0,
       "deletions": 0
     }
   ],
-  "split_reason": "分割推奨またはブロックの場合だけ記載",
+  "split_reason": "Only when splitting is recommended or review is blocked",
   "uncertainties": [
 
   ]

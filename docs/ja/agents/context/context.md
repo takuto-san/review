@@ -57,7 +57,7 @@ runtime: false
 {
   "context": {
     "objective": {
-      "purpose": "変更が解決する問題",
+      "purpose": "Problem solved by the change",
       "scope": {
         "included": [
 
@@ -71,20 +71,20 @@ runtime: false
       "functional_requirements": [
         {
           "id": "FR-001",
-          "statement": "観測可能な要求",
+          "statement": "Observable requirement",
           "acceptance_criteria": [
             {
               "id": "AC-001",
-              "expected_behavior": "判定可能な期待結果",
+              "expected_behavior": "Verifiable expected behavior",
               "source": {
-                "uri": "媒体に依存しない参照先",
-                "locator": "見出し、ブロック、行番号など"
+                "uri": "Source-independent reference",
+                "locator": "Heading, block, line, or other precise location"
               }
             }
           ],
           "source": {
-            "uri": "媒体に依存しない参照先",
-            "locator": "見出し、ブロック、行番号など",
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
             "authority": "normative | informative | historical"
           }
         }
@@ -92,13 +92,13 @@ runtime: false
       "quality_requirements": [
         {
           "id": "NFR-001",
-          "statement": "測定可能な品質要求",
+          "statement": "Measurable quality requirement",
           "acceptance_criteria": [
 
           ],
           "source": {
-            "uri": "媒体に依存しない参照先",
-            "locator": "見出し、ブロック、行番号など",
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
             "authority": "normative | informative | historical"
           }
         }
@@ -106,10 +106,10 @@ runtime: false
       "constraints": [
         {
           "id": "CON-001",
-          "statement": "実装上または運用上の制約",
+          "statement": "Implementation or operational constraint",
           "source": {
-            "uri": "媒体に依存しない参照先",
-            "locator": "見出し、ブロック、行番号など",
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
             "authority": "normative | informative | historical"
           }
         }
@@ -124,9 +124,9 @@ runtime: false
       ],
       "unresolved_references": [
         {
-          "uri": "取得できなかった参照先",
-          "locator": "取得対象箇所",
-          "reason": "利用可能なツールがない、権限がない、位置が不明など",
+          "uri": "Unresolved reference",
+          "locator": "Requested location",
+          "reason": "No compatible tool, missing permission, unknown location, or another limitation",
           "affected_requirement_ids": [
 
           ]
@@ -139,8 +139,8 @@ runtime: false
         "requirement_ids": [
           "FR-001"
         ],
-        "question": "後続レビューが確認する具体的な問い",
-        "reason": "この変更で確認が必要な理由"
+        "question": "Concrete question for downstream review",
+        "reason": "Why this change requires the question"
       }
     ]
   }

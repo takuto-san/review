@@ -16,8 +16,23 @@ runtime: false
 | `contextual` | 以规格驱动方式审查需求、意图、兼容性和文档 |
 | `comment` | 重新验证Finding，删除推测和重复，生成PR评论候选 |
 
-推荐顺序为Reviewer mode的`review-needed`、`context`、`small-cls`、由`skills/review/SKILL.md`生成计划、三层审查、`comment`和最终报告。三层审查可以并行运行。
+推荐顺序：
 
-每个审查计划项都具有稳定的`review_item_id`，并在审查和验证过程中保持不变。必须显式向每个代理提供所需输入；审查代理对每个分配项恰好返回一个结果，证据不足时使用`insufficient_evidence`，不得省略。
+1. Reviewer mode下的`review-needed`
+2. `context`
+3. `small-cls`
+4. `skills/review/SKILL.md`生成审查计划
+5. `mechanical`、`structural`和`contextual`
+6. `comment`
+7. `skills/review/SKILL.md`生成最终报告
 
-机械审查必须在安全且适用时运行静态分析和单元测试，并记录全部命令与结果。`comment`不得把未完成审查视为完成。
+三个审查代理可以并行评估各自分配的项目。
+
+## 完成要求
+
+- 每个审查计划项都有稳定的`review_item_id`，并在审查和验证过程中保持不变。
+- 必须显式向每个代理提供所需输入；代理不得从父对话推断编排状态。
+- 每个审查代理对每个分配项恰好返回一个结果，证据不足时使用`insufficient_evidence`，不得省略。
+- `mechanical`必须在安全且适用时运行仓库定义的静态分析和单元测试。
+- 必须记录每条已执行的验证命令及其结果。
+- `comment`必须验证各层和检查是否完成，不得把未完成审查视为完成。

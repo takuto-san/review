@@ -42,3 +42,28 @@ runtime: false
 ## 输出
 
 以JSON输出`scope_status`、差异统计、`change_groups`、`split_reason`和`uncertainties`，不得输出代码质量Finding。
+
+```json
+{
+  "scope_status": "focused | split_recommended | review_blocked",
+  "stats": {
+    "changed_files": 0,
+    "additions": 0,
+    "deletions": 0,
+    "lines_changed": 0
+  },
+  "change_groups": [
+    {
+      "name": "Short concrete name",
+      "purpose": "What this group changes",
+      "files": 0,
+      "additions": 0,
+      "deletions": 0
+    }
+  ],
+  "split_reason": "Only when splitting is recommended or review is blocked",
+  "uncertainties": [
+
+  ]
+}
+```

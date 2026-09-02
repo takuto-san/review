@@ -12,7 +12,7 @@ Evaluate only review items whose `primary_layer` is `structural`, using the diff
 
 ## Required input
 
-The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; return `insufficient_evidence` for the affected items.
+The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; use `outcome: insufficient_evidence` for the affected items.
 
 ## Investigation method
 
@@ -38,17 +38,26 @@ The delegated task must provide the repository root, review target, base and hea
 ## Boundaries
 
 - Do not infer runtime problems from naming alone.
-- Do not classify a concern as `potential_issue` without a realistic execution path.
+- Do not classify a concern as `Please Fix` without a realistic execution path.
 - Do not report personal style preferences.
-- Use `needs_judgment` for design policy that code cannot establish.
-- Use `insufficient_evidence` when required implementation or material is unavailable.
+- Use `Needs Judgment` for design policy that code cannot establish.
+- Use `outcome: insufficient_evidence` when required implementation or material is unavailable and no concrete human decision question can be formed.
 
 ## Completion criteria
 
 - Return exactly one result for every assigned review-plan item.
-- Preserve each assigned `review_item_id` in the corresponding result.
-- Every `potential_issue` must include a realistic trigger-to-impact execution path.
-- Use `verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
+- Preserve each assigned review-plan `id` in the corresponding result.
+- Every `Please Fix` result must include a realistic trigger-to-impact execution path.
+- Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
+
+## Result and status
+
+- `outcome` records coverage: `reported`, `verified`, or `insufficient_evidence`.
+- Include `status` only when `outcome` is `reported`. Its only allowed values are `Please Fix`, `Needs Judgment`, and `Nit`.
+- `Please Fix` identifies a concrete defect or requirement violation that should be corrected before merge.
+- `Needs Judgment` means a human decision or answer is required, regardless of whether the question is directed to the developer, reviewer, or both.
+- `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
+- Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
 
 ## Output
 
@@ -58,29 +67,38 @@ Return exactly one JSON object matching this structure:
 {
   "results": [
     {
-      "review_item_id": "RP-001",
-      "quality_characteristic": "Reliability",
-      "subcharacteristic": "Recoverability",
-      "criterion": "Recovery and consistency",
-      "question": "Can retry after notification failure duplicate payment?",
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "conclusion": "One-sentence conclusion",
-      "failure_scenario": [
-        "Trigger",
-        "Code path",
-        "Observable impact"
-      ],
-      "evidence": [
-        {
-          "location": "path/to/file:line",
-          "summary": "Material evidence"
-        }
-      ],
-      "suggested_direction": "Possible resolution direction, or empty when uncertain",
-      "source": "pr-agent-structural-review",
-      "missing_information": [
+      "id": "RP-001",
+      "rubric": {
+        "category": "Reliability",
+        "subcategory": "Recoverability",
+        "criterion": "Recovery and consistency",
+        "question": "Can retry after notification failure duplicate payment?"
+      },
+      "outcome": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "result": {
+        "conclusion": "One-sentence conclusion",
+        "scenario": [
+          "Trigger",
+          "Code path",
+          "Observable impact"
+        ],
+        "evidence": [
+          {
+            "path": "path/to/file:line",
+            "summary": "Material evidence"
+          }
+        ],
+        "suggestion": "Possible resolution direction, or empty when uncertain",
+        "reviewer": "structural",
+        "missing_information": [
 
-      ]
+        ]
+      }
     }
   ]
 }

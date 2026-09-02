@@ -13,7 +13,7 @@ runtime: false
 
 ## 必須入力
 
-リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`insufficient_evidence`とします。
+リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`outcome: insufficient_evidence`とします。
 
 ## 調査方法
 
@@ -39,17 +39,26 @@ runtime: false
 ## 境界
 
 - 命名だけから実行時の問題を推測しない。
-- 現実的な実行経路を説明できない懸念を`potential_issue`にしない。
+- 現実的な実行経路を説明できない懸念を`Please Fix`にしない。
 - 個人的なスタイルの好みを報告しない。
-- コードから判断できない設計方針は`needs_judgment`とする。
-- 必要な実装や資料が取得できない場合は`insufficient_evidence`とする。
+- コードから判断できない設計方針は`Needs Judgment`とする。
+- 必要な実装や資料が取得できず、具体的な判断質問も作れない場合は`outcome: insufficient_evidence`とする。
 
 ## 完了条件
 
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
-- 各結果に`review_item_id`を維持する。
-- すべての`potential_issue`に、発生条件から影響までの現実的な実行経路を含める。
-- `verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
+- 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
+- すべての`Please Fix`に、発生条件から影響までの現実的な実行経路を含める。
+- `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
+
+## 判定結果とステータス
+
+- `outcome`はレビュー計画項目の処理結果を表し、`reported`、`verified`、`insufficient_evidence`のいずれかとする。
+- `status`は`outcome`が`reported`の場合だけ含める。値は`Please Fix`、`Needs Judgment`、`Nit`の3つに限る。
+- `Please Fix`: マージ前に修正すべき具体的な不具合または要件違反。
+- `Needs Judgment`: 人間の判断または回答が必要な項目。質問先が開発者、レビュワー、その両方のいずれでも使用する。
+- `Nit`: マージを妨げない、任意の軽微な改善。問題なしの代用にはしない。
+- `Needs Judgment`には必ず`human_question.audience`と具体的な質問を含める。
 
 ## 出力
 
@@ -57,29 +66,38 @@ runtime: false
 {
   "results": [
     {
-      "review_item_id": "RP-001",
-      "quality_characteristic": "信頼性",
-      "subcharacteristic": "回復性",
-      "criterion": "Recovery and consistency",
-      "question": "通知失敗後の再試行で決済が重複しないか",
-      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
-      "conclusion": "結論を一文で記載",
-      "failure_scenario": [
-        "発生条件",
-        "コード上の経路",
-        "観測可能な影響"
-      ],
-      "evidence": [
-        {
-          "location": "path/to/file:line",
-          "summary": "重要な根拠"
-        }
-      ],
-      "suggested_direction": "解決方向。断定できなければ空欄",
-      "source": "pr-agent-structural-review",
-      "missing_information": [
+      "id": "RP-001",
+      "rubric": {
+        "category": "Reliability",
+        "subcategory": "Recoverability",
+        "criterion": "Recovery and consistency",
+        "question": "Can retry after notification failure duplicate payment?"
+      },
+      "outcome": "reported",
+      "status": "Please Fix | Needs Judgment | Nit",
+      "human_question": {
+        "audience": "developer | reviewer | both",
+        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+      },
+      "result": {
+        "conclusion": "One-sentence conclusion",
+        "scenario": [
+          "Trigger",
+          "Code path",
+          "Observable impact"
+        ],
+        "evidence": [
+          {
+            "path": "path/to/file:line",
+            "summary": "Material evidence"
+          }
+        ],
+        "suggestion": "Possible resolution direction, or empty when uncertain",
+        "reviewer": "structural",
+        "missing_information": [
 
-      ]
+        ]
+      }
     }
   ]
 }
