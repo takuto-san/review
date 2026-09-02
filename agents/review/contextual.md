@@ -51,22 +51,42 @@ Do not independently access external sources or explore references absent from t
 
 ## Output
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "Functional suitability"
-    subcharacteristic: "Functional completeness"
-    criterion: "Requirements coverage"
-    question: "Does the PR satisfy every acceptance criterion?"
-    requirement_ids: ["REQ-001"]
-    acceptance_criterion_ids: ["AC-001"]
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "One-sentence result"
-    evidence:
-      - location: "source URI and locator | path/to/file:line"
-        summary: "Supporting evidence"
-    implementation_locations: []
-    test_locations: []
-    decision_for_reviewer: "Concrete question requiring human judgment"
-    missing_information: []
+Return exactly one JSON object matching this structure:
+
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "criterion": "Requirements coverage",
+      "question": "Does the PR satisfy every acceptance criterion?",
+      "requirement_ids": [
+        "REQ-001"
+      ],
+      "acceptance_criterion_ids": [
+        "AC-001"
+      ],
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "One-sentence result",
+      "evidence": [
+        {
+          "location": "source URI and locator | path/to/file:line",
+          "summary": "Supporting evidence"
+        }
+      ],
+      "implementation_locations": [
+
+      ],
+      "test_locations": [
+
+      ],
+      "decision_for_reviewer": "Concrete question requiring human judgment",
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```

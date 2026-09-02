@@ -50,34 +50,60 @@ Severity does not prescribe reviewer action. Never assign it to `needs_judgment`
 
 ## Output
 
-```yaml
-verified_results:
-  - review_item_ids: ["RP-001"]
-    quality_characteristic: "Reliability"
-    subcharacteristic: "Recoverability"
-    criterion: "Recovery and consistency"
-    requirement_ids: []
-    acceptance_criterion_ids: []
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    severity: critical | major | minor | null
-    conclusion: "Concise validated conclusion"
-    failure_scenario: []
-    evidence:
-      - location: "path/to/file:line"
-        summary: "Evidence"
-    reviewer_question: "What the human reviewer should confirm"
-    suggested_review_comment: "Proposed author comment when needed"
-rejected_results:
-  - review_item_ids: ["RP-002"]
-    original_conclusion: "Rejected candidate"
-    reason: "Reason for rejection"
-review_prerequisites:
-  scope_analysis_completed: true | false
-  review_plan_completed: true | false
-  mechanical_review_completed: true | false
-  structural_review_completed: true | false
-  contextual_review_completed: true | false
-  static_analysis_run: true | false
-  unit_tests_run: true | false
-  incomplete_reasons: []
+Return exactly one JSON object matching this structure:
+
+```json
+{
+  "verified_results": [
+    {
+      "review_item_ids": [
+        "RP-001"
+      ],
+      "quality_characteristic": "Reliability",
+      "subcharacteristic": "Recoverability",
+      "criterion": "Recovery and consistency",
+      "requirement_ids": [
+
+      ],
+      "acceptance_criterion_ids": [
+
+      ],
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "severity": "critical | major | minor | null",
+      "conclusion": "Concise validated conclusion",
+      "failure_scenario": [
+
+      ],
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "Evidence"
+        }
+      ],
+      "reviewer_question": "What the human reviewer should confirm",
+      "suggested_review_comment": "Proposed author comment when needed"
+    }
+  ],
+  "rejected_results": [
+    {
+      "review_item_ids": [
+        "RP-002"
+      ],
+      "original_conclusion": "Rejected candidate",
+      "reason": "Reason for rejection"
+    }
+  ],
+  "review_prerequisites": {
+    "scope_analysis_completed": "true | false",
+    "review_plan_completed": "true | false",
+    "mechanical_review_completed": "true | false",
+    "structural_review_completed": "true | false",
+    "contextual_review_completed": "true | false",
+    "static_analysis_run": "true | false",
+    "unit_tests_run": "true | false",
+    "incomplete_reasons": [
+
+    ]
+  }
+}
 ```

@@ -45,21 +45,29 @@ Do not classify a change as `review_blocked` from raw line count alone. Account 
 
 ## Output
 
-Return the following structure. Do not report code problems or quality findings.
+Return exactly one JSON object matching this structure. Do not report code problems or quality findings.
 
-```yaml
-scope_status: focused | split_recommended | review_blocked
-stats:
-  changed_files: 0
-  additions: 0
-  deletions: 0
-  lines_changed: 0
-change_groups:
-  - name: "Short concrete name"
-    purpose: "What this group changes"
-    files: 0
-    additions: 0
-    deletions: 0
-split_reason: "Only when splitting is recommended or review is blocked"
-uncertainties: []
+```json
+{
+  "scope_status": "focused | split_recommended | review_blocked",
+  "stats": {
+    "changed_files": 0,
+    "additions": 0,
+    "deletions": 0,
+    "lines_changed": 0
+  },
+  "change_groups": [
+    {
+      "name": "Short concrete name",
+      "purpose": "What this group changes",
+      "files": 0,
+      "additions": 0,
+      "deletions": 0
+    }
+  ],
+  "split_reason": "Only when splitting is recommended or review is blocked",
+  "uncertainties": [
+
+  ]
+}
 ```

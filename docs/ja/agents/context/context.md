@@ -53,55 +53,98 @@ runtime: false
 
 ## 出力
 
-```yaml
-context:
-  objective:
-    purpose: "変更が解決する問題"
-    scope:
-      included: []
-      excluded: []
-  spec:
-    functional_requirements:
-      - id: "FR-001"
-        statement: "観測可能な要求"
-        acceptance_criteria:
-          - id: "AC-001"
-            expected_behavior: "判定可能な期待結果"
-            source:
-              uri: "媒体に依存しない参照先"
-              locator: "見出し、ブロック、行番号など"
-        source:
-          uri: "媒体に依存しない参照先"
-          locator: "見出し、ブロック、行番号など"
-          authority: normative | informative | historical
-    quality_requirements:
-      - id: "NFR-001"
-        statement: "測定可能な品質要求"
-        acceptance_criteria: []
-        source:
-          uri: "媒体に依存しない参照先"
-          locator: "見出し、ブロック、行番号など"
-          authority: normative | informative | historical
-    constraints:
-      - id: "CON-001"
-        statement: "実装上または運用上の制約"
-        source:
-          uri: "媒体に依存しない参照先"
-          locator: "見出し、ブロック、行番号など"
-          authority: normative | informative | historical
-  unresolved:
-    ambiguities: []
-    conflicts: []
-    unresolved_references:
-      - uri: "取得できなかった参照先"
-        locator: "取得対象箇所"
-        reason: "利用可能なツールがない、権限がない、位置が不明など"
-        affected_requirement_ids: []
-  review_questions:
-    - id: "CQ-001"
-      requirement_ids: ["FR-001"]
-      question: "後続レビューが確認する具体的な問い"
-      reason: "この変更で確認が必要な理由"
+```json
+{
+  "context": {
+    "objective": {
+      "purpose": "変更が解決する問題",
+      "scope": {
+        "included": [
+
+        ],
+        "excluded": [
+
+        ]
+      }
+    },
+    "spec": {
+      "functional_requirements": [
+        {
+          "id": "FR-001",
+          "statement": "観測可能な要求",
+          "acceptance_criteria": [
+            {
+              "id": "AC-001",
+              "expected_behavior": "判定可能な期待結果",
+              "source": {
+                "uri": "媒体に依存しない参照先",
+                "locator": "見出し、ブロック、行番号など"
+              }
+            }
+          ],
+          "source": {
+            "uri": "媒体に依存しない参照先",
+            "locator": "見出し、ブロック、行番号など",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ],
+      "quality_requirements": [
+        {
+          "id": "NFR-001",
+          "statement": "測定可能な品質要求",
+          "acceptance_criteria": [
+
+          ],
+          "source": {
+            "uri": "媒体に依存しない参照先",
+            "locator": "見出し、ブロック、行番号など",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "id": "CON-001",
+          "statement": "実装上または運用上の制約",
+          "source": {
+            "uri": "媒体に依存しない参照先",
+            "locator": "見出し、ブロック、行番号など",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ]
+    },
+    "unresolved": {
+      "ambiguities": [
+
+      ],
+      "conflicts": [
+
+      ],
+      "unresolved_references": [
+        {
+          "uri": "取得できなかった参照先",
+          "locator": "取得対象箇所",
+          "reason": "利用可能なツールがない、権限がない、位置が不明など",
+          "affected_requirement_ids": [
+
+          ]
+        }
+      ]
+    },
+    "review_questions": [
+      {
+        "id": "CQ-001",
+        "requirement_ids": [
+          "FR-001"
+        ],
+        "question": "後続レビューが確認する具体的な問い",
+        "reason": "この変更で確認が必要な理由"
+      }
+    ]
+  }
+}
 ```
 
 IDが資料に存在しない場合は、出典と対応関係を維持できる一時IDを付け、そのIDがレビュー用であることを明示してください。出典のない要約を仕様上の事実として扱ってはいけません。

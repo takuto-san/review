@@ -56,23 +56,36 @@ runtime: false
 
 ## 出力
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "保守性"
-    subcharacteristic: "試験性"
-    criterion: "Test quality"
-    question: "通知失敗時の振る舞いがテストされているか"
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "確認できた事実を一文で記載"
-    evidence:
-      - location: "path/to/file:line"
-        summary: "結論を支える事実"
-    commands_run:
-      - command: "リポジトリで定義された検証コマンド"
-        outcome: "passed | failed | not_run"
-        summary: "主要な結果または実行できなかった理由"
-    missing_information: []
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "保守性",
+      "subcharacteristic": "試験性",
+      "criterion": "Test quality",
+      "question": "通知失敗時の振る舞いがテストされているか",
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "確認できた事実を一文で記載",
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "結論を支える事実"
+        }
+      ],
+      "commands_run": [
+        {
+          "command": "リポジトリで定義された検証コマンド",
+          "outcome": "passed | failed | not_run",
+          "summary": "主要な結果または実行できなかった理由"
+        }
+      ],
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```
 
 Findingの優先度付けや最終コメント作成は行わないでください。

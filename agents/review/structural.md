@@ -52,23 +52,36 @@ The delegated task must provide the repository root, review target, base and hea
 
 ## Output
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "Reliability"
-    subcharacteristic: "Recoverability"
-    criterion: "Recovery and consistency"
-    question: "Can retry after notification failure duplicate payment?"
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "One-sentence conclusion"
-    failure_scenario:
-      - "Trigger"
-      - "Code path"
-      - "Observable impact"
-    evidence:
-      - location: "path/to/file:line"
-        summary: "Material evidence"
-    suggested_direction: "Possible resolution direction, or empty when uncertain"
-    source: "pr-agent-structural-review"
-    missing_information: []
+Return exactly one JSON object matching this structure:
+
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "Reliability",
+      "subcharacteristic": "Recoverability",
+      "criterion": "Recovery and consistency",
+      "question": "Can retry after notification failure duplicate payment?",
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "One-sentence conclusion",
+      "failure_scenario": [
+        "Trigger",
+        "Code path",
+        "Observable impact"
+      ],
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "Material evidence"
+        }
+      ],
+      "suggested_direction": "Possible resolution direction, or empty when uncertain",
+      "source": "pr-agent-structural-review",
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```

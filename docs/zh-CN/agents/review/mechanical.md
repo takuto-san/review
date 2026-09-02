@@ -37,4 +37,4 @@ runtime: false
 
 ## 输出
 
-按英文正本的YAML结构返回`review_item_id`、质量特性、问题、状态、结论、证据、`commands_run`和缺失信息。
+按英文正本的JSON结构返回`review_item_id`、质量特性、问题、状态、结论、证据、`commands_run`和缺失信息。

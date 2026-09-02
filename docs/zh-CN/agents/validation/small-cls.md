@@ -41,4 +41,4 @@ runtime: false
 
 ## 输出
 
-输出`scope_status`、差异统计、`change_groups`、`split_reason`和`uncertainties`，不得输出代码质量Finding。
+以JSON输出`scope_status`、差异统计、`change_groups`、`split_reason`和`uncertainties`，不得输出代码质量Finding。

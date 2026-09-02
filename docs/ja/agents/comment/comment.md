@@ -51,34 +51,58 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
 
 ## 出力
 
-```yaml
-verified_results:
-  - review_item_ids: ["RP-001"]
-    quality_characteristic: "信頼性"
-    subcharacteristic: "回復性"
-    criterion: "Recovery and consistency"
-    requirement_ids: []
-    acceptance_criterion_ids: []
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    severity: critical | major | minor | null
-    conclusion: "検証後の簡潔な結論"
-    failure_scenario: []
-    evidence:
-      - location: "path/to/file:line"
-        summary: "根拠"
-    reviewer_question: "レビュワーに確認してほしいこと"
-    suggested_review_comment: "作成者へ送るコメント案。必要な場合のみ"
-rejected_results:
-  - review_item_ids: ["RP-002"]
-    original_conclusion: "除外した候補"
-    reason: "除外理由"
-review_prerequisites:
-  scope_analysis_completed: true | false
-  review_plan_completed: true | false
-  mechanical_review_completed: true | false
-  structural_review_completed: true | false
-  contextual_review_completed: true | false
-  static_analysis_run: true | false
-  unit_tests_run: true | false
-  incomplete_reasons: []
+```json
+{
+  "verified_results": [
+    {
+      "review_item_ids": [
+        "RP-001"
+      ],
+      "quality_characteristic": "信頼性",
+      "subcharacteristic": "回復性",
+      "criterion": "Recovery and consistency",
+      "requirement_ids": [
+
+      ],
+      "acceptance_criterion_ids": [
+
+      ],
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "severity": "critical | major | minor | null",
+      "conclusion": "検証後の簡潔な結論",
+      "failure_scenario": [
+
+      ],
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "根拠"
+        }
+      ],
+      "reviewer_question": "レビュワーに確認してほしいこと",
+      "suggested_review_comment": "作成者へ送るコメント案。必要な場合のみ"
+    }
+  ],
+  "rejected_results": [
+    {
+      "review_item_ids": [
+        "RP-002"
+      ],
+      "original_conclusion": "除外した候補",
+      "reason": "除外理由"
+    }
+  ],
+  "review_prerequisites": {
+    "scope_analysis_completed": "true | false",
+    "review_plan_completed": "true | false",
+    "mechanical_review_completed": "true | false",
+    "structural_review_completed": "true | false",
+    "contextual_review_completed": "true | false",
+    "static_analysis_run": "true | false",
+    "unit_tests_run": "true | false",
+    "incomplete_reasons": [
+
+    ]
+  }
+}
 ```

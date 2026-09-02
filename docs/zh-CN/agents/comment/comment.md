@@ -33,4 +33,4 @@ runtime: false
 
 ## 输出
 
-按英文正本结构返回`verified_results`、`rejected_results`和`review_prerequisites`。验证和拒绝结果必须包含`review_item_ids`，并保留证据、审查者问题和必要时的建议评论。
+以JSON按英文正本结构返回`verified_results`、`rejected_results`和`review_prerequisites`。验证和拒绝结果必须包含`review_item_ids`，并保留证据、审查者问题和必要时的建议评论。

@@ -53,23 +53,34 @@ runtime: false
 
 ## 出力
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "信頼性"
-    subcharacteristic: "回復性"
-    criterion: "Recovery and consistency"
-    question: "通知失敗後の再試行で決済が重複しないか"
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "結論を一文で記載"
-    failure_scenario:
-      - "発生条件"
-      - "コード上の経路"
-      - "観測可能な影響"
-    evidence:
-      - location: "path/to/file:line"
-        summary: "重要な根拠"
-    suggested_direction: "解決方向。断定できなければ空欄"
-    source: "pr-agent-structural-review"
-    missing_information: []
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "信頼性",
+      "subcharacteristic": "回復性",
+      "criterion": "Recovery and consistency",
+      "question": "通知失敗後の再試行で決済が重複しないか",
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "結論を一文で記載",
+      "failure_scenario": [
+        "発生条件",
+        "コード上の経路",
+        "観測可能な影響"
+      ],
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "重要な根拠"
+        }
+      ],
+      "suggested_direction": "解決方向。断定できなければ空欄",
+      "source": "pr-agent-structural-review",
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```

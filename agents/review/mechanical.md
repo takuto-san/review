@@ -55,23 +55,38 @@ Do not introduce tools or dependencies. Do not run destructive commands or comma
 
 ## Output
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "Maintainability"
-    subcharacteristic: "Testability"
-    criterion: "Test quality"
-    question: "Is behavior after notification failure covered by tests?"
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "One-sentence observed result"
-    evidence:
-      - location: "path/to/file:line"
-        summary: "Fact supporting the conclusion"
-    commands_run:
-      - command: "Repository-defined verification command"
-        outcome: "passed | failed | not_run"
-        summary: "Main result or reason it was not run"
-    missing_information: []
+Return exactly one JSON object matching this structure:
+
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "Maintainability",
+      "subcharacteristic": "Testability",
+      "criterion": "Test quality",
+      "question": "Is behavior after notification failure covered by tests?",
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "One-sentence observed result",
+      "evidence": [
+        {
+          "location": "path/to/file:line",
+          "summary": "Fact supporting the conclusion"
+        }
+      ],
+      "commands_run": [
+        {
+          "command": "Repository-defined verification command",
+          "outcome": "passed | failed | not_run",
+          "summary": "Main result or reason it was not run"
+        }
+      ],
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```
 
 Do not assign finding priority or write final review comments.

@@ -52,55 +52,100 @@ If the required material is too large, do not silently truncate it. Record what 
 
 ## Output
 
-```yaml
-context:
-  objective:
-    purpose: "Problem solved by the change"
-    scope:
-      included: []
-      excluded: []
-  spec:
-    functional_requirements:
-      - id: "FR-001"
-        statement: "Observable requirement"
-        acceptance_criteria:
-          - id: "AC-001"
-            expected_behavior: "Verifiable expected behavior"
-            source:
-              uri: "Source-independent reference"
-              locator: "Heading, block, line, or other precise location"
-        source:
-          uri: "Source-independent reference"
-          locator: "Heading, block, line, or other precise location"
-          authority: normative | informative | historical
-    quality_requirements:
-      - id: "NFR-001"
-        statement: "Measurable quality requirement"
-        acceptance_criteria: []
-        source:
-          uri: "Source-independent reference"
-          locator: "Heading, block, line, or other precise location"
-          authority: normative | informative | historical
-    constraints:
-      - id: "CON-001"
-        statement: "Implementation or operational constraint"
-        source:
-          uri: "Source-independent reference"
-          locator: "Heading, block, line, or other precise location"
-          authority: normative | informative | historical
-  unresolved:
-    ambiguities: []
-    conflicts: []
-    unresolved_references:
-      - uri: "Unresolved reference"
-        locator: "Requested location"
-        reason: "No compatible tool, missing permission, unknown location, or another limitation"
-        affected_requirement_ids: []
-  review_questions:
-    - id: "CQ-001"
-      requirement_ids: ["FR-001"]
-      question: "Concrete question for downstream review"
-      reason: "Why this change requires the question"
+Return exactly one JSON object matching this structure:
+
+```json
+{
+  "context": {
+    "objective": {
+      "purpose": "Problem solved by the change",
+      "scope": {
+        "included": [
+
+        ],
+        "excluded": [
+
+        ]
+      }
+    },
+    "spec": {
+      "functional_requirements": [
+        {
+          "id": "FR-001",
+          "statement": "Observable requirement",
+          "acceptance_criteria": [
+            {
+              "id": "AC-001",
+              "expected_behavior": "Verifiable expected behavior",
+              "source": {
+                "uri": "Source-independent reference",
+                "locator": "Heading, block, line, or other precise location"
+              }
+            }
+          ],
+          "source": {
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ],
+      "quality_requirements": [
+        {
+          "id": "NFR-001",
+          "statement": "Measurable quality requirement",
+          "acceptance_criteria": [
+
+          ],
+          "source": {
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "id": "CON-001",
+          "statement": "Implementation or operational constraint",
+          "source": {
+            "uri": "Source-independent reference",
+            "locator": "Heading, block, line, or other precise location",
+            "authority": "normative | informative | historical"
+          }
+        }
+      ]
+    },
+    "unresolved": {
+      "ambiguities": [
+
+      ],
+      "conflicts": [
+
+      ],
+      "unresolved_references": [
+        {
+          "uri": "Unresolved reference",
+          "locator": "Requested location",
+          "reason": "No compatible tool, missing permission, unknown location, or another limitation",
+          "affected_requirement_ids": [
+
+          ]
+        }
+      ]
+    },
+    "review_questions": [
+      {
+        "id": "CQ-001",
+        "requirement_ids": [
+          "FR-001"
+        ],
+        "question": "Concrete question for downstream review",
+        "reason": "Why this change requires the question"
+      }
+    ]
+  }
+}
 ```
 
 If source material has no IDs, assign temporary review-only IDs that preserve traceability to the source. Never treat an uncited summary as a specification fact.

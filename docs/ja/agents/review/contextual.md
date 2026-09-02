@@ -53,22 +53,40 @@ runtime: false
 
 ## 出力
 
-```yaml
-results:
-  - review_item_id: "RP-001"
-    quality_characteristic: "機能適合性"
-    subcharacteristic: "機能完全性"
-    criterion: "Requirements coverage"
-    question: "PRの受け入れ条件をすべて満たしているか"
-    requirement_ids: ["REQ-001"]
-    acceptance_criterion_ids: ["AC-001"]
-    status: potential_issue | verified | needs_judgment | insufficient_evidence
-    conclusion: "確認結果を一文で記載"
-    evidence:
-      - location: "source URI and locator | path/to/file:line"
-        summary: "根拠"
-    implementation_locations: []
-    test_locations: []
-    decision_for_reviewer: "人間が決める必要がある場合の具体的な問い"
-    missing_information: []
+```json
+{
+  "results": [
+    {
+      "review_item_id": "RP-001",
+      "quality_characteristic": "機能適合性",
+      "subcharacteristic": "機能完全性",
+      "criterion": "Requirements coverage",
+      "question": "PRの受け入れ条件をすべて満たしているか",
+      "requirement_ids": [
+        "REQ-001"
+      ],
+      "acceptance_criterion_ids": [
+        "AC-001"
+      ],
+      "status": "potential_issue | verified | needs_judgment | insufficient_evidence",
+      "conclusion": "確認結果を一文で記載",
+      "evidence": [
+        {
+          "location": "source URI and locator | path/to/file:line",
+          "summary": "根拠"
+        }
+      ],
+      "implementation_locations": [
+
+      ],
+      "test_locations": [
+
+      ],
+      "decision_for_reviewer": "人間が決める必要がある場合の具体的な問い",
+      "missing_information": [
+
+      ]
+    }
+  ]
+}
 ```

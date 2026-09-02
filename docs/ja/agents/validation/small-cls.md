@@ -44,19 +44,27 @@ runtime: false
 
 次の構造で返してください。コード上の問題や品質Findingは出さないでください。
 
-```yaml
-scope_status: focused | split_recommended | review_blocked
-stats:
-  changed_files: 0
-  additions: 0
-  deletions: 0
-  lines_changed: 0
-change_groups:
-  - name: "短い具体名"
-    purpose: "このまとまりが何を変えるか"
-    files: 0
-    additions: 0
-    deletions: 0
-split_reason: "分割推奨またはブロックの場合だけ記載"
-uncertainties: []
+```json
+{
+  "scope_status": "focused | split_recommended | review_blocked",
+  "stats": {
+    "changed_files": 0,
+    "additions": 0,
+    "deletions": 0,
+    "lines_changed": 0
+  },
+  "change_groups": [
+    {
+      "name": "短い具体名",
+      "purpose": "このまとまりが何を変えるか",
+      "files": 0,
+      "additions": 0,
+      "deletions": 0
+    }
+  ],
+  "split_reason": "分割推奨またはブロックの場合だけ記載",
+  "uncertainties": [
+
+  ]
+}
 ```

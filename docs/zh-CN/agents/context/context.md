@@ -44,4 +44,4 @@ runtime: false
 
 ## 输出
 
-输出根节点为`context`，分为`objective`、`spec`、`unresolved`和`review_questions`。`spec`将功能需求、质量需求和约束分开，验收条件嵌套在对应需求中；歧义、冲突和未解析引用统一放在`unresolved`中。每条事实必须保留URI和精确位置；来源没有Requirement ID时可分配仅用于审查的临时ID。
+以JSON输出。根节点为`context`，分为`objective`、`spec`、`unresolved`和`review_questions`。`spec`将功能需求、质量需求和约束分开，验收条件嵌套在对应需求中；歧义、冲突和未解析引用统一放在`unresolved`中。每条事实必须保留URI和精确位置；来源没有Requirement ID时可分配仅用于审查的临时ID。

@@ -57,20 +57,25 @@ positive evidence.
 
 ## Output
 
-Return exactly this structure. Do not report code problems or quality findings.
+Return exactly one JSON object matching this structure. Do not report code problems or quality findings.
 
-```yaml
-review_status: review_required | closed | draft | trivial | already_reviewed
-should_review: true | false
-reason: "Short evidence-based explanation"
-evidence:
-  pr_state: "OPEN | CLOSED | MERGED"
-  is_draft: false
-  head_sha: "Full head SHA"
-  substantive_changes: true | false | unknown
-  current_reviewer: "Login or unknown"
-  reviewed_head_sha: "Full SHA or none"
-uncertainties: []
+```json
+{
+  "review_status": "review_required | closed | draft | trivial | already_reviewed",
+  "should_review": "true | false",
+  "reason": "Short evidence-based explanation",
+  "evidence": {
+    "pr_state": "OPEN | CLOSED | MERGED",
+    "is_draft": false,
+    "head_sha": "Full head SHA",
+    "substantive_changes": "true | false | unknown",
+    "current_reviewer": "Login or unknown",
+    "reviewed_head_sha": "Full SHA or none"
+  },
+  "uncertainties": [
+
+  ]
+}
 ```
 
 Set `should_review` to `true` only for `review_required`. For every other status,
