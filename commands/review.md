@@ -99,7 +99,7 @@ blocked commands and their reasons as insufficient evidence.
 
 ## 5. Verify the review results
 
-After all review layers finish, run `finding-verifier` with the shared target
+After all review layers finish, run `comment` with the shared target
 context, Change Scope result, complete review plan, all three review results,
 mechanical commands, and the repository's `REVIEW.md`.
 
@@ -109,15 +109,15 @@ rejects speculation and unrelated pre-existing issues, removes duplicates,
 corrects classifications, and confirms whether applicable static analysis and
 Unit tests ran.
 
-Only `finding-verifier.verified_results` may be passed to the final report.
+Only `comment.verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
 did not run, preserve the reason and mark the review as incomplete.
 
 ## 6. Produce the final report
 
 Run `review-synthesizer` last with only the Change Scope result, review plan,
-`finding-verifier.verified_results`, and
-`finding-verifier.review_prerequisites`.
+`comment.verified_results`, and
+`comment.review_prerequisites`.
 
 The synthesizer must format existing verified evidence. It must not discover,
 add, remove, or re-evaluate findings.

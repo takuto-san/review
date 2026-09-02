@@ -4,8 +4,7 @@ A Claude Code plugin for reviewing local changes and GitHub pull requests.
 
 This is a clean-room implementation inspired by multi-stage review workflows.
 Its review planning, specialized review layers, finding verification, and
-report synthesis are implemented by this plugin without invoking an external
-code-review plugin.
+report synthesis are implemented entirely by this plugin's Claude Code agents.
 
 ## Structure
 
@@ -16,10 +15,12 @@ review/
 ├── agents/
 │   ├── change-scope-analyst.md
 │   ├── review-plan-builder.md
-│   ├── mechanical-reviewer.md
-│   ├── structural-reviewer.md
-│   ├── contextual-reviewer.md
-│   ├── finding-verifier.md
+│   ├── review/
+│   │   ├── mechanical-reviewer.md
+│   │   ├── structural-reviewer.md
+│   │   └── contextual-reviewer.md
+│   ├── comment/
+│   │   └── comment.md
 │   └── review-synthesizer.md
 ├── commands/
 │   └── review.md

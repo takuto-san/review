@@ -3,5 +3,14 @@
   "description": "A two-mode review command combining specialized review agents, repository checks, and evidence-based reporting.",
   "version": "0.1.0",
   "author": { "name": "takuto-san" },
-  "license": "MIT"
+  "license": "MIT",
+  "agents": [
+    "./agents/change-scope-analyst.md",
+    "./agents/review-plan-builder.md",
+    "./agents/review/mechanical-reviewer.md",
+    "./agents/review/structural-reviewer.md",
+    "./agents/review/contextual-reviewer.md",
+    "./agents/comment/comment.md",
+    "./agents/review-synthesizer.md"
+  ]
 }
