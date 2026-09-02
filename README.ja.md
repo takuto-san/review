@@ -291,7 +291,6 @@ claude plugin validate /path/to/review --strict
 
 各レビュー計画項目には`RP-001`形式の一意な`review_item_id`を付け、レビュー層からFinding検証まで維持します。各エージェントには必須入力を明示的に渡し、割り当て項目を証拠不足のまま省略せず`insufficient_evidence`として処理します。
 
-`agents/`、`skills/`、plugin manifestを変更する際は`skills/maintain-review-plugin/SKILL.md`を使用し、英語runtime定義と日本語・簡体字中国語ドキュメント、3言語のREADMEを同期します。
 
 <a id="7-technical-details"></a>
 ## 7. 技術詳細
