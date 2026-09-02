@@ -21,7 +21,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 3. コンテキストの収集と整理
 
-`review:context:context`を実行します。関連Issueを優先入口としつつ特定媒体へ依存せず、明示された参照の必要箇所だけをEvidence Packetへ整理します。生文書は後続へ渡しません。取得不能、情報源の矛盾、正本区分、出典位置を保持します。
+`review:context:context`を実行します。関連Issueを優先入口としつつ特定媒体へ依存せず、明示された参照の必要箇所だけをコンテキストへ整理します。生文書は後続へ渡しません。取得不能、情報源の矛盾、正本区分、出典位置を保持します。
 
 ## 4. Change Scopeの分析
 
@@ -41,13 +41,13 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 - `review:review:structural`
 - `review:review:contextual`
 
-機械層にはCI情報、構造層には差分とコードベース、文脈層にはEvidence Packetを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
+機械層にはCI情報、構造層には差分とコードベース、文脈層には収集済みコンテキストを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
 
 各委譲では、リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分またはその明確な位置、割り当て項目、agent固有の必須入力を明示します。subagentが親会話からオーケストレーション状態を復元できるとは仮定しません。
 
 ## 7. レビュー結果の検証
 
-`review:comment:comment`へEvidence Packet、Change Scope、計画、全結果、実行コマンド、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`review_item_id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
+`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、全結果、実行コマンド、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`review_item_id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
 
 ## 8. 最終レポート
 

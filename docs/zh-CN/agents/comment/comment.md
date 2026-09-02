@@ -12,13 +12,13 @@ runtime: false
 
 ## 必需输入
 
-必须提供共享目标上下文、Evidence Packet、Change Scope、完整审查计划、所有审查结果、机械检查命令记录和`REVIEW.md`。缺失时不得重建或猜测，应将相关前提标记为未完成。
+必须提供收集后的上下文、Change Scope、完整审查计划、所有审查结果、机械检查命令记录和`REVIEW.md`。缺失时不得重建或猜测，应将相关前提标记为未完成。
 
 ## 验证步骤
 
-确认结果对应`REVIEW.md`，Evidence Packet、Change Scope和计划完整，各审查层和必要命令已完成。验证`potential_issue`具有从变更代码到失败的现实路径且证据直接支持结论；排除既有问题、CI已明确报告的问题和推测；合并同一根因；把设计或规格选择改为`needs_judgment`，把缺少资料改为`insufficient_evidence`。
+确认结果对应`REVIEW.md`，收集后的上下文、Change Scope和计划完整，各审查层和必要命令已完成。验证`potential_issue`具有从变更代码到失败的现实路径且证据直接支持结论；排除既有问题、CI已明确报告的问题和推测；合并同一根因；把设计或规格选择改为`needs_judgment`，把缺少资料改为`insufficient_evidence`。
 
-规格类评论必须包含Requirement或Acceptance Criterion ID、精确来源、实现位置、现实失败场景和可观察影响。不得探索Issue或Evidence Packet以外的信息源。
+规格类评论必须包含Requirement或Acceptance Criterion ID、精确来源、实现位置、现实失败场景和可观察影响。不得探索Issue或收集后的上下文以外的信息源。
 
 ## 完成条件
 

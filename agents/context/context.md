@@ -26,7 +26,7 @@ The delegated task must provide the review target, change description, changed f
 ## Retrieval procedure
 
 1. Determine the change purpose and affected capabilities from the PR, related Issues, changed files, and PR description.
-2. Extract requirements, acceptance criteria, constraints, exclusions, open questions, and specification references.
+2. Extract functional requirements, quality requirements, acceptance criteria, constraints, exclusions, open questions, and specification references.
 3. Form concrete questions that downstream reviewers must answer.
 4. Determine whether the Issue alone answers each question.
 5. Only for unanswered questions, retrieve the relevant section of an explicit reference.
@@ -45,7 +45,7 @@ If the required material is too large, do not silently truncate it. Record what 
 
 ## Completion criteria
 
-- Every requirement and acceptance criterion has a stable review-only ID and precise source location.
+- Every requirement, acceptance criterion, and constraint has a stable review-only ID and precise source location.
 - Every external source was reached through an explicit reference.
 - Missing, inaccessible, oversized, and conflicting sources are recorded explicitly.
 - The context contains only information needed by downstream review questions.
@@ -54,24 +54,41 @@ If the required material is too large, do not silently truncate it. Record what 
 
 ```yaml
 context:
-  intent:
+  objective:
     purpose: "Problem solved by the change"
     scope:
       included: []
       excluded: []
-  specification:
-    requirements:
-      - id: "REQ-001"
+  spec:
+    functional_requirements:
+      - id: "FR-001"
         statement: "Observable requirement"
         acceptance_criteria:
           - id: "AC-001"
             expected_behavior: "Verifiable expected behavior"
+            source:
+              uri: "Source-independent reference"
+              locator: "Heading, block, line, or other precise location"
         source:
           uri: "Source-independent reference"
           locator: "Heading, block, line, or other precise location"
           authority: normative | informative | historical
-    constraints: []
-  gaps:
+    quality_requirements:
+      - id: "NFR-001"
+        statement: "Measurable quality requirement"
+        acceptance_criteria: []
+        source:
+          uri: "Source-independent reference"
+          locator: "Heading, block, line, or other precise location"
+          authority: normative | informative | historical
+    constraints:
+      - id: "CON-001"
+        statement: "Implementation or operational constraint"
+        source:
+          uri: "Source-independent reference"
+          locator: "Heading, block, line, or other precise location"
+          authority: normative | informative | historical
+  unresolved:
     ambiguities: []
     conflicts: []
     unresolved_references:
@@ -81,9 +98,9 @@ context:
         affected_requirement_ids: []
   review_questions:
     - id: "CQ-001"
-      requirement_ids: ["REQ-001"]
+      requirement_ids: ["FR-001"]
       question: "Concrete question for downstream review"
       reason: "Why this change requires the question"
 ```
 
-If source material has no requirement IDs, assign temporary review-only IDs that preserve traceability to the source. Never treat an uncited summary as a specification fact.
+If source material has no IDs, assign temporary review-only IDs that preserve traceability to the source. Never treat an uncited summary as a specification fact.

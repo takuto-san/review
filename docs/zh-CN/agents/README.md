@@ -8,7 +8,7 @@ runtime: false
 
 | 代理 | 职责 |
 |---|---|
-| `context` | 仅从明确引用中收集必要信息，生成与来源无关的Evidence Packet |
+| `context` | 仅从明确引用中收集必要信息，生成与来源无关的精简上下文 |
 | `review-needed` | 跳过已关闭、草稿、微不足道或已审查的PR |
 | `small-cls` | 评估规模、Change Group和内聚性是否造成过大审查负担 |
 | `mechanical` | 运行CI等效测试、静态分析和客观检查 |

@@ -21,7 +21,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 3. 收集并整理上下文
 
-运行`review:context:context`。优先使用关联Issue，但不依赖特定媒体。只获取明确引用中的必要部分并生成Evidence Packet，不把原始文档传给后续代理。保留无法解析的引用、来源冲突、权威级别和精确位置。
+运行`review:context:context`。优先使用关联Issue，但不依赖特定媒体。只获取明确引用中的必要部分并生成精简上下文，不把原始文档传给后续代理。保留无法解析的引用、来源冲突、权威级别和精确位置。
 
 ## 4. 分析Change Scope
 
@@ -41,13 +41,13 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 - `review:review:structural`
 - `review:review:contextual`
 
-向机械层提供CI，向结构层提供差异和代码库，向上下文层提供Evidence Packet。未经明确批准，不执行外部或不可信PR中的代码。
+向机械层提供CI，向结构层提供差异和代码库，向上下文层提供收集后的上下文。未经明确批准，不执行外部或不可信PR中的代码。
 
 每次委派都必须显式提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异或其明确位置、分配项以及代理特定的必需输入。不得假设subagent能从父对话恢复编排状态。
 
 ## 7. 验证审查结果
 
-向`review:comment:comment`传递Evidence Packet、Change Scope、计划、全部结果、命令和`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`review_item_id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
+向`review:comment:comment`传递收集后的上下文、Change Scope、计划、全部结果、命令和`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`review_item_id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
 
 ## 8. 生成最终报告
 

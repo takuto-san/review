@@ -27,7 +27,7 @@ runtime: false
 ## 取得手順
 
 1. PR、関連Issue、変更ファイル、PR説明から、変更の目的と影響する機能を把握する。
-2. Requirement、Acceptance Criterion、制約、非対象、未決事項、仕様参照を抽出する。
+2. Functional Requirement、Quality Requirement、Acceptance Criterion、制約、非対象、未決事項、仕様参照を抽出する。
 3. 後続レビューで答える必要がある具体的な問いを作る。
 4. Issueの記述だけで各問いに答えられるか確認する。
 5. 情報が不足する問いについてだけ、明示された参照先の該当箇所を取得する。
@@ -46,7 +46,7 @@ runtime: false
 
 ## 完了条件
 
-- RequirementとAcceptance Criterionに安定したレビュー用IDと正確な出典位置がある。
+- Requirement、Acceptance Criterion、制約に安定したレビュー用IDと正確な出典位置がある。
 - 外部情報源は明示された参照からのみ取得している。
 - 不足、アクセス不能、過大、矛盾する情報源を明記している。
 - コンテキストには後続のレビュー質問に必要な情報だけが含まれる。
@@ -55,14 +55,14 @@ runtime: false
 
 ```yaml
 context:
-  intent:
+  objective:
     purpose: "変更が解決する問題"
     scope:
       included: []
       excluded: []
-  specification:
-    requirements:
-      - id: "REQ-001"
+  spec:
+    functional_requirements:
+      - id: "FR-001"
         statement: "観測可能な要求"
         acceptance_criteria:
           - id: "AC-001"
@@ -74,8 +74,22 @@ context:
           uri: "媒体に依存しない参照先"
           locator: "見出し、ブロック、行番号など"
           authority: normative | informative | historical
-    constraints: []
-  gaps:
+    quality_requirements:
+      - id: "NFR-001"
+        statement: "測定可能な品質要求"
+        acceptance_criteria: []
+        source:
+          uri: "媒体に依存しない参照先"
+          locator: "見出し、ブロック、行番号など"
+          authority: normative | informative | historical
+    constraints:
+      - id: "CON-001"
+        statement: "実装上または運用上の制約"
+        source:
+          uri: "媒体に依存しない参照先"
+          locator: "見出し、ブロック、行番号など"
+          authority: normative | informative | historical
+  unresolved:
     ambiguities: []
     conflicts: []
     unresolved_references:
@@ -85,9 +99,9 @@ context:
         affected_requirement_ids: []
   review_questions:
     - id: "CQ-001"
-      requirement_ids: ["REQ-001"]
+      requirement_ids: ["FR-001"]
       question: "後続レビューが確認する具体的な問い"
       reason: "この変更で確認が必要な理由"
 ```
 
-Requirement IDが資料に存在しない場合は、出典と対応関係を維持できる一時IDを付け、そのIDがレビュー用であることを明示してください。出典のない要約を仕様上の事実として扱ってはいけません。
+IDが資料に存在しない場合は、出典と対応関係を維持できる一時IDを付け、そのIDがレビュー用であることを明示してください。出典のない要約を仕様上の事実として扱ってはいけません。

@@ -8,15 +8,15 @@ runtime: false
 
 ## 任务
 
-只对`primary_layer: contextual`的项目进行规格驱动审查。把`context`代理生成的Evidence Packet与实现和测试对应起来，不得修改文件。
+只对`primary_layer: contextual`的项目进行规格驱动审查。把`context`代理收集的上下文与实现和测试对应起来，不得修改文件。
 
 ## 必需输入
 
-必须提供审查目标、变更文件、完整差异、Evidence Packet以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项返回`insufficient_evidence`。
+必须提供审查目标、变更文件、完整差异、收集后的上下文以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项返回`insufficient_evidence`。
 
 ## 使用的上下文
 
-使用PR标题、说明、差异、规范化Evidence Packet以及测试名称和期望。不得独自访问外部来源或探索Evidence Packet以外的引用；信息不足时返回`insufficient_evidence`。
+使用PR标题、说明、差异、规范化上下文以及测试名称和期望。不得独自访问外部来源或探索收集后的上下文以外的引用；信息不足时返回`insufficient_evidence`。
 
 ## 审查内容
 
