@@ -2,7 +2,7 @@
 
 | Agent | Responsibility |
 |---|---|
-| `context` | Collects only explicitly referenced information and produces a source-independent Evidence Packet |
+| `context` | Collects only explicitly referenced information and produces compact, source-independent context |
 | `review-needed` | Checks PR review eligibility and skips closed, draft, trivial, or already-reviewed PRs |
 | `small-cls` | Evaluates whether size, Change Groups, and cohesion create excessive reviewer workload |
 | `mechanical` | Runs CI-equivalent tests, static analysis, and other objective checks |

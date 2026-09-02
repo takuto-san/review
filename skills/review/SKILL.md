@@ -83,11 +83,11 @@ Treat a related Issue as the preferred reference index when one exists. Do not
 hard-code or prefer a specific knowledge system. The context agent must use
 whatever compatible read-only tools are available, follow only explicit
 references, retrieve only the sections needed to answer review questions, and
-return a compact, source-independent `evidence_packet`.
+return compact, source-independent `context`.
 
 Do not pass raw retrieved documents or search results to later agents. Preserve
 unresolved references, conflicting sources, source authority, and precise
-locations in the Evidence Packet. If no compatible retrieval tool is available,
+locations in the collected context. If no compatible retrieval tool is available,
 continue with available evidence and record the resulting limitation.
 
 ## 4. Analyze Change Scope
@@ -106,7 +106,7 @@ incomplete.
 ## 5. Build the review plan
 
 As the orchestrator, read the repository's `REVIEW.md` and build the review
-plan directly from the shared target context, Evidence Packet, Change Scope
+plan directly from the collected context, Change Scope
 result, PR description, linked issues, available requirements, changed files,
 and diff.
 
@@ -141,7 +141,7 @@ After the review plan is complete, run these agents in parallel:
 
 Give every agent the shared target context, Change Scope result, only the review
 items assigned to its `primary_layer`, relevant supporting-layer information,
-and applicable repository guidance. Give the Evidence Packet to the contextual
+and applicable repository guidance. Give the collected context to the contextual
 reviewer; do not give it raw source documents or permission to expand the
 retrieval scope.
 
@@ -171,7 +171,7 @@ blocked commands and their reasons as insufficient evidence.
 ## 7. Verify the review results
 
 After all review layers finish, run `review:comment:comment` with the shared target
-context, Evidence Packet, Change Scope result, complete review plan, all three
+collected context, Change Scope result, complete review plan, all three
 review results, mechanical commands, and the repository's `REVIEW.md`.
 
 The verifier must not perform another general review. It verifies candidate
