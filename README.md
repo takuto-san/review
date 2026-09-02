@@ -18,22 +18,20 @@ verification, and report generation are implemented entirely by this plugin.
 
 ```mermaid
 flowchart TD
-    A[Review target<br/>Local changes or Pull Request] --> B[Resolve PR metadata and related Issues]
-    B --> C[context/context.md<br/>Collect only explicitly referenced information]
-    C --> D[Source-independent Evidence Packet]
-    D --> E[validation/small-cls.md<br/>Validate scope, cohesion, and reviewability]
-    E --> F[commands/review.md<br/>Build a PR-specific review plan]
+    A[Choose what to review<br/>Local changes or a Pull Request] --> B[Understand why it is changing<br/>Read the PR and related Issues]
+    B --> C[Gather only the needed background<br/>Follow explicit links to specifications and decisions]
+    C --> D[Create a concise review context<br/>Requirements, constraints, open questions, and sources]
+    D --> E[Check whether the change is reviewable<br/>Size, cohesion, and independent change groups]
+    E --> F[Decide what this review must check<br/>Select relevant quality criteria]
 
-    F --> G1[Mechanical review<br/>CI, static analysis, types, and tests]
-    F --> G2[Structural review<br/>Design, execution paths, state, and interfaces]
-    F --> G3[Contextual review<br/>Requirements, acceptance criteria, and constraints]
+    F --> G1[Run objective checks<br/>CI, static analysis, types, and tests]
+    F --> G2[Inspect the code structure<br/>Logic, dependencies, state, and failure paths]
+    F --> G3[Compare implementation with intent<br/>Requirements, acceptance criteria, and constraints]
 
-    G1 --> H[comment/comment.md<br/>Verify evidence, classify, and deduplicate findings]
+    G1 --> H[Validate the review findings<br/>Confirm evidence, remove duplicates, and reject speculation]
     G2 --> H
     G3 --> H
-
-    H --> I[commands/review.md<br/>Produce the final reviewer report]
-    I --> J[Review Summary<br/>Change Scope<br/>Needs Your Attention<br/>Review Coverage]
+    H --> I[Present the review result<br/>Summary, scope, items needing attention, and coverage]
 ```
 
 The context agent may use any compatible read-only source available in the

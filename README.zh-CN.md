@@ -16,22 +16,20 @@
 
 ```mermaid
 flowchart TD
-    A[审查目标<br/>本地更改或Pull Request] --> B[解析PR信息和关联Issue]
-    B --> C[context/context.md<br/>仅收集明确引用的信息]
-    C --> D[与信息源无关的Evidence Packet]
-    D --> E[validation/small-cls.md<br/>验证范围、内聚性和可审查性]
-    E --> F[commands/review.md<br/>生成针对当前PR的审查计划]
+    A[确定审查对象<br/>本地更改或Pull Request] --> B[理解变更原因<br/>阅读PR和关联Issue]
+    B --> C[只收集必要的背景信息<br/>仅跟踪明确引用的规格和决策资料]
+    C --> D[整理为审查上下文<br/>需求、约束、未决问题和来源]
+    D --> E[确认变更是否可审查<br/>规模、内聚性和可独立拆分的变更组]
+    E --> F[决定本次必须检查的内容<br/>只选择相关质量标准]
 
-    F --> G1[机械审查<br/>CI、静态分析、类型和测试]
-    F --> G2[结构审查<br/>设计、执行路径、状态和接口]
-    F --> G3[上下文审查<br/>需求、验收条件和约束]
+    F --> G1[运行客观检查<br/>CI、静态分析、类型和测试]
+    F --> G2[检查代码结构<br/>逻辑、依赖、状态和失败路径]
+    F --> G3[对照实现与变更意图<br/>需求、验收条件和约束]
 
-    G1 --> H[comment/comment.md<br/>验证证据、分类并去重]
+    G1 --> H[验证审查结果<br/>确认证据、删除重复并排除推测]
     G2 --> H
     G3 --> H
-
-    H --> I[commands/review.md<br/>生成面向审查者的最终报告]
-    I --> J[Review Summary<br/>Change Scope<br/>Needs Your Attention<br/>Review Coverage]
+    H --> I[展示审查结果<br/>摘要、变更范围、待确认事项和覆盖范围]
 ```
 
 `context`代理可以使用用户环境中任何兼容的只读信息源。它只跟踪与审查目标明确关联的引用，并向审查层传递精简的Evidence Packet，而不是原始文档。
