@@ -10,7 +10,6 @@ verification, and report generation are implemented entirely by this plugin.
 
 ## Documentation
 
-- [Review criteria](REVIEW.md)
 - [日本語ドキュメント](docs/ja/README.md)
 - [简体中文文档](docs/zh-CN/README.md)
 
@@ -26,20 +25,20 @@ Reviews commits and working-tree changes in the current local repository.
 
 ```mermaid
 flowchart TD
-    A[Find local changes<br/>Commits ahead of upstream, staged, unstaged, and relevant untracked files] --> B[Determine the local change intent<br/>Read commit messages, repository guidance, and explicit references]
-    B --> C[Gather only the needed background<br/>Follow references available from the local change]
-    C --> D[Create a concise review context<br/>Requirements, constraints, open questions, and sources]
-    D --> E[Check whether the change is reviewable<br/>Size, cohesion, and independent change groups]
-    E --> F[Decide what this review must check<br/>Select relevant quality criteria]
+    A[Find local changes] --> B[Determine the local change intent]
+    B --> C[Gather only the needed background]
+    C --> D[Create a concise review context]
+    D --> E[Check whether the change is reviewable]
+    E --> F[Decide what this review must check]
 
-    F --> G1[Run objective checks<br/>CI, static analysis, types, and tests]
-    F --> G2[Inspect the code structure<br/>Logic, dependencies, state, and failure paths]
-    F --> G3[Compare implementation with intent<br/>Requirements, acceptance criteria, and constraints]
+    F --> G1[Run objective checks]
+    F --> G2[Inspect the code structure]
+    F --> G3[Compare implementation with intent]
 
-    G1 --> H[Validate the review findings<br/>Confirm evidence, remove duplicates, and reject speculation]
+    G1 --> H[Validate the review findings]
     G2 --> H
     G3 --> H
-    H --> I[Present the review result<br/>Summary, scope, items needing attention, and coverage]
+    H --> I[Present the review result]
 ```
 
 ### Reviewer mode
@@ -48,20 +47,20 @@ Reviews a GitHub Pull Request identified by its number or URL.
 
 ```mermaid
 flowchart TD
-    A[Resolve the Pull Request<br/>Title, description, branches, diff, and CI status] --> B[Understand the requested change<br/>Read the PR and related Issues]
-    B --> C[Gather only the needed background<br/>Follow explicit links to specifications and decisions]
-    C --> D[Create a concise review context<br/>Requirements, constraints, open questions, and sources]
-    D --> E[Check whether the PR is reviewable<br/>Size, cohesion, and independent change groups]
-    E --> F[Decide what this review must check<br/>Select relevant quality criteria]
+    A[Resolve the Pull Request] --> B[Understand the requested change]
+    B --> C[Gather only the needed background]
+    C --> D[Create a concise review context]
+    D --> E[Check whether the PR is reviewable]
+    E --> F[Decide what this review must check]
 
-    F --> G1[Run objective checks<br/>CI, static analysis, types, and tests]
-    F --> G2[Inspect the code structure<br/>Logic, dependencies, state, and failure paths]
-    F --> G3[Compare implementation with intent<br/>Requirements, acceptance criteria, and constraints]
+    F --> G1[Run objective checks]
+    F --> G2[Inspect the code structure]
+    F --> G3[Compare implementation with intent]
 
-    G1 --> H[Validate the review findings<br/>Confirm evidence, remove duplicates, and reject speculation]
+    G1 --> H[Validate the review findings]
     G2 --> H
     G3 --> H
-    H --> I[Present the review result<br/>Summary, scope, items needing attention, and coverage]
+    H --> I[Present the review result]
 ```
 
 The context agent may use any compatible read-only source available in the
