@@ -6,6 +6,7 @@
 - [レビューSkillとオーケストレーター](skills/review/SKILL.md)
 - [エージェント一覧](agents/README.md)
 - [コンテキスト収集](agents/context/context.md)
+- [レビュー要否の検証](agents/validation/review-needed.md)
 - [Small CLs検証](agents/validation/small-cls.md)
 - [機械的レビュー](agents/review/mechanical.md)
 - [構造的レビュー](agents/review/structural.md)

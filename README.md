@@ -1,8 +1,8 @@
 # Review Plugin
 
-Automated review for local changes and GitHub pull requests using specialized agents, repository checks, and evidence-based finding verification.
+English | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
-[日本語](README.ja.md) | [简体中文](README.zh-CN.md)
+Automated review for local changes and GitHub pull requests using specialized agents, repository checks, and evidence-based finding verification.
 
 ## Overview
 
@@ -24,15 +24,16 @@ Performs an evidence-based review of local changes or a GitHub pull request.
 What it does:
 
 1. Resolves local changes or the requested pull request.
-2. Collects only context explicitly connected to the review target.
-3. Evaluates change size, cohesion, and reviewability.
-4. Builds a review plan from the change and `REVIEW.md`.
-5. Runs three specialized review layers in parallel:
+2. In Reviewer mode, checks whether review is needed and skips closed, draft, trivial, or already-reviewed pull requests.
+3. Collects only context explicitly connected to the review target.
+4. Evaluates whether the change creates excessive reviewer workload.
+5. Builds a review plan from the change and `REVIEW.md`.
+6. Runs three specialized review layers in parallel:
    - Mechanical checks for tests, static analysis, and objective signals
    - Structural review for design, execution paths, state, security, performance, and maintainability
    - Contextual review for requirements, intent, compatibility, and documentation
-6. Revalidates candidate findings against the code and available evidence.
-7. Reports only verified findings, human decisions, and explicit limitations.
+7. Revalidates candidate findings against the code and available evidence.
+8. Reports only verified findings, human decisions, and explicit limitations.
 
 Usage:
 
@@ -54,6 +55,7 @@ A pull request URL is supported in a natural-language request, but not as a dire
 Features:
 
 - Developer and Reviewer modes
+- Review-need validation for pull requests
 - Change-specific planning based on ISO/IEC 25010 quality characteristics
 - Parallel mechanical, structural, and contextual review
 - Read-only context collection from explicitly referenced sources
@@ -264,7 +266,8 @@ Only criteria applicable to the current change are selected.
 Agent responsibilities and output contracts are defined under `agents/`:
 
 - `agents/context/context.md` — context collection and Evidence Packet creation
-- `agents/validation/small-cls.md` — change scope and reviewability
+- `agents/validation/review-needed.md` — pull request review eligibility
+- `agents/validation/small-cls.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
 - `agents/review/contextual.md` — intent and requirement analysis
@@ -308,8 +311,9 @@ review/
 
 ### Agent architecture
 
+- 1 eligibility agent determines whether a pull request needs review.
 - 1 context agent gathers explicitly referenced evidence.
-- 1 scope agent classifies cohesion and reviewability.
+- 1 scope agent classifies cohesion and reviewer workload.
 - The review skill creates a target-specific review plan.
 - 3 specialized agents review mechanical, structural, and contextual concerns in parallel.
 - 1 comment agent verifies candidates and produces the verified result set.
@@ -319,17 +323,19 @@ review/
 
 ```mermaid
 flowchart TD
-    A[Resolve local changes or PR] --> B[Collect relevant context]
-    B --> C[Create Evidence Packet]
-    C --> D[Evaluate change scope]
-    D --> E[Build change-specific review plan]
-    E --> F1[Mechanical review]
-    E --> F2[Structural review]
-    E --> F3[Contextual review]
-    F1 --> G[Verify and deduplicate findings]
-    F2 --> G
-    F3 --> G
-    G --> H[Produce final report]
+    A[Resolve local changes or PR] --> B{PR needs review?}
+    B -->|No| X[Report skip reason]
+    B -->|Yes or local changes| C[Collect relevant context]
+    C --> D[Create Evidence Packet]
+    D --> E[Evaluate reviewer workload]
+    E --> F[Build change-specific review plan]
+    F --> G1[Mechanical review]
+    F --> G2[Structural review]
+    F --> G3[Contextual review]
+    G1 --> H[Verify and deduplicate findings]
+    G2 --> H
+    G3 --> H
+    H --> I[Produce final report]
 ```
 
 ### Context handling

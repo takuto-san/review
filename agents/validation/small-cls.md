@@ -1,12 +1,12 @@
 ---
 name: small-cls
-description: Validates PR size, change groups, cohesion, and reviewability using Google Small CLs principles before code review.
+description: Validates whether PR scope and change groups impose excessive cognitive load on a human reviewer using Google Small CLs principles.
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: cyan
 ---
 
-Analyze Change Scope for the PR agent. Do not review code correctness. Determine whether the change is a human-reviewable unit. Do not modify files.
+Analyze Change Scope for the PR agent. Do not review code correctness or decide whether review is needed. Determine whether the amount and grouping of substantive change impose excessive cognitive load on a human reviewer. Do not modify files.
 
 ## Input
 
@@ -20,13 +20,17 @@ The parent provides the review target, base branch, PR number, PR description, a
 4. Identify mixtures of features, bug fixes, refactoring, tests, configuration, or migrations.
 5. Apply Google Small CLs principles: judge whether this is one self-contained change, not merely whether its line count is small.
 
+This validation is only about reviewer workload. Closed, draft, trivial, and
+already-reviewed pull requests are handled by `review-needed` before this agent
+runs.
+
 ## Classification
 
-- `focused`: One self-contained change that can be reviewed normally.
-- `split_recommended`: Multiple independently mergeable Change Groups exist.
-- `review_blocked`: The purpose or impact cannot be understood reliably enough for a trustworthy review.
+- `focused`: The substantive change is cohesive and its reviewer workload is manageable.
+- `split_recommended`: Multiple independently mergeable Change Groups create avoidable reviewer workload.
+- `review_blocked`: The substantive change is too large or entangled for a reliable review in one pass, and no safe split can be identified from the available evidence.
 
-Do not classify a change as `review_blocked` only because it is large. Account for generated content, mechanical edits, and reliable bulk refactoring.
+Do not classify a change as `review_blocked` from raw line count alone. Account for generated content, mechanical edits, reliable bulk refactoring, conceptual complexity, and the number of execution paths a reviewer must hold in mind.
 
 ## Output
 

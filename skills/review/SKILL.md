@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review local code changes or a GitHub Pull Request using context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
+description: Review local code changes or a GitHub Pull Request using review-need validation, context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
 argument-hint: "[PR number]"
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
@@ -60,7 +60,20 @@ at the resolved head SHA and remove it after collecting the results.
 Create one shared target context. Every agent must receive the same repository,
 base SHA, head SHA, diff, changed files, and PR metadata.
 
-## 2. Collect and organize context
+## 2. Check whether review is needed
+
+In Reviewer mode, run `review:validation:review-needed` with the shared target
+context and review metadata. It must check the conditions in this order: closed
+or merged, draft, trivial, and already reviewed at the current head SHA by the
+current authenticated reviewer.
+
+If `should_review` is `false`, stop before context collection and report the
+status and evidence concisely. Do not run `small-cls` or any review layer.
+
+In Developer mode, skip this validation and continue when reviewable local
+changes exist.
+
+## 3. Collect and organize context
 
 Run `review:context:context` with the shared target context, PR description,
 related Issues, repository guidance, changed components, and every explicit
@@ -77,19 +90,20 @@ unresolved references, conflicting sources, source authority, and precise
 locations in the Evidence Packet. If no compatible retrieval tool is available,
 continue with available evidence and record the resulting limitation.
 
-## 3. Analyze Change Scope
+## 4. Analyze Change Scope
 
 Run `review:validation:small-cls` with the shared target context, PR metadata, changed
 files, diff statistics, and resolved SHAs.
 
-The agent must only analyze reviewability, Change Groups, scope classification,
-and uncertainties. It must not produce code-quality findings.
+The agent must only analyze reviewer workload, Change Groups, scope
+classification, and uncertainties. It must not decide whether review is needed
+or produce code-quality findings.
 
 If the result is `review_blocked`, continue only with checks that can still
 produce reliable evidence. The final report must state that the review is
 incomplete.
 
-## 4. Build the review plan
+## 5. Build the review plan
 
 As the orchestrator, read the repository's `REVIEW.md` and build the review
 plan directly from the shared target context, Evidence Packet, Change Scope
@@ -112,7 +126,7 @@ Preserve the selected criterion, concrete question, selection reason, primary
 layer, supporting layers, and expected evidence. Do not add generic review
 items merely for completeness.
 
-## 5. Run the review layers
+## 6. Run the review layers
 
 After the review plan is complete, run these agents in parallel:
 
@@ -143,7 +157,7 @@ destructive commands. For an external or otherwise untrusted pull request, do
 not execute repository-controlled code without explicit user approval. Record
 blocked commands and their reasons as insufficient evidence.
 
-## 6. Verify the review results
+## 7. Verify the review results
 
 After all review layers finish, run `review:comment:comment` with the shared target
 context, Evidence Packet, Change Scope result, complete review plan, all three
@@ -159,7 +173,7 @@ Only the comment agent's `verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
 did not run, preserve the reason and mark the review as incomplete.
 
-## 7. Produce the final report
+## 8. Produce the final report
 
 As the orchestrator, produce the final report using only the Change Scope
 result, review plan, the comment agent's `verified_results`, and
@@ -197,6 +211,7 @@ describe a verified result as an absolute safety guarantee.
 ## Completion requirements
 
 Present the review as complete only when the target was resolved unambiguously,
+Reviewer mode eligibility was confirmed,
 required context was collected or its limitations were recorded, Change Scope
 was evaluated, the review plan was generated from `REVIEW.md`, all applicable
 review layers completed, applicable static analysis and Unit tests ran or have

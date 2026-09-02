@@ -6,7 +6,7 @@ runtime: false
 
 # Small CLs验证代理
 
-分析PR的Change Scope，不审查代码正确性。判断变更是否构成人工可审查的单元，不得修改文件。
+分析PR的Change Scope，不审查代码正确性或决定是否需要审查。判断实质变更的数量和分组是否给人工审查者造成过大认知负担，不得修改文件。关闭、草稿、微不足道或已审查状态由`review-needed`预先判断。
 
 ## 输入
 
@@ -22,11 +22,11 @@ runtime: false
 
 ## 分类
 
-- `focused`：一个可正常审查的自包含变更。
-- `split_recommended`：存在多个可独立合并的Change Group。
-- `review_blocked`：无法可靠理解目的或影响，不能保证审查质量。
+- `focused`：实质变更内聚，审查负担可控。
+- `split_recommended`：多个可独立合并的Change Group造成可避免的审查负担。
+- `review_blocked`：实质变更过大或相互纠缠，无法在一次审查中可靠完成，且现有证据无法确定安全拆分方式。
 
-不能仅因规模大而判为`review_blocked`，应考虑生成内容、机械修改和可信批量重构。
+不能仅根据原始行数判为`review_blocked`，应考虑生成内容、机械修改、可信批量重构、概念复杂度以及审查者必须同时掌握的执行路径数量。
 
 ## 输出
 
