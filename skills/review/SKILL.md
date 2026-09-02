@@ -1,13 +1,13 @@
 ---
 name: review
 description: Review local code changes or a GitHub Pull Request using context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
-argument-hint: "[PR number or URL]"
+user-invocable: false
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
 
 # Review
 
-Review the target supplied in `$ARGUMENTS` or identified in the user's natural-language request.
+Review the target identified in the user's natural-language request.
 
 This plugin implements its own review workflow. Do not invoke external code
 review plugins or treat their output as a prerequisite.
@@ -31,8 +31,8 @@ ambiguous instead of guessing.
 
 ### Developer mode
 
-When neither `$ARGUMENTS` nor the user's request identifies a PR, and the user
-asks to review local or current changes, review commits ahead of the current
+When the user's request does not identify a PR and asks to review local or
+current changes, review commits ahead of the current
 branch's upstream, staged changes, unstaged changes, and relevant untracked
 source files.
 
@@ -42,8 +42,8 @@ exist, stop and report that there is nothing to review.
 
 ### Reviewer mode
 
-When `$ARGUMENTS` or the user's request contains a pull-request number or URL,
-resolve with `gh` the
+When the user's request contains a pull-request number or URL, resolve with
+`gh` the
 repository, PR number, title, description, base and head branches and SHAs,
 linked issues, changed files, additions, deletions, CI and check status, and
 draft, closed, or merged state.

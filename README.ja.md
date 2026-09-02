@@ -95,14 +95,11 @@ review/
 ## 使用方法
 
 ```text
-/review:review
-/review:review 123
-/review:review https://github.com/owner/repository/pull/123
 ローカル変更をレビューして
 このPRをレビューして https://github.com/owner/repository/pull/123
 ```
 
-`/review:review`による明示実行だけでなく、自然言語のレビュー依頼からもSkillが自動選択されます。依頼のどこかにPR番号またはURLがあればReviewer mode、PRを指定せず現在またはローカル変更のレビューを依頼した場合はDeveloper modeになります。
+レビューSkillは自然言語の依頼から自動選択され、`/`コマンドのメニューには表示されません。依頼のどこかにPR番号またはURLがあればReviewer mode、PRを指定せず現在またはローカル変更のレビューを依頼した場合はDeveloper modeになります。
 
 レビュー開始前に、`context`エージェントがレビュー対象から明示的に参照された情報だけを取得し、媒体に依存しない簡潔なEvidence Packetへ変換します。Notion、Confluence、Google Docs、GitHub、Web、リポジトリ内文書などの生データを、そのままレビューエージェントへ渡すことはありません。
 

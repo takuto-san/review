@@ -9,7 +9,7 @@ runtime: false
 
 # Review
 
-审查`$ARGUMENTS`或用户自然语言中指定的目标。除`/review:review`外，“请审查这个PR https://github.com/owner/repository/pull/123”之类的请求也会触发该Skill。
+审查用户自然语言中指定的目标。“请审查这个PR https://github.com/owner/repository/pull/123”之类的请求会由Claude自动触发该Skill。用户不能通过`/`命令直接运行它。
 
 ## 1. 解析审查目标
 

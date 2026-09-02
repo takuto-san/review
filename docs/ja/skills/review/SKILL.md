@@ -9,7 +9,7 @@ runtime: false
 
 # Review
 
-`$ARGUMENTS`またはユーザーの自然言語から特定した対象をレビューします。`/review:review`だけでなく、「このPRをレビューして https://github.com/owner/repository/pull/123」のような依頼でも起動します。レビューは読み取り専用です。
+ユーザーの自然言語から特定した対象をレビューします。「このPRをレビューして https://github.com/owner/repository/pull/123」のような依頼からClaudeが自動起動します。ユーザーが`/`コマンドとして直接実行することはできません。レビューは読み取り専用です。
 
 ## 1. レビュー対象の解決
 
