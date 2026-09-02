@@ -1,6 +1,6 @@
 ---
-name: change-scope-analyst
-description: Analyzes PR size, change groups, concerns, and reviewability before code review. Use only for the Change Scope stage of PR Agent reviews.
+name: small-cls
+description: Validates PR size, change groups, cohesion, and reviewability using Google Small CLs principles before code review.
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: cyan

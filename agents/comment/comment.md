@@ -11,7 +11,7 @@ color: red
 ## 検証手順
 
 1. 各結果が`REVIEW.md`の品質特性、副特性、レビュー観点に対応しているか確認する。
-2. Change Scopeとレビュー計画が入力に含まれているか確認する。
+2. Evidence Packet、Change Scope、レビュー計画が入力に含まれているか確認する。
 3. 機械的・構造的・文脈的レビューが完了しているか確認する。
 4. 静的解析とUnitテストが実行され、コマンドと結果が機械的レビューに記録されているか確認する。実行されていなければ理由を確認する。
 5. `potential_issue`について、変更されたコードから現実的に到達可能な失敗経路があるか確認する。
@@ -20,6 +20,10 @@ color: red
 8. 同じ根本原因を示す結果を統合する。
 9. 設計・仕様判断であれば`needs_judgment`、情報不足なら`insufficient_evidence`へ修正する。
 10. `verified`について、確認範囲を超えた安全保証になっていないか確認する。
+11. 仕様に基づく結果について、RequirementまたはAcceptance Criterion、仕様の出典位置、実装位置、具体的な差分が示されているか確認する。
+12. 仕様が存在しない、参照先を取得できない、情報源が矛盾する場合は、コード不具合と断定せず`needs_judgment`または`insufficient_evidence`へ分類する。
+
+IssueやEvidence Packetに含まれない情報源を新たに探索してはいけません。仕様由来の`potential_issue`をPRコメント候補にするには、Requirement IDまたはAcceptance Criterion ID、正確な出典、実装位置、現実的な失敗シナリオ、観測可能な影響が必要です。
 
 ## 重要度
 
@@ -38,6 +42,8 @@ verified_results:
   - quality_characteristic: "信頼性"
     subcharacteristic: "回復性"
     criterion: "Recovery and consistency"
+    requirement_ids: []
+    acceptance_criterion_ids: []
     status: potential_issue | verified | needs_judgment | insufficient_evidence
     severity: critical | major | minor | null
     conclusion: "検証後の簡潔な結論"

@@ -5,12 +5,11 @@
   "author": { "name": "takuto-san" },
   "license": "MIT",
   "agents": [
-    "./agents/change-scope-analyst.md",
-    "./agents/review-plan-builder.md",
+    "./agents/context/context.md",
+    "./agents/validation/small-cls.md",
     "./agents/review/mechanical-reviewer.md",
     "./agents/review/structural-reviewer.md",
     "./agents/review/contextual-reviewer.md",
-    "./agents/comment/comment.md",
-    "./agents/review-synthesizer.md"
+    "./agents/comment/comment.md"
   ]
 }

@@ -45,9 +45,26 @@ at the resolved head SHA and remove it after collecting the results.
 Create one shared target context. Every agent must receive the same repository,
 base SHA, head SHA, diff, changed files, and PR metadata.
 
-## 2. Analyze Change Scope
+## 2. Collect and organize context
 
-Run `change-scope-analyst` with the shared target context, PR metadata, changed
+Run `review:context:context` with the shared target context, PR description,
+related Issues, repository guidance, changed components, and every explicit
+specification or decision reference found in those sources.
+
+Treat a related Issue as the preferred reference index when one exists. Do not
+hard-code or prefer a specific knowledge system. The context agent must use
+whatever compatible read-only tools are available, follow only explicit
+references, retrieve only the sections needed to answer review questions, and
+return a compact, source-independent `evidence_packet`.
+
+Do not pass raw retrieved documents or search results to later agents. Preserve
+unresolved references, conflicting sources, source authority, and precise
+locations in the Evidence Packet. If no compatible retrieval tool is available,
+continue with available evidence and record the resulting limitation.
+
+## 3. Analyze Change Scope
+
+Run `review:validation:small-cls` with the shared target context, PR metadata, changed
 files, diff statistics, and resolved SHAs.
 
 The agent must only analyze reviewability, Change Groups, scope classification,
@@ -57,38 +74,52 @@ If the result is `review_blocked`, continue only with checks that can still
 produce reliable evidence. The final report must state that the review is
 incomplete.
 
-## 3. Build the review plan
+## 4. Build the review plan
 
-Run `review-plan-builder` with the shared target context, Change Scope result,
-PR description, linked issues, available requirements, changed files, diff,
-and the repository's `REVIEW.md`.
+As the orchestrator, read the repository's `REVIEW.md` and build the review
+plan directly from the shared target context, Evidence Packet, Change Scope
+result, PR description, linked issues, available requirements, changed files,
+and diff.
 
-The agent must consider all eight quality characteristics but select only the
-criteria relevant to this change. Preserve every generated review item and its
-`primary_layer` assignment. Do not add generic review items that were not
-selected by the plan.
+Consider all eight quality characteristics as a coverage check, but select only
+the criteria relevant to this change. Use each criterion's applicability rules
+to turn it into a concrete, PR-specific question. Assign every selected item to
+one primary layer:
 
-## 4. Run the review layers
+- `mechanical`: CI, static analysis, tests, and objective repository checks
+- `structural`: design, dependencies, state, execution paths, performance,
+  security, maintainability, and test design
+- `contextual`: requirements, user value, PR intent, compatibility policy,
+  migration decisions, and documentation
+
+When another layer provides useful evidence, record it as a supporting layer.
+Preserve the selected criterion, concrete question, selection reason, primary
+layer, supporting layers, and expected evidence. Do not add generic review
+items merely for completeness.
+
+## 5. Run the review layers
 
 After the review plan is complete, run these agents in parallel:
 
-- `mechanical-reviewer`
-- `structural-reviewer`
-- `contextual-reviewer`
+- `review:review:mechanical-reviewer`
+- `review:review:structural-reviewer`
+- `review:review:contextual-reviewer`
 
 Give every agent the shared target context, Change Scope result, only the review
 items assigned to its `primary_layer`, relevant supporting-layer information,
-and applicable repository guidance.
+and applicable repository guidance. Give the Evidence Packet to the contextual
+reviewer; do not give it raw source documents or permission to expand the
+retrieval scope.
 
-Additionally, give CI and check status to `mechanical-reviewer`, the full diff
-and codebase context to `structural-reviewer`, and PR descriptions, issues,
-requirements, and documentation to `contextual-reviewer`.
+Additionally, give CI and check status to the mechanical reviewer, the full
+diff and codebase context to the structural reviewer, and PR descriptions,
+issues, requirements, and documentation to the contextual reviewer.
 
 Do not ask an agent to perform another layer's primary responsibility.
 
 ### Mechanical checks
 
-The `mechanical-reviewer` must discover and run the repository's existing
+The mechanical reviewer must discover and run the repository's existing
 commands for applicable static analysis, lint, type checking, compilation,
 Unit tests, and safe build or integration checks. Prefer commands used by CI.
 
@@ -97,11 +128,11 @@ destructive commands. For an external or otherwise untrusted pull request, do
 not execute repository-controlled code without explicit user approval. Record
 blocked commands and their reasons as insufficient evidence.
 
-## 5. Verify the review results
+## 6. Verify the review results
 
-After all review layers finish, run `comment` with the shared target
-context, Change Scope result, complete review plan, all three review results,
-mechanical commands, and the repository's `REVIEW.md`.
+After all review layers finish, run `review:comment:comment` with the shared target
+context, Evidence Packet, Change Scope result, complete review plan, all three
+review results, mechanical commands, and the repository's `REVIEW.md`.
 
 The verifier must not perform another general review. It verifies candidate
 findings against actual code, validates realistic failure paths and evidence,
@@ -109,18 +140,16 @@ rejects speculation and unrelated pre-existing issues, removes duplicates,
 corrects classifications, and confirms whether applicable static analysis and
 Unit tests ran.
 
-Only `comment.verified_results` may be passed to the final report.
+Only the comment agent's `verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
 did not run, preserve the reason and mark the review as incomplete.
 
-## 6. Produce the final report
+## 7. Produce the final report
 
-Run `review-synthesizer` last with only the Change Scope result, review plan,
-`comment.verified_results`, and
-`comment.review_prerequisites`.
-
-The synthesizer must format existing verified evidence. It must not discover,
-add, remove, or re-evaluate findings.
+As the orchestrator, produce the final report using only the Change Scope
+result, review plan, the comment agent's `verified_results`, and
+`review_prerequisites`. Do not discover, add, remove, or re-evaluate
+findings during formatting.
 
 Return exactly these sections:
 
@@ -133,13 +162,31 @@ Do not expose internal agent names, processing layers, intermediate YAML,
 rejected candidates, or orchestration details. Do not declare LGTM, Approve,
 or Changes Requested. The final decision belongs to the human reviewer.
 
+In `Review Summary`, show counts for potential problems, human decisions,
+verified concerns, and items that could not be verified. Mark the review as
+incomplete when a prerequisite is missing or a required check did not run
+without a justified limitation.
+
+In `Change Scope`, show changed files, additions, deletions, total lines, and
+Change Groups. Explain a split recommendation only when applicable.
+
+In `Needs Your Attention`, include only potential problems, human decisions,
+and insufficient evidence. For potential problems, include the conclusion,
+realistic failure scenario, review criterion, strongest evidence, and proposed
+author comment.
+
+In `Review Coverage`, group selected criteria by quality characteristic and
+show the subcharacteristic, criterion, concrete result, and evidence. Do not
+describe a verified result as an absolute safety guarantee.
+
 ## Completion requirements
 
 Present the review as complete only when the target was resolved unambiguously,
-Change Scope was evaluated, the review plan was generated from `REVIEW.md`, all
-applicable review layers completed, applicable static analysis and Unit tests
-ran or have justified limitations, candidate findings were independently
-verified, and the final report contains only verified results.
+required context was collected or its limitations were recorded, Change Scope
+was evaluated, the review plan was generated from `REVIEW.md`, all applicable
+review layers completed, applicable static analysis and Unit tests ran or have
+justified limitations, candidate findings were independently verified, and the
+final report contains only verified results.
 
 If any requirement is missing, clearly mark the review as incomplete and state
 the reason.
