@@ -12,22 +12,23 @@ runtime: false
 
 ## 必需输入
 
-必须提供收集后的上下文、Change Scope、完整审查计划、所有审查结果、机械检查命令记录和`REVIEW.md`。缺失时不得重建或猜测，应将相关前提标记为未完成。
+必须提供收集后的上下文、Change Scope、完整审查计划、所有审查结果、包含顶层`checks`的完整机械审查Artifact和`REVIEW.md`。缺失时不得重建或猜测，应将相关前提标记为未完成。
 
 ## 验证步骤
 
 1. 确认每个结果都映射到`REVIEW.md`中的质量特性、子特性和标准。
 2. 确认已提供收集后的上下文、Change Scope和审查计划。
 3. 确认所有适用审查层均已完成。
-4. 确认静态分析和单元测试已运行，且命令和结果已有记录；否则保留未运行原因。
-5. 对每个`Please Fix`，验证从变更代码到故障的现实路径。
-6. 确认证据直接支持结论。
-7. 拒绝既有问题、CI已明确说明的问题和推测性问题。
-8. 合并根因相同的结果。
-9. 将设计或规格决策重新归类为`Needs Judgment`；无法形成具体决策问题的缺失信息保持为`result: insufficient_evidence`。
-10. 确保`result: verified`不声称超出检查范围的安全性。
-11. 对规格类结果，要求提供Requirement或Acceptance Criterion、来源位置、实现位置和具体不一致。
-12. 将规格冲突归类为`Needs Judgment`，将不可用规格归类为`result: insufficient_evidence`，不得自动视为代码缺陷。
+4. 确认静态分析和单元测试已运行，且每个适用命令都有顶层检查记录；否则保留未运行原因。
+5. 确认每个机械结果的`assessment.check_refs`都指向现有检查，且结果、退出码和摘要一致。
+6. 对每个`Please Fix`，验证从变更代码到故障的现实路径。
+7. 确认证据直接支持结论。
+8. 拒绝既有问题、CI已明确说明的问题和推测性问题。
+9. 合并根因相同的结果。
+10. 将设计或规格决策重新归类为`Needs Judgment`；无法形成具体决策问题的缺失信息保持为`outcome: insufficient_evidence`。
+11. 确保`outcome: verified`不声称超出检查范围的安全性。
+12. 对规格类结果，要求提供Requirement或Acceptance Criterion、来源位置、实现位置和具体不一致。
+13. 将规格冲突归类为`Needs Judgment`，将不可用规格归类为`outcome: insufficient_evidence`，不得自动视为代码缺陷。
 
 规格类评论必须包含Requirement或Acceptance Criterion ID、精确来源、实现位置、现实失败场景和可观察影响。不得探索Issue或收集后的上下文以外的信息源。
 

@@ -27,7 +27,7 @@ runtime: false
 2. 运行适用的现有静态检查，例如lint、类型检查、编译或SAST。
 3. 运行受影响的单元测试；范围明确时优先运行目标测试，否则运行现有单元测试套件。
 4. 在相关且安全时运行标准化集成检查或构建检查。
-5. 将每条命令、结果和重要失败记录为证据。
+5. 将每个适用命令仅记录一次到顶层`checks`数组，并包含工作目录、结果、退出码以及主要结果或未运行原因。
 
 不得引入工具或依赖。不得运行破坏性命令或依赖不可用外部环境的命令。应以`outcome: insufficient_evidence`记录这些限制。
 
@@ -44,6 +44,7 @@ runtime: false
 - 每个分配的审查计划项恰好返回一个结果。
 - 在对应结果中保留每个已分配审查计划的`id`。
 - 记录所有尝试的验证命令，包括失败和有理由的未运行。
+- 为每项检查分配稳定的`CHK-*` ID，并通过相关结果的`assessment.check_refs`引用；不得在结果中重复命令记录。
 - `outcome: verified`仅表示在声明范围内检查了该问题且未发现相反证据。
 
 ## 结果与状态
@@ -53,7 +54,7 @@ runtime: false
 - `Please Fix`：合并前应修正的具体缺陷或需求违反。
 - `Needs Judgment`：需要人工决定或回答；适用于面向开发者、审查者或双方的问题。
 - `Nit`：不阻止合并的次要可选改进。
-- 每个`Needs Judgment`结果都要设置`human_question`，并将其`audience`标为`developer`、`reviewer`或`both`。
+- 仅为`Needs Judgment`结果包含`human_question`，并将其`audience`标为`developer`、`reviewer`或`both`。
 - 不得使用`Nit`替代`verified`。
 
 ## 输出
@@ -62,6 +63,16 @@ runtime: false
 
 ```json
 {
+  "checks": [
+    {
+      "id": "CHK-001",
+      "command": "npm test",
+      "cwd": ".",
+      "outcome": "passed | failed | not_run",
+      "exit_code": 0,
+      "summary": "Main result or reason not run"
+    }
+  ],
   "results": [
     {
       "id": "RP-001",
@@ -72,12 +83,12 @@ runtime: false
         "question": "Is behavior after notification failure covered by tests?"
       },
       "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
+      "status": "Needs Judgment",
       "human_question": {
         "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+        "question": "Concrete question"
       },
-      "result": {
+      "assessment": {
         "conclusion": "One-sentence observed result",
         "evidence": [
           {
@@ -85,13 +96,7 @@ runtime: false
             "summary": "Fact supporting the conclusion"
           }
         ],
-        "commands_run": [
-          {
-            "command": "Repository-defined verification command",
-            "outcome": "passed | failed | not_run",
-            "summary": "Main result or reason it was not run"
-          }
-        ],
+        "check_refs": ["CHK-001"],
         "reviewer": "mechanical",
         "missing_information": [
 
@@ -101,5 +106,7 @@ runtime: false
   ]
 }
 ```
+
+已执行检查的`exit_code`使用整数，`not_run`时使用`null`。仅当`outcome`为`reported`时包含`status`，仅当`status`为`Needs Judgment`时包含`human_question`。
 
 不得分配Finding优先级或编写最终审查评论。

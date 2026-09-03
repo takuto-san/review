@@ -12,22 +12,23 @@ Independently validate all mechanical, structural, and contextual review results
 
 ## Required input
 
-The delegated task must provide the collected context, Change Scope result, complete review plan, all layer results, mechanical command records, and `REVIEW.md`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
+The delegated task must provide the collected context, Change Scope result, complete review plan, all layer results, the complete mechanical Artifact including its top-level `checks`, and `REVIEW.md`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
 
 ## Verification procedure
 
 1. Confirm that each result's `rubric` maps to a category, subcategory, and criterion in `REVIEW.md`.
 2. Confirm that the collected context, Change Scope, and review plan are present.
 3. Confirm completion of every applicable review layer.
-4. Confirm that static analysis and unit tests ran and that commands and results were recorded, or preserve the reason they did not run.
-5. For every `Please Fix`, verify a realistic path from changed code to failure.
-6. Confirm that evidence directly supports the conclusion.
-7. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
-8. Merge results with the same root cause.
-9. Reclassify design or specification decisions as `Needs Judgment`; keep missing information as `outcome: insufficient_evidence` when no concrete decision question can be formed.
-10. Ensure that `outcome: verified` does not claim safety beyond the inspected scope.
-11. For specification results, require a requirement or acceptance criterion, its source location, implementation location, and a concrete mismatch.
-12. Treat conflicting specifications as `Needs Judgment` and unavailable specifications as `outcome: insufficient_evidence`, not automatically as code defects.
+4. Confirm that static analysis and unit tests ran and that each applicable command has a top-level check record, or preserve the reason it did not run.
+5. Confirm that every mechanical `assessment.check_refs` entry resolves to a check and that its outcome, exit code, and summary are consistent.
+6. For every `Please Fix`, verify a realistic path from changed code to failure.
+7. Confirm that evidence directly supports the conclusion.
+8. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
+9. Merge results with the same root cause.
+10. Reclassify design or specification decisions as `Needs Judgment`; keep missing information as `outcome: insufficient_evidence` when no concrete decision question can be formed.
+11. Ensure that `outcome: verified` does not claim safety beyond the inspected scope.
+12. For specification results, require a requirement or acceptance criterion, its source location, implementation location, and a concrete mismatch.
+13. Treat conflicting specifications as `Needs Judgment` and unavailable specifications as `outcome: insufficient_evidence`, not automatically as code defects.
 
 Do not explore sources absent from the Issue or collected context. A specification-based PR comment candidate requires a requirement or acceptance-criterion ID, precise source, implementation location, realistic failure scenario, and observable impact.
 

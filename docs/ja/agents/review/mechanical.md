@@ -28,7 +28,7 @@ runtime: false
 2. 変更に関係する静的解析を実行する。例: Lint、型検査、コンパイル、SAST。ただしリポジトリに既存の設定とコマンドがあるものを優先する。
 3. 変更に関係するUnitテストを実行する。対象テストを絞れる場合は対象テストを優先し、影響範囲を絞れない場合は既存のUnitテストスイートを実行する。
 4. 必要に応じて、リポジトリで標準化されている結合テストやビルド検証を実行する。
-5. 実行したコマンド、終了状態、主要な失敗内容をEvidenceとして記録する。
+5. 対象となる各コマンドをトップレベルの`checks`へ1回だけ記録し、作業ディレクトリ、結果、終了コード、主要結果または未実行理由を含める。
 
 独自の検証ツールを新規導入しないでください。依存関係の追加、外部環境の変更、データの破壊を伴うコマンドは実行せず、`outcome: insufficient_evidence`として必要な実行環境を記載してください。
 
@@ -45,6 +45,7 @@ runtime: false
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
 - 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
 - 失敗や正当な未実行を含め、試行した全検証コマンドを記録する。
+- 各チェックへ安定した`CHK-*` IDを付与し、該当結果の`assessment.check_refs`から参照する。結果内にコマンド記録を重複させない。
 - `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
 
 ## 判定結果とステータス
@@ -54,7 +55,7 @@ runtime: false
 - `Please Fix`: マージ前に修正すべき具体的な不具合または要件違反。
 - `Needs Judgment`: 人間の判断または回答が必要な項目。設計意図を開発者へ確認する場合も、AIが判断を保留してレビュワーへ意見を求める場合も含む。
 - `Nit`: マージを妨げない、任意の軽微な改善。
-- `Needs Judgment`には必ず`human_question`を設定し、質問先を`developer`、`reviewer`、`both`のいずれかで示す。
+- `human_question`は`Needs Judgment`の場合だけ含め、質問先を`developer`、`reviewer`、`both`のいずれかで示す。
 - 問題が見つからなかった項目を`Nit`にしない。
 
 ## 出力
@@ -63,6 +64,16 @@ runtime: false
 
 ```json
 {
+  "checks": [
+    {
+      "id": "CHK-001",
+      "command": "npm test",
+      "cwd": ".",
+      "outcome": "passed | failed | not_run",
+      "exit_code": 0,
+      "summary": "Main result or reason not run"
+    }
+  ],
   "results": [
     {
       "id": "RP-001",
@@ -73,12 +84,12 @@ runtime: false
         "question": "Is behavior after notification failure covered by tests?"
       },
       "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
+      "status": "Needs Judgment",
       "human_question": {
         "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+        "question": "Concrete question"
       },
-      "result": {
+      "assessment": {
         "conclusion": "One-sentence observed result",
         "evidence": [
           {
@@ -86,13 +97,7 @@ runtime: false
             "summary": "Fact supporting the conclusion"
           }
         ],
-        "commands_run": [
-          {
-            "command": "Repository-defined verification command",
-            "outcome": "passed | failed | not_run",
-            "summary": "Main result or reason it was not run"
-          }
-        ],
+        "check_refs": ["CHK-001"],
         "reviewer": "mechanical",
         "missing_information": [
 
@@ -102,5 +107,7 @@ runtime: false
   ]
 }
 ```
+
+実行したチェックの`exit_code`は整数、`not_run`の場合は`null`とします。`status`は`outcome: reported`の場合だけ、`human_question`は`status: Needs Judgment`の場合だけ含めます。
 
 Findingの優先度付けや最終コメント作成は行わないでください。

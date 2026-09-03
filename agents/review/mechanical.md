@@ -27,7 +27,7 @@ The delegated task must provide the repository root, review target, base and hea
 2. Run applicable existing static checks such as lint, type checking, compilation, or SAST.
 3. Run affected unit tests; prefer targeted tests when scope is clear, otherwise run the existing unit-test suite.
 4. Run standardized integration or build checks when relevant and safe.
-5. Record every command, outcome, and important failure as evidence.
+5. Record every applicable command once in the top-level `checks` array, including its working directory, outcome, exit code, and main result or reason it was not run.
 
 Do not introduce tools or dependencies. Do not run destructive commands or commands requiring unavailable external environments. Record those limitations with `outcome: insufficient_evidence`.
 
@@ -44,6 +44,7 @@ Do not introduce tools or dependencies. Do not run destructive commands or comma
 - Return exactly one result for every assigned review-plan item.
 - Preserve each assigned review-plan `id` in the corresponding result.
 - Record every verification command attempted, including failures and justified omissions.
+- Give every check a stable `CHK-*` ID and reference it from affected results through `assessment.check_refs`; do not duplicate command records inside results.
 - Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
 
 ## Result and status
@@ -53,7 +54,7 @@ Do not introduce tools or dependencies. Do not run destructive commands or comma
 - `Please Fix`: A concrete defect or requirement violation that should be corrected before merge.
 - `Needs Judgment`: A human decision or answer is required. Use it for questions to either the developer or the reviewer, including design intent and cases where the agent defers judgment.
 - `Nit`: A minor, optional improvement that does not block merge.
-- Set `human_question` for every `Needs Judgment` result and identify its `audience` as `developer`, `reviewer`, or `both`.
+- Include `human_question` only for a `Needs Judgment` result and identify its `audience` as `developer`, `reviewer`, or `both`.
 - Do not use `Nit` as a substitute for `verified`.
 
 ## Output
@@ -64,6 +65,16 @@ Return exactly one A2A-compatible Artifact using `name: review.mechanical` and
 
 ```json
 {
+  "checks": [
+    {
+      "id": "CHK-001",
+      "command": "npm test",
+      "cwd": ".",
+      "outcome": "passed | failed | not_run",
+      "exit_code": 0,
+      "summary": "Main result or reason not run"
+    }
+  ],
   "results": [
     {
       "id": "RP-001",
@@ -74,12 +85,12 @@ Return exactly one A2A-compatible Artifact using `name: review.mechanical` and
         "question": "Is behavior after notification failure covered by tests?"
       },
       "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
+      "status": "Needs Judgment",
       "human_question": {
         "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+        "question": "Concrete question"
       },
-      "result": {
+      "assessment": {
         "conclusion": "One-sentence observed result",
         "evidence": [
           {
@@ -87,13 +98,7 @@ Return exactly one A2A-compatible Artifact using `name: review.mechanical` and
             "summary": "Fact supporting the conclusion"
           }
         ],
-        "commands_run": [
-          {
-            "command": "Repository-defined verification command",
-            "outcome": "passed | failed | not_run",
-            "summary": "Main result or reason it was not run"
-          }
-        ],
+        "check_refs": ["CHK-001"],
         "reviewer": "mechanical",
         "missing_information": [
 
@@ -103,5 +108,9 @@ Return exactly one A2A-compatible Artifact using `name: review.mechanical` and
   ]
 }
 ```
+
+Use an integer `exit_code` for an executed check and `null` when its outcome is
+`not_run`. Omit `status` unless `outcome` is `reported`. Omit `human_question`
+unless `status` is `Needs Judgment`.
 
 Do not assign finding priority or write final review comments.

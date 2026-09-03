@@ -186,11 +186,17 @@ destructive commands. For an external or otherwise untrusted pull request, do
 not execute repository-controlled code without explicit user approval. Record
 blocked commands and their reasons as insufficient evidence.
 
+The mechanical Artifact must record each applicable command once in its
+top-level `checks` array with a stable `CHK-*` ID, working directory, outcome,
+exit code, and summary. Mechanical results must use `assessment.check_refs` to
+refer to those checks instead of embedding duplicate command records.
+
 ## 7. Verify the review results
 
 After all review layers finish, run `review:comment:comment` with the shared target
 collected context, Change Scope result, complete review plan, all three
-review results, mechanical commands, and the repository's `REVIEW.md`.
+review results, the complete mechanical Artifact (including top-level `checks`
+and `assessment` results), and the repository's `REVIEW.md`.
 
 The verifier must not perform another general review. It verifies candidate
 findings against actual code, validates realistic failure paths and evidence,
