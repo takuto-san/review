@@ -12,7 +12,7 @@ Perform specification-driven contextual review only for items whose `primary_lay
 
 ## Required input
 
-The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; use `outcome: insufficient_evidence` for the affected items.
+The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; use `evaluation.level: not_assessable` for the affected items.
 
 ## Context to use
 
@@ -20,7 +20,7 @@ The delegated task must provide the review target, changed files, complete diff,
 - Normalized context
 - Test names and expectations
 
-Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; use `outcome: insufficient_evidence` and identify what is missing.
+Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; use `evaluation.level: not_assessable` and identify what is missing.
 
 ## Review concerns
 
@@ -37,10 +37,9 @@ Do not independently access external sources or explore references absent from t
 - Never invent undocumented requirements.
 - Preserve requirement IDs, acceptance-criterion IDs, and source locations.
 - Never treat an uncited summary as a normative specification.
-- Classify source conflicts as `Needs Judgment`; do not resolve them yourself.
+- Do not resolve source conflicts yourself; evaluate the item as `not_assessable` and record the conflict.
 - Code correctness alone does not prove that a product decision is correct.
-- Use `Needs Judgment` for ambiguous requirements and pose a concrete decision question to the developer, reviewer, or both.
-- Use `outcome: insufficient_evidence` when required material is unavailable and no concrete human decision question can be formed.
+- Use `evaluation.level: not_assessable` when requirements are ambiguous or required material is unavailable.
 
 ## Completion criteria
 
@@ -48,24 +47,15 @@ Do not independently access external sources or explore references absent from t
 - Preserve each assigned review-plan `id` in the corresponding result.
 - Preserve requirement IDs, acceptance-criterion IDs, and precise source locations.
 - Evaluate every result against the five-level common evaluation scale in `REVIEW.md`.
-- Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
-
-## Result and status
-
-- `outcome` records coverage: `reported`, `verified`, or `insufficient_evidence`.
-- Include `status` only when `outcome` is `reported`. Its only allowed values are `Please Fix`, `Needs Judgment`, and `Nit`.
-- `Please Fix` identifies a concrete defect or requirement violation that should be corrected before merge.
-- `Needs Judgment` means a human decision or answer is required, regardless of whether the question is directed to the developer, reviewer, or both.
-- `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
-- Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
+- Every `does_not_meet` result must include a realistic requirement-to-impact execution path.
 
 ## Evaluation scale
 
 - Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
 - Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
 - Put the selected level and a concise evidence-based rationale in `evaluation`.
-- Do not infer an evaluation level from `status`; the evaluation level measures conformance with the criterion, while `status` identifies the requested human response.
-- Use `evaluation.level: not_assessable` when `outcome` is `insufficient_evidence`, explain why in `evaluation.rationale`, and record the missing evidence in `result.missing_information`.
+- Do not assign review workflow labels or requested actions in this layer. The downstream verification layer decides those from the evaluation and evidence.
+- When the level is `not_assessable`, explain why in `evaluation.rationale` and record the missing evidence in `assessment.missing_information`.
 
 ## Output
 
@@ -79,7 +69,7 @@ Return exactly one Artifact using the following structure:
     {
       "mediaType": "application/json",
       "data": {
-        "results": [
+        "result": [
           {
             "id": "RP-001",
             "rubric": {
@@ -88,17 +78,11 @@ Return exactly one Artifact using the following structure:
               "criterion": "Requirements coverage",
               "question": "Does the PR satisfy every acceptance criterion?"
             },
-            "outcome": "reported",
-            "status": "Please Fix | Needs Judgment | Nit",
             "evaluation": {
               "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
               "rationale": "Concise evidence-based reason for selecting this level"
             },
-            "human_question": {
-              "audience": "developer | reviewer | both",
-              "question": "Concrete question when status is Needs Judgment; otherwise empty"
-            },
-            "result": {
+            "assessment": {
               "conclusion": "One-sentence conclusion",
               "scenario": [
                 "Requirement or acceptance criterion",

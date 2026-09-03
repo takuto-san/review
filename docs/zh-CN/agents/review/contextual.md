@@ -12,7 +12,7 @@ runtime: false
 
 ## 必需输入
 
-必须提供审查目标、变更文件、完整差异、收集后的上下文以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项使用`outcome: insufficient_evidence`。
+必须提供审查目标、变更文件、完整差异、收集后的上下文以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项使用`evaluation.level: not_assessable`。
 
 ## 使用的上下文
 
@@ -20,7 +20,7 @@ runtime: false
 - 规范化上下文
 - 测试名称和期望
 
-不得独自访问外部来源或探索收集后的上下文以外的引用；信息不足时不得扩大获取范围，应使用`outcome: insufficient_evidence`并指出缺失内容。
+不得独自访问外部来源或探索收集后的上下文以外的引用；信息不足时不得扩大获取范围，应使用`evaluation.level: not_assessable`并指出缺失内容。
 
 ## 审查内容
 
@@ -37,10 +37,9 @@ runtime: false
 - 不得创造未记录的需求。
 - 保留Requirement ID、Acceptance Criterion ID和来源位置。
 - 不得将无出处摘要视为规范性规格。
-- 将来源冲突归类为`Needs Judgment`，不得自行解决。
+- 不得自行解决来源冲突；将该项评估为`not_assessable`并记录冲突。
 - 仅代码正确并不能证明产品决策正确。
-- 对模糊需求使用`Needs Judgment`，并向开发者、审查者或双方提出具体决策问题。
-- 当必要资料不可用且无法形成具体人工判断问题时，使用`outcome: insufficient_evidence`。
+- 当需求含糊或必要资料不可用时，使用`evaluation.level: not_assessable`。
 
 ## 完成条件
 
@@ -48,24 +47,15 @@ runtime: false
 - 在对应结果中保留每个已分配审查计划的`id`。
 - 保留Requirement ID、Acceptance Criterion ID和精确来源位置。
 - 按照`REVIEW.md`中的五级通用评价尺度评估每个结果。
-- `outcome: verified`仅表示在声明范围内检查了该问题且未发现相反证据。
-
-## 结果与状态
-
-- `outcome`记录覆盖结果：`reported`、`verified`或`insufficient_evidence`。
-- 仅当`outcome`为`reported`时包含`status`；允许值只有`Please Fix`、`Needs Judgment`和`Nit`。
-- `Please Fix`表示合并前应修正的具体缺陷或需求违反。
-- `Needs Judgment`表示需要人工决定或回答，无论问题面向开发者、审查者还是双方。
-- `Nit`表示不阻止合并的次要可选改进，不得用来替代`verified`。
-- 每个`Needs Judgment`必须包含`human_question.audience`和具体问题。
+- 每个`does_not_meet`结果必须包含从需求到可观察影响的现实执行路径。
 
 ## 评价尺度
 
 - 将已分配审查计划项中的适用category、subcategory、criterion和PR特定question复制到`rubric`中。
 - 应用`REVIEW.md`中定义的五级通用评价尺度：`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`或`not_assessable`。
 - 将所选级别及简洁、基于证据的理由放入`evaluation`。
-- 不要从`status`推断评价级别；评价级别衡量对标准的符合程度，而`status`标识请求的人工响应。
-- 当`outcome`为`insufficient_evidence`时，使用`evaluation.level: not_assessable`，在`evaluation.rationale`中说明原因，并在`result.missing_information`中记录缺失证据。
+- 本层不得分配审查工作流标签或请求的操作。下游验证层根据评价和证据作出决定。
+- 当级别为`not_assessable`时，在`evaluation.rationale`中说明原因，并在`assessment.missing_information`中记录缺失证据。
 
 ## 输出
 
@@ -79,7 +69,7 @@ runtime: false
     {
       "mediaType": "application/json",
       "data": {
-        "results": [
+        "result": [
           {
             "id": "RP-001",
             "rubric": {
@@ -88,17 +78,11 @@ runtime: false
               "criterion": "Requirements coverage",
               "question": "Does the PR satisfy every acceptance criterion?"
             },
-            "outcome": "reported",
-            "status": "Please Fix | Needs Judgment | Nit",
             "evaluation": {
               "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
               "rationale": "Concise evidence-based reason for selecting this level"
             },
-            "human_question": {
-              "audience": "developer | reviewer | both",
-              "question": "Concrete question when status is Needs Judgment; otherwise empty"
-            },
-            "result": {
+            "assessment": {
               "conclusion": "One-sentence conclusion",
               "scenario": [
                 "Requirement or acceptance criterion",
