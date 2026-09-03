@@ -23,7 +23,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 3. 收集并整理上下文
 
-运行`review:context:context`。不再把关联Issue作为特权入口，而是从用户指定来源、PR关联产物以及与变更相邻的仓库信息构建有边界的搜索锚点。可用时优先使用MCP只读工具，并将其他工具取得的来源也规范化到MCP Resource兼容的`context.resources`。不得把原始文档传给后续代理，并保留无法解析的引用、来源冲突、权威级别和精确位置。
+运行`review:context:context`。不再把关联Issue作为特权入口，而是从用户指定来源、PR关联产物以及与变更相邻的仓库信息构建有边界的搜索锚点。可用时优先使用MCP只读工具；其他工具取得的来源也必须用各result中的MCP Resource兼容`source.uri`和精确`source.locator`标识。不得把原始文档或内部获取计划传给后续代理，只保留变更目的、带来源的`results`和`unknowns`。此阶段不分类Requirement或创建审查问题。
 
 ## 4. 分析Change Scope
 
@@ -33,7 +33,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 5. 生成审查计划
 
-编排器读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`mechanical`、`structural`或`contextual`层。为每项分配`RP-001`形式的稳定`review_item_id`，并保留选择理由、辅助层和预期证据。每个审查代理必须对每个分配项返回一个结果；证据不足时返回`insufficient_evidence`，不得省略。
+编排器从已收集上下文中提取并分类适用的Requirement、Acceptance Criterion、约束和未决事项，保留来源位置并分配审查专用ID。不得将无出处信息提升为正式Requirement。随后读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`mechanical`、`structural`或`contextual`层。为每项分配`RP-001`形式的稳定`review_item_id`，并保留选择理由、辅助层和预期证据。每个审查代理必须对每个分配项返回一个结果；证据不足时返回`insufficient_evidence`，不得省略。
 
 ## 6. 运行三层审查
 

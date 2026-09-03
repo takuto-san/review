@@ -23,7 +23,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 3. コンテキストの収集と整理
 
-`review:context:context`を実行します。関連Issueを特権的な入口にせず、ユーザー指定の情報源、PR関連成果物、変更に隣接するリポジトリ情報から境界付き検索アンカーを作ります。利用可能な場合はMCP読み取りツールを優先し、それ以外で取得した情報源もMCP Resource互換の`context.resources`へ正規化します。生文書は後続へ渡さず、取得不能、情報源の矛盾、正本区分、出典位置を保持します。
+`review:context:context`を実行します。関連Issueを特権的な入口にせず、ユーザー指定の情報源、PR関連成果物、変更に隣接するリポジトリ情報から境界付き検索アンカーを作ります。利用可能な場合はMCP読み取りツールを優先し、それ以外で取得した情報源も各resultのMCP Resource互換`source.uri`と正確な`source.locator`で識別します。生文書や内部取得計画は後続へ渡さず、変更目的、出典付きの`results`、`unknowns`だけを保持します。Requirement分類やレビュー質問作成は行いません。
 
 ## 4. Change Scopeの分析
 
@@ -33,7 +33,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 5. レビュー計画の作成
 
-オーケストレーターが`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`mechanical`、`structural`、`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。各レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
+オーケストレーターが収集済みコンテキストから適用可能なRequirement、Acceptance Criterion、制約、未決事項を抽出・分類し、出典位置を保ったレビュー用IDを付けます。出典のない情報を正式Requirementへ昇格させません。そのうえで`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`mechanical`、`structural`、`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。各レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
 
 ## 6. 3層レビューの実行
 

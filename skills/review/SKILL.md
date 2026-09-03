@@ -91,14 +91,16 @@ Treat a related Issue as one discovery point rather than the preferred source
 type. Do not hard-code or prefer a specific knowledge system. The context agent
 must build bounded search anchors, prefer compatible MCP read-only tools when
 available, search only relevant source families, and retrieve only the sections
-needed to answer review questions. Sources obtained through non-MCP tools must
-still be normalized into the MCP Resource-compatible `context.resources` list.
+needed to understand the change. For sources obtained through non-MCP tools,
+each result must still use an MCP Resource-compatible `source.uri` plus a
+precise `source.locator`.
 
-Do not pass raw retrieved documents or search results to later agents. Preserve
-the bounded retrieval plan, normalized acceptance criteria, review-question
-routing, unresolved references, conflicting sources, source authority, and
-precise locations in the collected context. If no compatible retrieval tool is
-available, continue with available evidence and record the resulting limitation.
+Do not pass raw retrieved documents, search results, or the internal retrieval
+plan to later agents. Preserve concise source-backed results, unknowns, and precise
+locations in the collected context. The context agent must not classify facts
+as requirements, create review questions, or assign review layers. If no
+compatible retrieval tool is available, continue with available evidence and
+record the resulting limitation.
 
 ## 4. Analyze Change Scope
 
@@ -116,9 +118,12 @@ incomplete.
 ## 5. Build the review plan
 
 As the orchestrator, read the repository's `REVIEW.md` and build the review
-plan directly from the collected context, Change Scope
-result, PR description, linked issues, available requirements, changed files,
-and diff.
+plan directly from the collected context, Change Scope result, PR
+description, linked issues, changed files, and diff. At this stage, extract and
+classify applicable requirements, acceptance criteria, constraints, and open
+questions from the source-backed context. Assign stable review-only IDs and
+preserve their source locations. Do not promote uncited context into a
+normative requirement.
 
 Consider all eight quality characteristics as a coverage check, but select only
 the criteria relevant to this change. Use each criterion's applicability rules
@@ -130,10 +135,6 @@ one primary layer:
   security, maintainability, and test design
 - `contextual`: requirements, user value, PR intent, compatibility policy,
   migration decisions, and documentation
-
-Use each collected review question's `primary_review_layer` as a routing hint,
-but validate it against the concrete review-plan item and the layer boundaries
-above. The orchestrator remains responsible for the final assignment.
 
 When another layer provides useful evidence, record it as a supporting layer.
 Assign each selected item a stable identifier such as `RP-001`. Preserve the
