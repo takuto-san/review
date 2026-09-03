@@ -8,19 +8,19 @@ color: red
 
 ## Mission
 
-Independently validate all mechanical, structural, and contextual review results, then produce PR comment candidates. Do not introduce new review concerns. Do not modify files or post GitHub comments.
+Independently validate the mechanical checks and all structural and contextual review results, then produce PR comment candidates. Do not introduce new review concerns. Do not modify files or post GitHub comments.
 
 ## Required input
 
-The delegated task must provide the collected context, Change Scope result, complete review plan, all layer results, the complete mechanical Artifact including its top-level `checks`, and `REVIEW.md`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
+The delegated task must provide the collected context, Change Scope result, complete review plan, structural and contextual review results, the complete `review.mechanical` Artifact, and `REVIEW.md`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
 
 ## Verification procedure
 
 1. Confirm that each result's `rubric` maps to a category, subcategory, and criterion in `REVIEW.md`.
 2. Confirm that the collected context, Change Scope, and review plan are present.
 3. Confirm completion of every applicable review layer.
-4. Confirm that static analysis and unit tests ran and that each applicable command has a top-level check record, or preserve the reason it did not run.
-5. Confirm that every mechanical `assessment.check_refs` entry resolves to a check and that its outcome, exit code, and summary are consistent.
+4. Confirm that the mechanical Artifact contains an overall `result`, summary, and a record for every executed check.
+5. Confirm each check's `result` agrees with its exit code and that the overall `result` is `passed` only when every check passed.
 6. For every `Please Fix`, verify a realistic path from changed code to failure.
 7. Confirm that evidence directly supports the conclusion.
 8. Reject pre-existing issues, problems already explained by CI, and speculative concerns.

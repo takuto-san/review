@@ -61,44 +61,51 @@ The delegated task must provide the repository root, review target, base and hea
 
 ## Output
 
-Return exactly one A2A-compatible Artifact using `name: review.structural` and
-`metadata.schema: review/structural`. Put exactly the following payload in
-`parts[0].data`:
+Return exactly one Artifact using the following structure:
 
 ```json
 {
-  "results": [
+  "artifactId": "structural-result-001",
+  "name": "structural-result",
+  "parts": [
     {
-      "id": "RP-001",
-      "rubric": {
-        "category": "Reliability",
-        "subcategory": "Recoverability",
-        "criterion": "Recovery and consistency",
-        "question": "Can retry after notification failure duplicate payment?"
-      },
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
-      "human_question": {
-        "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
-      },
-      "result": {
-        "conclusion": "One-sentence conclusion",
-        "scenario": [
-          "Trigger",
-          "Code path",
-          "Observable impact"
-        ],
-        "evidence": [
+      "mediaType": "application/json",
+      "data": {
+        "results": [
           {
-            "path": "path/to/file:line",
-            "summary": "Material evidence"
-          }
-        ],
-        "suggestion": "Possible resolution direction, or empty when uncertain",
-        "reviewer": "structural",
-        "missing_information": [
+            "id": "RP-001",
+            "rubric": {
+              "category": "Reliability",
+              "subcategory": "Recoverability",
+              "criterion": "Recovery and consistency",
+              "question": "Can retry after notification failure duplicate payment?"
+            },
+            "outcome": "reported",
+            "status": "Please Fix | Needs Judgment | Nit",
+            "human_question": {
+              "audience": "developer | reviewer | both",
+              "question": "Concrete question when status is Needs Judgment; otherwise empty"
+            },
+            "result": {
+              "conclusion": "One-sentence conclusion",
+              "scenario": [
+                "Trigger",
+                "Code path",
+                "Observable impact"
+              ],
+              "evidence": [
+                {
+                  "path": "path/to/file:line",
+                  "summary": "Material evidence"
+                }
+              ],
+              "suggestion": "Possible resolution direction, or empty when uncertain",
+              "reviewer": "structural",
+              "missing_information": [
 
+              ]
+            }
+          }
         ]
       }
     }

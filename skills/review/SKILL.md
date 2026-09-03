@@ -128,9 +128,8 @@ normative requirement.
 Consider all eight quality characteristics as a coverage check, but select only
 the criteria relevant to this change. Use each criterion's applicability rules
 to turn it into a concrete, PR-specific question. Assign every selected item to
-one primary layer:
+one primary review layer:
 
-- `mechanical`: CI, static analysis, tests, and objective repository checks
 - `structural`: design, dependencies, state, execution paths, performance,
   security, maintainability, and test design
 - `contextual`: requirements, user value, PR intent, compatibility policy,
@@ -145,8 +144,8 @@ review items merely for completeness.
 Package the completed review plan as an A2A-compatible Artifact named
 `review.plan` with `metadata.schema: review/plan` before delegating review work.
 
-Every review agent must return exactly one result for every item assigned to
-it and preserve the item's `id`. Missing evidence must produce an
+Every structural and contextual review agent must return exactly one result
+for every item assigned to it and preserve the item's `id`. Missing evidence must produce an
 `insufficient_evidence` result rather than omission.
 
 ## 6. Run the review layers
@@ -157,8 +156,8 @@ After the review plan is complete, run these agents in parallel:
 - `review:review:structural`
 - `review:review:contextual`
 
-Give every agent the shared target context, Change Scope result, only the review
-items assigned to its `primary_layer`, relevant supporting-layer information,
+Give the structural and contextual agents the shared target context, Change
+Scope result, only the review items assigned to their `primary_layer`, relevant supporting-layer information,
 and applicable repository guidance. Give the collected context to the contextual
 reviewer; do not give it raw source documents or permission to expand the
 retrieval scope.
@@ -169,7 +168,7 @@ issues, requirements, and documentation to the contextual reviewer.
 
 Do not ask an agent to perform another layer's primary responsibility.
 
-For each delegation, explicitly include the repository root, review target,
+For each review delegation, explicitly include the repository root, review target,
 base and head SHAs, changed files, complete diff or an unambiguous location for
 it, assigned review items, and any agent-specific inputs required by its
 definition. Do not assume that a subagent can recover orchestration state from
@@ -184,19 +183,19 @@ Unit tests, and safe build or integration checks. Prefer commands used by CI.
 Do not install dependencies, add tools, change configuration, or execute
 destructive commands. For an external or otherwise untrusted pull request, do
 not execute repository-controlled code without explicit user approval. Record
-blocked commands and their reasons as insufficient evidence.
+an A2A task failure when required verification cannot be started.
 
-The mechanical Artifact must record each applicable command once in its
-top-level `checks` array with a stable `CHK-*` ID, working directory, outcome,
-exit code, and summary. Mechanical results must use `assessment.check_refs` to
-refer to those checks instead of embedding duplicate command records.
+The mechanical Artifact uses `name: review.mechanical`. Its payload contains
+one overall `result`, one `summary`, and a `checks` array containing only commands
+that were actually executed. Each check records its name, command, `result`,
+exit code, and observed summary. Results are only `passed` or `failed`.
 
 ## 7. Verify the review results
 
 After all review layers finish, run `review:comment:comment` with the shared target
-collected context, Change Scope result, complete review plan, all three
-review results, the complete mechanical Artifact (including top-level `checks`
-and `assessment` results), and the repository's `REVIEW.md`.
+collected context, Change Scope result, complete review plan, both review
+results, the complete `review.mechanical` Artifact, and the repository's
+`REVIEW.md`.
 
 The verifier must not perform another general review. It verifies candidate
 findings against actual code, validates realistic failure paths and evidence,

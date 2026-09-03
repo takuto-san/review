@@ -20,7 +20,7 @@ Recommended order:
 6. `comment`
 7. `skills/review/SKILL.md` produces the final report
 
-The three review agents can evaluate their assigned items in parallel.
+The mechanical checks and the two review agents can run in parallel.
 
 ## Agent artifact contract
 
@@ -58,7 +58,7 @@ infer missing payload fields from conversation history.
 - Every agent result uses the shared A2A-compatible Artifact envelope.
 - Every agent receives its required inputs explicitly; agents do not infer orchestration state from the parent conversation.
 - Inter-stage inputs and outputs use the shared A2A-compatible Artifact envelope.
-- Each review agent returns exactly one result per assigned item, using `insufficient_evidence` instead of omission.
+- Each structural and contextual review agent returns exactly one result per assigned item, using `insufficient_evidence` instead of omission.
 - `mechanical` must run repository-defined static analysis and unit tests when safe and applicable.
 - Every executed verification command and result must be recorded.
 - `comment` must verify layer and check completion and must not treat an incomplete review as complete.

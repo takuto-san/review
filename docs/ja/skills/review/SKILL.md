@@ -33,7 +33,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 5. レビュー計画の作成
 
-オーケストレーターが収集済みコンテキストから適用可能なRequirement、Acceptance Criterion、制約、未決事項を抽出・分類し、出典位置を保ったレビュー用IDを付けます。出典のない情報を正式Requirementへ昇格させません。そのうえで`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`mechanical`、`structural`、`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。各レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
+オーケストレーターが収集済みコンテキストから適用可能なRequirement、Acceptance Criterion、制約、未決事項を抽出・分類し、出典位置を保ったレビュー用IDを付けます。出典のない情報を正式Requirementへ昇格させません。そのうえで`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`structural`または`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。構造・文脈レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
 
 ## 6. 3層レビューの実行
 
@@ -43,13 +43,13 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 - `review:review:structural`
 - `review:review:contextual`
 
-機械層にはCI情報、構造層には差分とコードベース、文脈層には収集済みコンテキストを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。機械的レビューArtifactでは、対象コマンドを安定した`CHK-*` ID付きのトップレベル`checks`へ1回だけ記録し、各結果の`assessment.check_refs`から参照します。
+機械層にはCI情報を渡し、既存の検証コマンドを実行させます。`review.mechanical` Artifactは、全体の`result`と`summary`、実行したコマンドだけを含む`checks`を返します。各チェックは名前、コマンド、`result`、終了コード、観測した要約を持ち、結果は`passed`または`failed`だけです。構造層には差分とコードベース、文脈層には収集済みコンテキストを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
 
 各委譲では、リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分またはその明確な位置、割り当て項目、agent固有の必須入力を明示します。subagentが親会話からオーケストレーション状態を復元できるとは仮定しません。
 
 ## 7. レビュー結果の検証
 
-`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、全結果、トップレベルの`checks`と`assessment`結果を含む完全な機械的レビューArtifact、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
+`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、構造・文脈レビュー結果、完全な`review.mechanical` Artifact、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
 
 ## 8. 最終レポート
 

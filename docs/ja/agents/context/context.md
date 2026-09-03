@@ -61,7 +61,7 @@ PRレビューを始める人間のレビュワーと同じように、変更目
 {
   "context": {
     "purpose": "Problem solved by the change",
-    "results": [
+    "result": [
       {
         "summary": "Fact that helps downstream agents understand the change",
         "source": {

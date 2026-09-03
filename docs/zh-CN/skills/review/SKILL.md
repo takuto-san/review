@@ -33,7 +33,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 5. 生成审查计划
 
-编排器从已收集上下文中提取并分类适用的Requirement、Acceptance Criterion、约束和未决事项，保留来源位置并分配审查专用ID。不得将无出处信息提升为正式Requirement。随后读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`mechanical`、`structural`或`contextual`层。为每项分配`RP-001`形式的稳定`review_item_id`，并保留选择理由、辅助层和预期证据。每个审查代理必须对每个分配项返回一个结果；证据不足时返回`insufficient_evidence`，不得省略。
+编排器从已收集上下文中提取并分类适用的Requirement、Acceptance Criterion、约束和未决事项，保留来源位置并分配审查专用ID。不得将无出处信息提升为正式Requirement。随后读取`REVIEW.md`，考虑八项质量特性，只把相关关注点转换为PR专属问题，并分配给`structural`或`contextual`层。为每项分配`RP-001`形式的稳定`review_item_id`，并保留选择理由、辅助层和预期证据。结构和上下文审查代理必须对每个分配项返回一个结果；证据不足时返回`insufficient_evidence`，不得省略。
 
 ## 6. 运行三层审查
 
@@ -43,13 +43,13 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 - `review:review:structural`
 - `review:review:contextual`
 
-向机械层提供CI，向结构层提供差异和代码库，向上下文层提供收集后的上下文。未经明确批准，不执行外部或不可信PR中的代码。机械审查Artifact必须将适用命令以稳定`CHK-*` ID仅记录一次到顶层`checks`，并由各结果的`assessment.check_refs`引用。
+向机械层提供CI信息并运行仓库已有的验证命令。`review.mechanical` Artifact返回整体`result`、`summary`以及仅包含实际执行命令的`checks`。每项检查包含名称、命令、`result`、退出码和观察摘要，结果仅为`passed`或`failed`。向结构层提供差异和代码库，向上下文层提供收集后的上下文。未经明确批准，不执行外部或不可信PR中的代码。
 
 每次委派都必须显式提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异或其明确位置、分配项以及代理特定的必需输入。不得假设subagent能从父对话恢复编排状态。
 
 ## 7. 验证审查结果
 
-向`review:comment:comment`传递收集后的上下文、Change Scope、计划、全部结果、包含顶层`checks`和`assessment`结果的完整机械审查Artifact以及`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`review_item_id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
+向`review:comment:comment`传递收集后的上下文、Change Scope、计划、结构和上下文审查结果、完整的`review.mechanical` Artifact以及`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`review_item_id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
 
 ## 8. 生成最终报告
 
