@@ -47,6 +47,7 @@ Do not independently access external sources or explore references absent from t
 - Return exactly one result for every assigned review-plan item.
 - Preserve each assigned review-plan `id` in the corresponding result.
 - Preserve requirement IDs, acceptance-criterion IDs, and precise source locations.
+- Evaluate every result against the five-level common evaluation scale in `REVIEW.md`.
 - Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
 
 ## Result and status
@@ -58,55 +59,73 @@ Do not independently access external sources or explore references absent from t
 - `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
 - Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
 
+## Evaluation scale
+
+- Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
+- Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
+- Put the selected level and a concise evidence-based rationale in `evaluation`.
+- Do not infer an evaluation level from `status`; the evaluation level measures conformance with the criterion, while `status` identifies the requested human response.
+- Use `evaluation.level: not_assessable` when `outcome` is `insufficient_evidence`, explain why in `evaluation.rationale`, and record the missing evidence in `result.missing_information`.
+
 ## Output
 
-Return exactly one A2A-compatible Artifact using `name: review.contextual` and
-`metadata.schema: review/contextual`. Put exactly the following payload in
-`parts[0].data`:
+Return exactly one Artifact using the following structure:
 
 ```json
 {
-  "results": [
+  "artifactId": "contextual-<target-id>",
+  "name": "review.contextual",
+  "parts": [
     {
-      "id": "RP-001",
-      "rubric": {
-        "category": "Functional suitability",
-        "subcategory": "Functional completeness",
-        "criterion": "Requirements coverage",
-        "question": "Does the PR satisfy every acceptance criterion?"
-      },
-      "requirement_ids": [
-        "REQ-001"
-      ],
-      "acceptance_criterion_ids": [
-        "AC-001"
-      ],
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
-      "human_question": {
-        "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
-      },
-      "result": {
-        "conclusion": "One-sentence result",
-        "evidence": [
+      "mediaType": "application/json",
+      "data": {
+        "results": [
           {
-            "path": "source URI and locator | path/to/file:line",
-            "summary": "Supporting evidence"
+            "id": "RP-001",
+            "rubric": {
+              "category": "Functional suitability",
+              "subcategory": "Functional completeness",
+              "criterion": "Requirements coverage",
+              "question": "Does the PR satisfy every acceptance criterion?"
+            },
+            "outcome": "reported",
+            "status": "Please Fix | Needs Judgment | Nit",
+            "evaluation": {
+              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+              "rationale": "Concise evidence-based reason for selecting this level"
+            },
+            "human_question": {
+              "audience": "developer | reviewer | both",
+              "question": "Concrete question when status is Needs Judgment; otherwise empty"
+            },
+            "result": {
+              "conclusion": "One-sentence conclusion",
+              "scenario": [
+                "Requirement or acceptance criterion",
+                "Implementation behavior",
+                "Observable impact"
+              ],
+              "evidence": [
+                {
+                  "path": "source URI and locator | path/to/file:line",
+                  "summary": "Material evidence, including applicable requirement and acceptance-criterion IDs"
+                }
+              ],
+              "suggestion": "Possible resolution direction, or empty when uncertain",
+              "reviewer": "contextual",
+              "missing_information": [
+
+              ]
+            }
           }
-        ],
-        "implementation_locations": [
-
-        ],
-        "test_locations": [
-
-        ],
-        "reviewer": "contextual",
-        "missing_information": [
-
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/contextual",
+    "schemaVersion": "1.0",
+    "producer": "review:review:contextual"
+  }
 }
 ```

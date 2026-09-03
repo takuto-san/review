@@ -48,6 +48,7 @@ runtime: false
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
 - 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
 - Requirement ID、Acceptance Criterion ID、正確な出典位置を維持する。
+- 各結果を`REVIEW.md`の5段階共通評価尺度で評価する。
 - `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
 
 ## 判定結果とステータス
@@ -59,53 +60,73 @@ runtime: false
 - `Nit`: マージを妨げない、任意の軽微な改善。問題なしの代用にはしない。
 - `Needs Judgment`には必ず`human_question.audience`と具体的な質問を含める。
 
+## 評価尺度
+
+- 割り当てられたレビュー計画項目から、該当するcategory、subcategory、criterion、PR固有のquestionを`rubric`へコピーする。
+- `REVIEW.md`で定義された5段階の共通評価尺度（`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`、`not_assessable`）を適用する。
+- 選択したレベルと、根拠に基づく簡潔な理由を`evaluation`へ格納する。
+- `status`から評価レベルを推測しない。評価レベルは基準への適合度を示し、`status`は人間に求める対応を示す。
+- `outcome`が`insufficient_evidence`の場合は`evaluation.level: not_assessable`とし、その理由を`evaluation.rationale`で説明し、不足している証拠を`result.missing_information`へ記録する。
+
 ## 出力
 
-`name: review.contextual`、`metadata.schema: review/contextual`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納します。
+次の構造を持つArtifactを正確に1つ返します。
 
 ```json
 {
-  "results": [
+  "artifactId": "contextual-<target-id>",
+  "name": "review.contextual",
+  "parts": [
     {
-      "id": "RP-001",
-      "rubric": {
-        "category": "Functional suitability",
-        "subcategory": "Functional completeness",
-        "criterion": "Requirements coverage",
-        "question": "Does the PR satisfy every acceptance criterion?"
-      },
-      "requirement_ids": [
-        "REQ-001"
-      ],
-      "acceptance_criterion_ids": [
-        "AC-001"
-      ],
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
-      "human_question": {
-        "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
-      },
-      "result": {
-        "conclusion": "One-sentence result",
-        "evidence": [
+      "mediaType": "application/json",
+      "data": {
+        "results": [
           {
-            "path": "source URI and locator | path/to/file:line",
-            "summary": "Supporting evidence"
+            "id": "RP-001",
+            "rubric": {
+              "category": "Functional suitability",
+              "subcategory": "Functional completeness",
+              "criterion": "Requirements coverage",
+              "question": "Does the PR satisfy every acceptance criterion?"
+            },
+            "outcome": "reported",
+            "status": "Please Fix | Needs Judgment | Nit",
+            "evaluation": {
+              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+              "rationale": "Concise evidence-based reason for selecting this level"
+            },
+            "human_question": {
+              "audience": "developer | reviewer | both",
+              "question": "Concrete question when status is Needs Judgment; otherwise empty"
+            },
+            "result": {
+              "conclusion": "One-sentence conclusion",
+              "scenario": [
+                "Requirement or acceptance criterion",
+                "Implementation behavior",
+                "Observable impact"
+              ],
+              "evidence": [
+                {
+                  "path": "source URI and locator | path/to/file:line",
+                  "summary": "Material evidence, including applicable requirement and acceptance-criterion IDs"
+                }
+              ],
+              "suggestion": "Possible resolution direction, or empty when uncertain",
+              "reviewer": "contextual",
+              "missing_information": [
+
+              ]
+            }
           }
-        ],
-        "implementation_locations": [
-
-        ],
-        "test_locations": [
-
-        ],
-        "reviewer": "contextual",
-        "missing_information": [
-
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/contextual",
+    "schemaVersion": "1.0",
+    "producer": "review:review:contextual"
+  }
 }
 ```

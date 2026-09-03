@@ -47,6 +47,7 @@ runtime: false
 - 每个分配的审查计划项恰好返回一个结果。
 - 在对应结果中保留每个已分配审查计划的`id`。
 - 保留Requirement ID、Acceptance Criterion ID和精确来源位置。
+- 按照`REVIEW.md`中的五级通用评价尺度评估每个结果。
 - `outcome: verified`仅表示在声明范围内检查了该问题且未发现相反证据。
 
 ## 结果与状态
@@ -58,53 +59,73 @@ runtime: false
 - `Nit`表示不阻止合并的次要可选改进，不得用来替代`verified`。
 - 每个`Needs Judgment`必须包含`human_question.audience`和具体问题。
 
+## 评价尺度
+
+- 将已分配审查计划项中的适用category、subcategory、criterion和PR特定question复制到`rubric`中。
+- 应用`REVIEW.md`中定义的五级通用评价尺度：`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`或`not_assessable`。
+- 将所选级别及简洁、基于证据的理由放入`evaluation`。
+- 不要从`status`推断评价级别；评价级别衡量对标准的符合程度，而`status`标识请求的人工响应。
+- 当`outcome`为`insufficient_evidence`时，使用`evaluation.level: not_assessable`，在`evaluation.rationale`中说明原因，并在`result.missing_information`中记录缺失证据。
+
 ## 输出
 
-返回一个具有`name: review.contextual`和`metadata.schema: review/contextual`的A2A兼容Artifact，并将以下负载放入`parts[0].data`：
+严格按照以下结构返回一个Artifact：
 
 ```json
 {
-  "results": [
+  "artifactId": "contextual-<target-id>",
+  "name": "review.contextual",
+  "parts": [
     {
-      "id": "RP-001",
-      "rubric": {
-        "category": "Functional suitability",
-        "subcategory": "Functional completeness",
-        "criterion": "Requirements coverage",
-        "question": "Does the PR satisfy every acceptance criterion?"
-      },
-      "requirement_ids": [
-        "REQ-001"
-      ],
-      "acceptance_criterion_ids": [
-        "AC-001"
-      ],
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
-      "human_question": {
-        "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
-      },
-      "result": {
-        "conclusion": "One-sentence result",
-        "evidence": [
+      "mediaType": "application/json",
+      "data": {
+        "results": [
           {
-            "path": "source URI and locator | path/to/file:line",
-            "summary": "Supporting evidence"
+            "id": "RP-001",
+            "rubric": {
+              "category": "Functional suitability",
+              "subcategory": "Functional completeness",
+              "criterion": "Requirements coverage",
+              "question": "Does the PR satisfy every acceptance criterion?"
+            },
+            "outcome": "reported",
+            "status": "Please Fix | Needs Judgment | Nit",
+            "evaluation": {
+              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+              "rationale": "Concise evidence-based reason for selecting this level"
+            },
+            "human_question": {
+              "audience": "developer | reviewer | both",
+              "question": "Concrete question when status is Needs Judgment; otherwise empty"
+            },
+            "result": {
+              "conclusion": "One-sentence conclusion",
+              "scenario": [
+                "Requirement or acceptance criterion",
+                "Implementation behavior",
+                "Observable impact"
+              ],
+              "evidence": [
+                {
+                  "path": "source URI and locator | path/to/file:line",
+                  "summary": "Material evidence, including applicable requirement and acceptance-criterion IDs"
+                }
+              ],
+              "suggestion": "Possible resolution direction, or empty when uncertain",
+              "reviewer": "contextual",
+              "missing_information": [
+
+              ]
+            }
           }
-        ],
-        "implementation_locations": [
-
-        ],
-        "test_locations": [
-
-        ],
-        "reviewer": "contextual",
-        "missing_information": [
-
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/contextual",
+    "schemaVersion": "1.0",
+    "producer": "review:review:contextual"
+  }
 }
 ```
