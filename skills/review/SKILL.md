@@ -145,8 +145,9 @@ Package the completed review plan as an A2A-compatible Artifact named
 `review.plan` with `metadata.schema: review/plan` before delegating review work.
 
 Every structural and contextual review agent must return exactly one result
-for every item assigned to it and preserve the item's `id`. Missing evidence must produce an
-`insufficient_evidence` result rather than omission.
+for every item assigned to it and preserve the item's `id`. Each result contains
+`evaluation` and `assessment`; missing evidence must produce
+`evaluation.level: not_assessable` rather than omission.
 
 ## 6. Run the review layers
 
@@ -193,15 +194,15 @@ are only `passed` or `failed`.
 ## 7. Verify the review results
 
 After all review layers finish, run `review:comment:comment` with the shared target
-collected context, Change Scope result, complete review plan, both review
-results, the complete `review.mechanical` Artifact, and the repository's
-`REVIEW.md`.
+collected context, Change Scope result, complete review plan, the complete
+`review.structural`, `review.contextual`, and `review.mechanical` Artifacts, and
+the repository's `REVIEW.md`.
 
 The verifier must not perform another general review. It verifies candidate
 findings against actual code, validates realistic failure paths and evidence,
 rejects speculation and unrelated pre-existing issues, removes duplicates,
-corrects classifications, and confirms whether applicable static analysis and
-Unit tests ran.
+assigns the final five-label classification from each layer's `evaluation` and
+`assessment`, and confirms whether applicable static analysis and Unit tests ran.
 
 Only the comment agent's `verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
@@ -218,33 +219,13 @@ result, review plan, the comment agent's `verified_results`, and
 `review_prerequisites`. Do not discover, add, remove, or re-evaluate
 findings during formatting.
 
-Return exactly these sections:
-
-1. `Review Summary`
-2. `Change Scope`
-3. `Needs Your Attention`
-4. `Review Coverage`
-
-Do not expose internal agent names, processing layers, intermediate YAML,
-rejected candidates, or orchestration details. Do not declare LGTM, Approve,
-or Changes Requested. The final decision belongs to the human reviewer.
-
-In `Review Summary`, show counts for potential problems, human decisions,
-verified concerns, and items that could not be verified. Mark the review as
-incomplete when a prerequisite is missing or a required check did not run
-without a justified limitation.
-
-In `Change Scope`, show changed files, additions, deletions, total lines, and
-Change Groups. Explain a split recommendation only when applicable.
-
-In `Needs Your Attention`, include only potential problems, human decisions,
-and insufficient evidence. For potential problems, include the conclusion,
-realistic failure scenario, review criterion, strongest evidence, and proposed
-author comment.
-
-In `Review Coverage`, group selected criteria by quality characteristic and
-show the subcharacteristic, criterion, concrete result, and evidence. Do not
-describe a verified result as an absolute safety guarantee.
+Present one consolidated table with the columns `Review Layer`, `Review Item`,
+`Label`, and `Result / Evidence`. Include every executed Mechanical check and
+every Structural and Contextual review-plan item. Use only `Nit`, `LGTM`,
+`Please Fix`, `Need Review`, or `Unable to Verify` as labels. After the table,
+show counts for all five labels, including zero counts, and the overall label
+calculated by the verifier. Preserve concrete evidence and missing-information
+details, but do not expose intermediate Artifact data or rejected candidates.
 
 ## Completion requirements
 

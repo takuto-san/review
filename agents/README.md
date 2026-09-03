@@ -59,7 +59,7 @@ infer missing payload fields from conversation history.
 - Every agent result uses the shared A2A-compatible Artifact envelope.
 - Every agent receives its required inputs explicitly; agents do not infer orchestration state from the parent conversation.
 - Inter-stage inputs and outputs use the shared A2A-compatible Artifact envelope.
-- Each structural and contextual review agent returns exactly one result per assigned item, using `insufficient_evidence` instead of omission.
+- Each structural and contextual review agent returns exactly one result per assigned item, using `evaluation.level: not_assessable` and `assessment.missing_information` instead of omission when evidence is insufficient.
 - `mechanical` must run repository-defined static analysis and unit tests when safe and applicable.
 - Every executed verification command and result must be recorded.
 - `comment` must verify layer and check completion and must not treat an incomplete review as complete.

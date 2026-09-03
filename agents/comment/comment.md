@@ -12,23 +12,24 @@ Independently validate the mechanical checks and all structural and contextual r
 
 ## Required input
 
-The delegated task must provide the collected context, Change Scope result, complete review plan, structural and contextual review results, the complete `review.mechanical` Artifact, and `REVIEW.md`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
+The delegated task must provide the collected context, Change Scope result, complete review plan, the complete `review.structural`, `review.contextual`, and `review.mechanical` Artifacts, and `REVIEW.md`. Read each typed payload from `parts[0].data`. If required input is missing, mark the relevant prerequisite incomplete and do not reconstruct or guess it.
 
 ## Verification procedure
 
 1. Confirm that each result's `rubric` maps to a category, subcategory, and criterion in `REVIEW.md`.
 2. Confirm that the collected context, Change Scope, and review plan are present.
 3. Confirm completion of every applicable review layer.
-4. Confirm that the mechanical Artifact's `result` contains a record for every executed check.
-5. Confirm that each entry's `status` agrees with its summary.
-6. For every `Please Fix`, verify a realistic path from changed code to failure.
-7. Confirm that evidence directly supports the conclusion.
-8. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
-9. Merge results with the same root cause.
-10. Reclassify design or specification decisions as `Needs Judgment`; keep missing information as `outcome: insufficient_evidence` when no concrete decision question can be formed.
-11. Ensure that `outcome: verified` does not claim safety beyond the inspected scope.
-12. For specification results, require a requirement or acceptance criterion, its source location, implementation location, and a concrete mismatch.
-13. Treat conflicting specifications as `Needs Judgment` and unavailable specifications as `outcome: insufficient_evidence`, not automatically as code defects.
+4. Confirm that the mechanical Artifact's `result` contains a record for every executed check and that each entry's `status` agrees with its summary.
+5. Confirm that the structural and contextual Artifacts each use `result` and contain exactly one record for every review-plan item assigned to that layer.
+6. For every structural and contextual record, validate that `evaluation.level` agrees with `evaluation.rationale` and `assessment` under the five-level scale in `REVIEW.md`.
+7. For every candidate that may become `Please Fix`, verify a realistic path from changed code to failure. For contextual candidates, require a realistic requirement-to-impact path.
+8. Confirm that `assessment.evidence` directly supports `assessment.conclusion`.
+9. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
+10. Merge results with the same root cause.
+11. Classify product, design, or specification choices that have sufficient code facts but still require a human decision as `Need Review` and preserve a concrete decision question and audience.
+12. Classify `evaluation.level: not_assessable`, including conflicting, ambiguous, or unavailable specifications, as `Unable to Verify`; preserve `evaluation.rationale` and `assessment.missing_information`.
+13. Ensure that `LGTM` does not claim safety beyond the inspected scope.
+14. For specification results classified as `Please Fix`, require a requirement or acceptance criterion, its source location, implementation location, a realistic failure scenario, and observable impact.
 
 Do not explore sources absent from the Issue or collected context. A specification-based PR comment candidate requires a requirement or acceptance-criterion ID, precise source, implementation location, realistic failure scenario, and observable impact.
 
@@ -41,19 +42,48 @@ Do not explore sources absent from the Issue or collected context. A specificati
 
 ## Status
 
-Use exactly one status for every reported result:
+Use exactly one label for every review-plan item:
 
 - `Please Fix`: A confirmed issue that should be corrected before merge.
-- `Needs Judgment`: A human decision or answer is required, whether directed to the developer, reviewer, or both.
+- `Need Review`: A human decision or answer is required, whether directed to the developer, reviewer, or both.
 - `Nit`: A minor, optional improvement that does not block merge.
+- `LGTM`: The item was checked and no actionable concern was found within the inspected scope.
+- `Unable to Verify`: The item could not be judged because required evidence, input, or an applicable check was unavailable.
 
-Every `Needs Judgment` must preserve a concrete `human_question` and its audience. Do not turn `outcome: verified` or `outcome: insufficient_evidence` into a `Nit`.
+Structural and contextual layers do not supply these labels. Assign them only after validating their `evaluation` and `assessment`:
+
+- `fully_meets` normally maps to `LGTM`.
+- `mostly_meets` normally maps to `Nit` when the remaining gap is confirmed, optional, and low impact; otherwise use `Need Review` if a human decision is required.
+- `partially_meets` and `does_not_meet` map to `Please Fix` only when verification confirms a concrete defect or requirement violation that should be corrected before merge. Use `Need Review` when the evidence instead establishes a product, design, specification, or reviewer decision.
+- `not_assessable` always maps to `Unable to Verify`.
+
+Do not mechanically infer an action from the evaluation level when the rules above require verification of impact or human judgment. Every `Need Review` must include a concrete `human_question` and its audience, created from the supplied evidence without inventing a new concern. `Unable to Verify` must preserve the missing information or incomplete prerequisite. Do not use `LGTM` when the item was not actually checked, and do not turn `not_assessable` into a `Nit` or `Need Review`.
+
+Determine the overall label using the highest-priority result present:
+
+1. `Please Fix`
+2. `Need Review`
+3. `Unable to Verify`
+4. `Nit`
+5. `LGTM`
 
 ## Output
 
-Return exactly one A2A-compatible Artifact using `name: review.verification` and
-`metadata.schema: review/verification`. Put exactly the following payload in
-`parts[0].data`:
+Return the human-readable final result first, followed by exactly one A2A-compatible Artifact using `name: review.verification` and `metadata.schema: review/verification`.
+
+The human-readable result must contain one row for every executed Mechanical check and one row for every Structural and Contextual review-plan item. Use this exact column order:
+
+```markdown
+| Review Layer | Review Item | Label | Result / Evidence |
+|---|---|---|---|
+| Mechanical | RP-001: Static analysis | LGTM | Lint and type checks passed. |
+| Structural | RP-002: Error handling | Please Fix | `src/api.ts:42` suppresses the exception. |
+| Contextual | RP-003: Specification alignment | Unable to Verify | The Issue and acceptance criterion conflict, so conformance cannot be assessed. |
+```
+
+After the results table, include a count table for all five labels and a single `Overall: <label>` line. Include labels with zero results in the count table. Do not omit `LGTM` or `Unable to Verify` items from the results table.
+
+Put exactly the following payload in `parts[0].data` of the Artifact:
 
 ```json
 {
@@ -73,13 +103,17 @@ Return exactly one A2A-compatible Artifact using `name: review.verification` and
       "acceptance_criterion_ids": [
 
       ],
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
+      "source_layer": "structural | contextual",
+      "evaluation": {
+        "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+        "rationale": "Validated evidence-based reason for the evaluation"
+      },
+      "label": "Please Fix | Need Review | Nit | LGTM | Unable to Verify",
       "human_question": {
         "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
+        "question": "Concrete question when label is Need Review; otherwise empty"
       },
-      "result": {
+      "assessment": {
         "conclusion": "Concise validated conclusion",
         "scenario": [
 
@@ -91,7 +125,7 @@ Return exactly one A2A-compatible Artifact using `name: review.verification` and
           }
         ],
         "suggestion": "Proposed author comment when needed",
-        "reviewer": "comment",
+        "reviewer": "structural | contextual",
         "missing_information": [
 
         ]
