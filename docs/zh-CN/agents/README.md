@@ -30,7 +30,7 @@ runtime: false
 
 ## 代理产物契约
 
-每个代理返回一个兼容A2A的`Artifact` JSON对象。各代理文档中的输出示例仅表示放入`parts[0].data`的负载。
+每个代理返回一个兼容A2A的`Artifact` JSON对象。如果代理专用输出示例不包含`artifactId`，该示例仅表示放入`parts[0].data`的负载。
 
 ```json
 {

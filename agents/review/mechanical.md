@@ -18,35 +18,45 @@ The delegated task must provide the repository root, review target, base and hea
 
 1. Discover the repository's official verification commands from manifests, build files, Makefiles, CI workflows, and repository guidance.
 2. Run applicable lint, type-check, static-analysis, test, build, and integration commands that are safe in the available environment.
-3. Read each command's output and exit code before recording its result.
+3. Read each command's output before recording its result.
 4. Return only commands that were actually executed.
 
 Do not install dependencies, introduce tools, change configuration, or run destructive commands. If the required verification cannot be started, return an A2A task failure instead of a successful Artifact.
 
 ## Result
 
-- A check is `passed` only when its command completed successfully.
-- A check is `failed` when its command completed with a failure.
-- The overall `result` is `passed` only when every check passed; otherwise it is `failed`.
+- A result entry has `status: passed` only when its command completed successfully.
+- A result entry has `status: failed` when its command completed with a failure.
 - Summaries must report observed output, not inferred success.
 
 ## Output
 
-Return exactly one A2A-compatible Artifact using `name: review.mechanical` and `metadata.schema: review/mechanical`. Put exactly the following payload in `parts[0].data`:
+Return exactly one A2A Artifact with the following structure:
 
 ```json
 {
-  "result": "passed | failed",
-  "summary": "Overall verification result",
-  "checks": [
+  "artifactId": "mechanical-<target-id>",
+  "name": "review.mechanical",
+  "parts": [
     {
-      "name": "unit-tests",
-      "command": "npm test",
-      "result": "passed | failed",
-      "exitCode": 0,
-      "summary": "Observed command result"
+      "mediaType": "application/json",
+      "data": {
+        "result": [
+          {
+            "name": "unit-tests",
+            "command": "npm test",
+            "status": "passed | failed",
+            "summary": "Observed command result"
+          }
+        ]
+      }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/mechanical",
+    "schemaVersion": "1.0",
+    "producer": "review:review:mechanical"
+  }
 }
 ```
 

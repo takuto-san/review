@@ -43,7 +43,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 - `review:review:structural`
 - `review:review:contextual`
 
-向机械层提供CI信息并运行仓库已有的验证命令。`review.mechanical` Artifact返回整体`result`、`summary`以及仅包含实际执行命令的`checks`。每项检查包含名称、命令、`result`、退出码和观察摘要，结果仅为`passed`或`failed`。向结构层提供差异和代码库，向上下文层提供收集后的上下文。未经明确批准，不执行外部或不可信PR中的代码。
+向机械层提供CI信息并运行仓库已有的验证命令。`review.mechanical` Artifact返回仅包含实际执行命令的`result`。每个结果项包含名称、命令、`status`和观察摘要，状态仅为`passed`或`failed`。向结构层提供差异和代码库，向上下文层提供收集后的上下文。未经明确批准，不执行外部或不可信PR中的代码。
 
 每次委派都必须显式提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异或其明确位置、分配项以及代理特定的必需输入。不得假设subagent能从父对话恢复编排状态。
 

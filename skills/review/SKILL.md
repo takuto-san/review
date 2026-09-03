@@ -185,10 +185,10 @@ destructive commands. For an external or otherwise untrusted pull request, do
 not execute repository-controlled code without explicit user approval. Record
 an A2A task failure when required verification cannot be started.
 
-The mechanical Artifact uses `name: review.mechanical`. Its payload contains
-one overall `result`, one `summary`, and a `checks` array containing only commands
-that were actually executed. Each check records its name, command, `result`,
-exit code, and observed summary. Results are only `passed` or `failed`.
+The mechanical Artifact uses `name: review.mechanical`. Its payload contains a
+`result` array with only commands that were actually executed. Each entry
+records its name, command, `status`, and observed summary. Statuses
+are only `passed` or `failed`.
 
 ## 7. Verify the review results
 

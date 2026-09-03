@@ -18,35 +18,45 @@ runtime: false
 
 1. 从manifest、构建文件、Makefile、CI workflow和仓库指南中确定正式验证命令。
 2. 运行当前环境中安全适用的Lint、类型检查、静态分析、测试、构建和集成检查。
-3. 读取每条命令的输出和退出码后再记录结果。
+3. 读取每条命令的输出后再记录结果。
 4. 只返回实际执行过的命令。
 
 不得安装依赖、引入工具、更改配置或运行破坏性命令。如果无法启动必要验证，应返回A2A任务失败，而不是成功Artifact。
 
 ## 结果
 
-- 仅当命令成功结束时，检查结果为`passed`。
-- 命令失败结束时，检查结果为`failed`。
-- 仅当所有检查均通过时，整体`result`为`passed`；否则为`failed`。
+- 仅当命令成功结束时，结果项为`status: passed`。
+- 命令失败结束时，结果项为`status: failed`。
 - 摘要必须记录观察到的输出，不得推测成功。
 
 ## 输出
 
-返回一个具有`name: review.mechanical`和`metadata.schema: review/mechanical`的A2A兼容Artifact，并将以下负载放入`parts[0].data`：
+返回一个具有以下结构的A2A Artifact：
 
 ```json
 {
-  "result": "passed | failed",
-  "summary": "Overall verification result",
-  "checks": [
+  "artifactId": "mechanical-<target-id>",
+  "name": "review.mechanical",
+  "parts": [
     {
-      "name": "unit-tests",
-      "command": "npm test",
-      "result": "passed | failed",
-      "exitCode": 0,
-      "summary": "Observed command result"
+      "mediaType": "application/json",
+      "data": {
+        "result": [
+          {
+            "name": "unit-tests",
+            "command": "npm test",
+            "status": "passed | failed",
+            "summary": "Observed command result"
+          }
+        ]
+      }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/mechanical",
+    "schemaVersion": "1.0",
+    "producer": "review:review:mechanical"
+  }
 }
 ```
 

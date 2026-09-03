@@ -24,8 +24,9 @@ The mechanical checks and the two review agents can run in parallel.
 
 ## Agent artifact contract
 
-Every agent returns one A2A-compatible `Artifact` JSON object. Agent-specific
-output examples show only the payload placed in `parts[0].data`.
+Every agent returns one A2A-compatible `Artifact` JSON object. Unless an
+agent-specific example includes `artifactId`, it shows only the payload placed
+in `parts[0].data`.
 
 ```json
 {

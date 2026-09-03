@@ -19,35 +19,45 @@ runtime: false
 
 1. manifest、ビルドファイル、Makefile、CI workflow、リポジトリガイダンスから正式な検証コマンドを特定する。
 2. 利用可能な環境で安全に実行できるLint、型検査、静的解析、テスト、ビルド、結合テストを実行する。
-3. 各コマンドの出力と終了コードを確認してから結果を記録する。
+3. 各コマンドの出力を確認してから結果を記録する。
 4. 実際に実行したコマンドだけを返す。
 
 依存関係のインストール、ツールの導入、設定変更、破壊的なコマンド実行は禁止します。必要な検証を開始できない場合は、成功したArtifactではなくA2Aタスクの失敗として返します。
 
 ## 結果
 
-- コマンドが正常終了したチェックだけを`passed`とする。
-- コマンドが失敗終了したチェックを`failed`とする。
-- 全チェックが成功した場合だけ、全体の`result`を`passed`とする。それ以外は`failed`とする。
+- コマンドが正常終了した結果項目だけを`status: passed`とする。
+- コマンドが失敗終了した結果項目を`status: failed`とする。
 - 要約には推測ではなく、観測した出力を記録する。
 
 ## 出力
 
-`name: review.mechanical`、`metadata.schema: review/mechanical`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納します。
+次の構造を持つA2A Artifactを1つ返します。
 
 ```json
 {
-  "result": "passed | failed",
-  "summary": "Overall verification result",
-  "checks": [
+  "artifactId": "mechanical-<target-id>",
+  "name": "review.mechanical",
+  "parts": [
     {
-      "name": "unit-tests",
-      "command": "npm test",
-      "result": "passed | failed",
-      "exitCode": 0,
-      "summary": "Observed command result"
+      "mediaType": "application/json",
+      "data": {
+        "result": [
+          {
+            "name": "unit-tests",
+            "command": "npm test",
+            "status": "passed | failed",
+            "summary": "Observed command result"
+          }
+        ]
+      }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/mechanical",
+    "schemaVersion": "1.0",
+    "producer": "review:review:mechanical"
+  }
 }
 ```
 

@@ -43,7 +43,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 - `review:review:structural`
 - `review:review:contextual`
 
-機械層にはCI情報を渡し、既存の検証コマンドを実行させます。`review.mechanical` Artifactは、全体の`result`と`summary`、実行したコマンドだけを含む`checks`を返します。各チェックは名前、コマンド、`result`、終了コード、観測した要約を持ち、結果は`passed`または`failed`だけです。構造層には差分とコードベース、文脈層には収集済みコンテキストを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
+機械層にはCI情報を渡し、既存の検証コマンドを実行させます。`review.mechanical` Artifactは、実行したコマンドだけを含む`result`を返します。各項目は名前、コマンド、`status`、観測した要約を持ち、ステータスは`passed`または`failed`だけです。構造層には差分とコードベース、文脈層には収集済みコンテキストを渡します。外部または信頼できないPRのコードは明示承認なしに実行しません。
 
 各委譲では、リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分またはその明確な位置、割り当て項目、agent固有の必須入力を明示します。subagentが親会話からオーケストレーション状態を復元できるとは仮定しません。
 
