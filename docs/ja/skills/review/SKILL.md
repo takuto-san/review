@@ -11,6 +11,8 @@ runtime: false
 
 `$ARGUMENTS`または自然言語から対象を特定します。`/review:review`はローカル変更、`/review:review 123`はPR番号をレビューします。PR URLは直接引数にせず、「このPRをレビューして URL」のような自然言語で指定します。レビューは読み取り専用です。
 
+工程間の入力と出力はすべて`agents/README.md`で定義するA2A互換Artifactを使用します。オーケストレーターはArtifact名、media type、schema metadata、必須ペイロードを検証し、Artifactを保持したまま次工程へ渡します。受信側は`parts[0].data`を読み取り、不足データを会話履歴から復元しません。共有対象は`review.target`、レビュー計画は`review.plan`として表現します。
+
 ## 1. レビュー対象の解決
 
 自然言語のどこにPR番号またはURLが含まれていてもReviewer modeとして認識し、`gh`でPR、関連Issue、差分、CI状態を取得します。複数URLや競合する対象があれば推測しません。PRが指定されずローカル変更のレビューを依頼された場合はDeveloper modeを使用します。
@@ -21,7 +23,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 3. コンテキストの収集と整理
 
-`review:context:context`を実行します。関連Issueを優先入口としつつ特定媒体へ依存せず、明示された参照の必要箇所だけをコンテキストへ整理します。生文書は後続へ渡しません。取得不能、情報源の矛盾、正本区分、出典位置を保持します。
+`review:context:context`を実行します。関連Issueを特権的な入口にせず、ユーザー指定の情報源、PR関連成果物、変更に隣接するリポジトリ情報から境界付き検索アンカーを作ります。利用可能な場合はMCP読み取りツールを優先し、それ以外で取得した情報源もMCP Resource互換の`context.resources`へ正規化します。生文書は後続へ渡さず、取得不能、情報源の矛盾、正本区分、出典位置を保持します。
 
 ## 4. Change Scopeの分析
 

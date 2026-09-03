@@ -60,7 +60,9 @@ Do not independently access external sources or explore references absent from t
 
 ## Output
 
-Return exactly one JSON object matching this structure:
+Return exactly one A2A-compatible Artifact using `name: review.contextual` and
+`metadata.schema: review/contextual`. Put exactly the following payload in
+`parts[0].data`:
 
 ```json
 {

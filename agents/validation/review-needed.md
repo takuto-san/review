@@ -57,7 +57,9 @@ positive evidence.
 
 ## Output
 
-Return exactly one JSON object matching this structure. Do not report code problems or quality findings.
+Return exactly one A2A-compatible Artifact using `name: review.eligibility` and
+`metadata.schema: review/eligibility`. Put exactly the following payload in
+`parts[0].data`. Do not report code problems or quality findings.
 
 ```json
 {

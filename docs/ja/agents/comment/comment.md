@@ -51,6 +51,8 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
 
 ## 出力
 
+`name: review.verification`、`metadata.schema: review/verification`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納します。
+
 ```json
 {
   "verified_results": [

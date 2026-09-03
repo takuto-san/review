@@ -42,7 +42,7 @@ runtime: false
 
 ## 出力
 
-次の構造で返してください。コード上の問題や品質Findingは出さないでください。
+`name: review.scope`、`metadata.schema: review/scope`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納してください。コード上の問題や品質Findingは出さないでください。
 
 ```json
 {

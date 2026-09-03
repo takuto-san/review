@@ -36,7 +36,7 @@ PRが大きすぎるか、凝集しているか、レビューしやすいかは
 
 ## 出力
 
-`review_status`、`should_review`、根拠、PR状態、draft状態、head SHA、実質的変更の有無、現在のレビュワー、レビュー済みhead SHA、不確実性を返します。コード上の問題や品質Findingは出しません。
+`name: review.eligibility`、`metadata.schema: review/eligibility`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納します。コード上の問題や品質Findingは出しません。
 
 ```json
 {

@@ -11,6 +11,8 @@ runtime: false
 
 从`$ARGUMENTS`或自然语言识别目标。`/review:review`审查本地更改，`/review:review 123`审查数字PR编号。PR URL不能作为直接参数，应使用“请审查这个PR URL”之类的自然语言请求。
 
+阶段间的所有输入和输出都使用`agents/README.md`定义的A2A兼容Artifact。编排器验证Artifact名称、media type、schema metadata和必需负载，并将完整Artifact传给下一阶段。接收方读取`parts[0].data`，不得从对话历史重建缺失数据。共享目标表示为`review.target`，审查计划表示为`review.plan`。
+
 ## 1. 解析审查目标
 
 自然语言中任意位置包含PR编号或URL时使用Reviewer mode，并通过`gh`获取PR、关联Issue、差异和CI状态。存在多个URL或冲突目标时不得猜测。未指定PR但要求审查本地更改时使用Developer mode。
@@ -21,7 +23,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 3. 收集并整理上下文
 
-运行`review:context:context`。优先使用关联Issue，但不依赖特定媒体。只获取明确引用中的必要部分并生成精简上下文，不把原始文档传给后续代理。保留无法解析的引用、来源冲突、权威级别和精确位置。
+运行`review:context:context`。不再把关联Issue作为特权入口，而是从用户指定来源、PR关联产物以及与变更相邻的仓库信息构建有边界的搜索锚点。可用时优先使用MCP只读工具，并将其他工具取得的来源也规范化到MCP Resource兼容的`context.resources`。不得把原始文档传给后续代理，并保留无法解析的引用、来源冲突、权威级别和精确位置。
 
 ## 4. 分析Change Scope
 

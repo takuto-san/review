@@ -45,7 +45,9 @@ Do not classify a change as `review_blocked` from raw line count alone. Account 
 
 ## Output
 
-Return exactly one JSON object matching this structure. Do not report code problems or quality findings.
+Return exactly one A2A-compatible Artifact using `name: review.scope` and
+`metadata.schema: review/scope`. Put exactly the following payload in
+`parts[0].data`. Do not report code problems or quality findings.
 
 ```json
 {

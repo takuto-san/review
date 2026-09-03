@@ -50,7 +50,9 @@ Every `Needs Judgment` must preserve a concrete `human_question` and its audienc
 
 ## Output
 
-Return exactly one JSON object matching this structure:
+Return exactly one A2A-compatible Artifact using `name: review.verification` and
+`metadata.schema: review/verification`. Put exactly the following payload in
+`parts[0].data`:
 
 ```json
 {

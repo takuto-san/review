@@ -58,7 +58,9 @@ Do not introduce tools or dependencies. Do not run destructive commands or comma
 
 ## Output
 
-Return exactly one JSON object matching this structure:
+Return exactly one A2A-compatible Artifact using `name: review.mechanical` and
+`metadata.schema: review/mechanical`. Put exactly the following payload in
+`parts[0].data`:
 
 ```json
 {

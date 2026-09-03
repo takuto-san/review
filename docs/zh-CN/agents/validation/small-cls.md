@@ -41,7 +41,7 @@ runtime: false
 
 ## 输出
 
-以JSON输出`scope_status`、差异统计、`change_groups`、`split_reason`和`uncertainties`，不得输出代码质量Finding。
+返回一个具有`name: review.scope`和`metadata.schema: review/scope`的A2A兼容Artifact，并将以下负载放入`parts[0].data`。不得输出代码质量Finding。
 
 ```json
 {

@@ -61,7 +61,9 @@ The delegated task must provide the repository root, review target, base and hea
 
 ## Output
 
-Return exactly one JSON object matching this structure:
+Return exactly one A2A-compatible Artifact using `name: review.structural` and
+`metadata.schema: review/structural`. Put exactly the following payload in
+`parts[0].data`:
 
 ```json
 {

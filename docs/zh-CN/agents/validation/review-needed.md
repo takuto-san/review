@@ -35,7 +35,7 @@ PR是否过大、是否内聚或是否易于审查只由`small-cls`判断。缺�
 
 ## 输出
 
-以JSON返回`review_status`、`should_review`、理由、PR状态、draft状态、head SHA、实质变更状态、当前审查者、已审查head SHA和不确定性，不得输出代码质量Finding。
+返回一个具有`name: review.eligibility`和`metadata.schema: review/eligibility`的A2A兼容Artifact，并将以下负载放入`parts[0].data`。不得输出代码质量Finding。
 
 ```json
 {

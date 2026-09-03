@@ -57,8 +57,16 @@ Reject ambiguous arguments instead of guessing. Do not alter the user's current
 working tree. If code must be checked out, create an isolated temporary worktree
 at the resolved head SHA and remove it after collecting the results.
 
-Create one shared target context. Every agent must receive the same repository,
-base SHA, head SHA, diff, changed files, and PR metadata.
+Create one shared target context as an A2A-compatible Artifact named
+`review.target`. Every agent must receive this same Artifact containing the
+repository, base SHA, head SHA, diff, changed files, and PR metadata.
+
+All inter-stage inputs and outputs must use the A2A-compatible Artifact defined
+in `agents/README.md`. Validate the artifact name, media type, schema metadata,
+and required payload fields, then pass the required Artifacts intact to the
+next stage. Each receiving stage reads typed data from `parts[0].data`. Treat
+missing or malformed artifact payloads as incomplete prerequisites; do not
+reconstruct them from conversation history.
 
 ## 2. Check whether review is needed
 
@@ -76,19 +84,21 @@ changes exist.
 ## 3. Collect and organize context
 
 Run `review:context:context` with the shared target context, PR description,
-related Issues, repository guidance, changed components, and every explicit
-specification or decision reference found in those sources.
+related Issues, repository guidance, changed components, user-named sources,
+and specification or decision references found in those discovery points.
 
-Treat a related Issue as the preferred reference index when one exists. Do not
-hard-code or prefer a specific knowledge system. The context agent must use
-whatever compatible read-only tools are available, follow only explicit
-references, retrieve only the sections needed to answer review questions, and
-return compact, source-independent `context`.
+Treat a related Issue as one discovery point rather than the preferred source
+type. Do not hard-code or prefer a specific knowledge system. The context agent
+must build bounded search anchors, prefer compatible MCP read-only tools when
+available, search only relevant source families, and retrieve only the sections
+needed to answer review questions. Sources obtained through non-MCP tools must
+still be normalized into the MCP Resource-compatible `context.resources` list.
 
 Do not pass raw retrieved documents or search results to later agents. Preserve
-unresolved references, conflicting sources, source authority, and precise
-locations in the collected context. If no compatible retrieval tool is available,
-continue with available evidence and record the resulting limitation.
+the bounded retrieval plan, normalized acceptance criteria, review-question
+routing, unresolved references, conflicting sources, source authority, and
+precise locations in the collected context. If no compatible retrieval tool is
+available, continue with available evidence and record the resulting limitation.
 
 ## 4. Analyze Change Scope
 
@@ -121,11 +131,18 @@ one primary layer:
 - `contextual`: requirements, user value, PR intent, compatibility policy,
   migration decisions, and documentation
 
+Use each collected review question's `primary_review_layer` as a routing hint,
+but validate it against the concrete review-plan item and the layer boundaries
+above. The orchestrator remains responsible for the final assignment.
+
 When another layer provides useful evidence, record it as a supporting layer.
 Assign each selected item a stable identifier such as `RP-001`. Preserve the
 review item ID, selected criterion, concrete question, selection reason,
 primary layer, supporting layers, and expected evidence. Do not add generic
 review items merely for completeness.
+
+Package the completed review plan as an A2A-compatible Artifact named
+`review.plan` with `metadata.schema: review/plan` before delegating review work.
 
 Every review agent must return exactly one result for every item assigned to
 it and preserve the item's `id`. Missing evidence must produce an

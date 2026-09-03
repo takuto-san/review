@@ -58,7 +58,7 @@ runtime: false
 
 ## 输出
 
-返回与以下结构一致的单一JSON对象：
+返回一个具有`name: review.mechanical`和`metadata.schema: review/mechanical`的A2A兼容Artifact，并将以下负载放入`parts[0].data`：
 
 ```json
 {

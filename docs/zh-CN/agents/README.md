@@ -8,7 +8,7 @@ runtime: false
 
 | 代理 | 职责 |
 |---|---|
-| `context` | 仅从明确引用中收集必要信息，生成与来源无关的精简上下文 |
+| `context` | 通过有边界的发现收集影响判断的信息，生成与来源无关的精简上下文 |
 | `review-needed` | 跳过已关闭、草稿、微不足道或已审查的PR |
 | `small-cls` | 评估规模、Change Group和内聚性是否造成过大审查负担 |
 | `mechanical` | 运行CI等效测试、静态分析和客观检查 |
@@ -28,10 +28,36 @@ runtime: false
 
 三个审查代理可以并行评估各自分配的项目。
 
+## 代理产物契约
+
+每个代理返回一个兼容A2A的`Artifact` JSON对象。各代理文档中的输出示例仅表示放入`parts[0].data`的负载。
+
+```json
+{
+  "artifactId": "context-<target-id>",
+  "name": "review.context",
+  "parts": [
+    {
+      "mediaType": "application/json",
+      "data": {}
+    }
+  ],
+  "metadata": {
+    "schema": "review/context",
+    "schemaVersion": "1.0",
+    "producer": "review:context"
+  }
+}
+```
+
+各类数据和阶段使用`review.target`、`review.eligibility`、`review.context`、`review.scope`、`review.plan`、`review.mechanical`、`review.structural`、`review.contextual`和`review.verification`。编排器通过这些Artifact信封传递必需输入，接收方从`parts[0].data`读取类型化负载。不得根据对话历史推测缺失字段。
+
 ## 完成要求
 
 - 每个审查计划项都有稳定的`review_item_id`，并在审查和验证过程中保持不变。
+- 每个代理结果都使用共同的A2A兼容Artifact信封。
 - 必须显式向每个代理提供所需输入；代理不得从父对话推断编排状态。
+- 阶段间输入和输出使用共同的A2A兼容Artifact信封。
 - 每个审查代理对每个分配项恰好返回一个结果，证据不足时使用`insufficient_evidence`，不得省略。
 - `mechanical`必须在安全且适用时运行仓库定义的静态分析和单元测试。
 - 必须记录每条已执行的验证命令及其结果。
