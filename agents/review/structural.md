@@ -47,6 +47,7 @@ The delegated task must provide the repository root, review target, base and hea
 
 - Return exactly one result for every assigned review-plan item.
 - Preserve each assigned review-plan `id` in the corresponding result.
+- Evaluate every result against the five-level common evaluation scale in `REVIEW.md`.
 - Every `Please Fix` result must include a realistic trigger-to-impact execution path.
 - Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
 
@@ -59,14 +60,22 @@ The delegated task must provide the repository root, review target, base and hea
 - `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
 - Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
 
+## Evaluation scale
+
+- Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
+- Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
+- Put the selected level and a concise evidence-based rationale in `evaluation`.
+- Do not infer an evaluation level from `status`; the evaluation level measures conformance with the criterion, while `status` identifies the requested human response.
+- Use `evaluation.level: not_assessable` when `outcome` is `insufficient_evidence`, explain why in `evaluation.rationale`, and record the missing evidence in `result.missing_information`.
+
 ## Output
 
 Return exactly one Artifact using the following structure:
 
 ```json
 {
-  "artifactId": "structural-result-001",
-  "name": "structural-result",
+  "artifactId": "structural-<target-id>",
+  "name": "review.structural",
   "parts": [
     {
       "mediaType": "application/json",
@@ -82,6 +91,10 @@ Return exactly one Artifact using the following structure:
             },
             "outcome": "reported",
             "status": "Please Fix | Needs Judgment | Nit",
+            "evaluation": {
+              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+              "rationale": "Concise evidence-based reason for selecting this level"
+            },
             "human_question": {
               "audience": "developer | reviewer | both",
               "question": "Concrete question when status is Needs Judgment; otherwise empty"
@@ -109,6 +122,11 @@ Return exactly one Artifact using the following structure:
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/structural",
+    "schemaVersion": "1.0",
+    "producer": "review:review:structural"
+  }
 }
 ```

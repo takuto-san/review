@@ -137,6 +137,26 @@ For authorization, verify checks occur before protected work, cannot be bypassed
 
 # Result classifications
 
+## Common evaluation scale
+
+Use the following five-level scale to evaluate how well the reviewed change
+satisfies an applicable concern. Select a level from concrete implementation,
+execution-path, test, and specification evidence rather than intuition.
+
+| Level | Definition |
+|---|---|
+| `fully_meets` | The relevant normal, boundary, and failure paths satisfy the concern, with direct supporting evidence and no material gap found. |
+| `mostly_meets` | The concern is satisfied on the important paths, but a limited, low-impact gap or weakness remains. |
+| `partially_meets` | The concern is satisfied in some material respects, but a concrete gap affects an important path or leaves meaningful risk. |
+| `does_not_meet` | A realistic path demonstrates that the concern is materially violated; any existing protection is insufficient for the identified impact. |
+| `not_assessable` | The available specifications, implementation, tests, measurements, permissions, or environment evidence are insufficient to assess conformance. |
+
+The first four levels measure conformance with a review concern;
+`not_assessable` records that conformance cannot be judged from the available
+evidence. The scale does not express the action requested from a human. Pair
+`not_assessable` with `Could not verify`, and classify assessable results
+separately according to the result classifications below.
+
 ## Potential problem
 
 Changed code, a realistic trigger, and observable impact indicate a possible defect. A human reviewer decides whether to send the finding to the author.
