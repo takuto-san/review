@@ -1,6 +1,6 @@
 # Review Plugin
 
-[English](README.md) | 日本語 | [简体中文](README.zh-CN.md)
+[English](../README.md) | 日本語 | [简体中文](README.zh-CN.md)
 
 専門エージェント、リポジトリのチェック、証拠に基づくFinding検証を使用して、ローカル変更とGitHub Pull Requestを自動レビューします。
 
@@ -57,11 +57,11 @@ review/
 │       └── SKILL.md
 ├── docs/
 │   ├── ja/
-│   └── zh-CN/
+│   ├── zh-CN/
+│   ├── README.ja.md
+│   └── README.zh-CN.md
 ├── REVIEW.md
 ├── README.md
-├── README.ja.md
-├── README.zh-CN.md
 └── LICENSE
 ```
 
@@ -330,4 +330,4 @@ takuto-san
 
 0.1.0
 
-[MIT License](LICENSE)の下で提供されます。
+[MIT License](../LICENSE)の下で提供されます。

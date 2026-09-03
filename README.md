@@ -1,6 +1,6 @@
 # Review Plugin
 
-English | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
+English | [日本語](docs/README.ja.md) | [简体中文](docs/README.zh-CN.md)
 
 Automated review for local changes and GitHub pull requests using specialized agents, repository checks, and evidence-based finding verification.
 
@@ -54,11 +54,11 @@ review/
 │       └── SKILL.md
 ├── docs/
 │   ├── ja/
-│   └── zh-CN/
+│   ├── zh-CN/
+│   ├── README.ja.md
+│   └── README.zh-CN.md
 ├── REVIEW.md
 ├── README.md
-├── README.ja.md
-├── README.zh-CN.md
 └── LICENSE
 ```
 
