@@ -12,7 +12,7 @@ Evaluate only review items whose `primary_layer` is `structural`, using the diff
 
 ## Required input
 
-The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; use `outcome: insufficient_evidence` for the affected items.
+The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; use `evaluation.level: not_assessable` for the affected items.
 
 ## Investigation method
 
@@ -38,35 +38,24 @@ The delegated task must provide the repository root, review target, base and hea
 ## Boundaries
 
 - Do not infer runtime problems from naming alone.
-- Do not classify a concern as `Please Fix` without a realistic execution path.
+- Do not evaluate a concern as `does_not_meet` without a realistic execution path.
 - Do not report personal style preferences.
-- Use `Needs Judgment` for design policy that code cannot establish.
-- Use `outcome: insufficient_evidence` when required implementation or material is unavailable and no concrete human decision question can be formed.
+- Use `evaluation.level: not_assessable` when code cannot establish a design policy or required implementation or material is unavailable.
 
 ## Completion criteria
 
 - Return exactly one result for every assigned review-plan item.
 - Preserve each assigned review-plan `id` in the corresponding result.
 - Evaluate every result against the five-level common evaluation scale in `REVIEW.md`.
-- Every `Please Fix` result must include a realistic trigger-to-impact execution path.
-- Use `outcome: verified` only to mean that the assigned question was examined within the stated scope and no contradictory evidence was found.
-
-## Result and status
-
-- `outcome` records coverage: `reported`, `verified`, or `insufficient_evidence`.
-- Include `status` only when `outcome` is `reported`. Its only allowed values are `Please Fix`, `Needs Judgment`, and `Nit`.
-- `Please Fix` identifies a concrete defect or requirement violation that should be corrected before merge.
-- `Needs Judgment` means a human decision or answer is required, regardless of whether the question is directed to the developer, reviewer, or both.
-- `Nit` identifies a minor, optional improvement that does not block merge. Do not use it as a substitute for `verified`.
-- Every `Needs Judgment` result must include `human_question.audience` and a concrete question.
+- Every `does_not_meet` result must include a realistic trigger-to-impact execution path.
 
 ## Evaluation scale
 
 - Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
 - Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
 - Put the selected level and a concise evidence-based rationale in `evaluation`.
-- Do not infer an evaluation level from `status`; the evaluation level measures conformance with the criterion, while `status` identifies the requested human response.
-- Use `evaluation.level: not_assessable` when `outcome` is `insufficient_evidence`, explain why in `evaluation.rationale`, and record the missing evidence in `result.missing_information`.
+- Do not assign review workflow labels or requested actions in this layer. The downstream verification layer decides those from the evaluation and evidence.
+- When the level is `not_assessable`, explain why in `evaluation.rationale` and record the missing evidence in `assessment.missing_information`.
 
 ## Output
 
@@ -80,7 +69,7 @@ Return exactly one Artifact using the following structure:
     {
       "mediaType": "application/json",
       "data": {
-        "results": [
+        "result": [
           {
             "id": "RP-001",
             "rubric": {
@@ -89,17 +78,11 @@ Return exactly one Artifact using the following structure:
               "criterion": "Recovery and consistency",
               "question": "Can retry after notification failure duplicate payment?"
             },
-            "outcome": "reported",
-            "status": "Please Fix | Needs Judgment | Nit",
             "evaluation": {
               "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
               "rationale": "Concise evidence-based reason for selecting this level"
             },
-            "human_question": {
-              "audience": "developer | reviewer | both",
-              "question": "Concrete question when status is Needs Judgment; otherwise empty"
-            },
-            "result": {
+            "assessment": {
               "conclusion": "One-sentence conclusion",
               "scenario": [
                 "Trigger",

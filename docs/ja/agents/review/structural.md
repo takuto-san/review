@@ -13,7 +13,7 @@ runtime: false
 
 ## 必須入力
 
-リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`outcome: insufficient_evidence`とします。
+リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分、割り当てられたレビュー計画項目が必要です。不足する場合は推測せず、該当項目を`evaluation.level: not_assessable`とします。
 
 ## 調査方法
 
@@ -39,35 +39,24 @@ runtime: false
 ## 境界
 
 - 命名だけから実行時の問題を推測しない。
-- 現実的な実行経路を説明できない懸念を`Please Fix`にしない。
+- 現実的な実行経路を説明できない懸念を`does_not_meet`と評価しない。
 - 個人的なスタイルの好みを報告しない。
-- コードから判断できない設計方針は`Needs Judgment`とする。
-- 必要な実装や資料が取得できず、具体的な判断質問も作れない場合は`outcome: insufficient_evidence`とする。
+- コードから設計方針を判断できない場合や、必要な実装・資料が取得できない場合は`evaluation.level: not_assessable`とする。
 
 ## 完了条件
 
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
 - 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
 - すべての結果を`REVIEW.md`の5段階共通評価尺度で評価する。
-- すべての`Please Fix`に、発生条件から影響までの現実的な実行経路を含める。
-- `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
-
-## 判定結果とステータス
-
-- `outcome`はレビュー計画項目の処理結果を表し、`reported`、`verified`、`insufficient_evidence`のいずれかとする。
-- `status`は`outcome`が`reported`の場合だけ含める。値は`Please Fix`、`Needs Judgment`、`Nit`の3つに限る。
-- `Please Fix`: マージ前に修正すべき具体的な不具合または要件違反。
-- `Needs Judgment`: 人間の判断または回答が必要な項目。質問先が開発者、レビュワー、その両方のいずれでも使用する。
-- `Nit`: マージを妨げない、任意の軽微な改善。問題なしの代用にはしない。
-- `Needs Judgment`には必ず`human_question.audience`と具体的な質問を含める。
+- すべての`does_not_meet`に、発生条件から影響までの現実的な実行経路を含める。
 
 ## 評価尺度
 
 - 割り当てられたレビュー計画項目の品質特性、副特性、レビュー観点、PR固有の質問を`rubric`へ引き継ぐ。
 - `REVIEW.md`の5段階共通評価尺度、`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`、`not_assessable`のいずれかを適用する。
 - 選択した段階と、証拠に基づく簡潔な理由を`evaluation`へ格納する。
-- `status`から評価段階を推測しない。評価段階はレビュー観点への適合度、`status`は人間に求める対応を表す。
-- `outcome`が`insufficient_evidence`の場合は`evaluation.level: not_assessable`を使用し、`evaluation.rationale`で理由を説明して、不足する証拠を`result.missing_information`へ記録する。
+- この層ではレビュー工程上のラベルや人間に求める対応を付与しない。後続の検証層が評価と証拠から判断する。
+- 評価段階が`not_assessable`の場合は`evaluation.rationale`で理由を説明し、不足する証拠を`assessment.missing_information`へ記録する。
 
 ## 出力
 
@@ -81,7 +70,7 @@ runtime: false
     {
       "mediaType": "application/json",
       "data": {
-        "results": [
+        "result": [
           {
             "id": "RP-001",
             "rubric": {
@@ -90,17 +79,11 @@ runtime: false
               "criterion": "Recovery and consistency",
               "question": "Can retry after notification failure duplicate payment?"
             },
-            "outcome": "reported",
-            "status": "Please Fix | Needs Judgment | Nit",
             "evaluation": {
               "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
               "rationale": "Concise evidence-based reason for selecting this level"
             },
-            "human_question": {
-              "audience": "developer | reviewer | both",
-              "question": "Concrete question when status is Needs Judgment; otherwise empty"
-            },
-            "result": {
+            "assessment": {
               "conclusion": "One-sentence conclusion",
               "scenario": ["Trigger", "Code path", "Observable impact"],
               "evidence": [{"path": "path/to/file:line", "summary": "Material evidence"}],

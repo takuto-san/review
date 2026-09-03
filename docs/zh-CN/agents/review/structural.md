@@ -12,7 +12,7 @@ runtime: false
 
 ## 必需输入
 
-必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异以及分配的审查计划项。输入缺失时不得猜测，对受影响项使用`outcome: insufficient_evidence`。
+必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异以及分配的审查计划项。输入缺失时不得猜测，对受影响项使用`evaluation.level: not_assessable`。
 
 ## 调查方法
 
@@ -38,35 +38,24 @@ runtime: false
 ## 约束
 
 - 不得仅凭命名推测运行时问题。
-- 没有现实执行路径时不得将问题归类为`Please Fix`。
+- 没有现实执行路径时不得将关注点评价为`does_not_meet`。
 - 不得报告个人风格偏好。
-- 对代码无法确定的设计策略使用`Needs Judgment`。
-- 当必要实现或资料不可用且无法形成具体人工判断问题时，使用`outcome: insufficient_evidence`。
+- 当代码无法确定设计策略或必要实现、资料不可用时，使用`evaluation.level: not_assessable`。
 
 ## 完成条件
 
 - 每个分配的审查计划项恰好返回一个结果。
 - 在对应结果中保留每个已分配审查计划的`id`。
 - 按照`REVIEW.md`的五级通用评价尺度评价每个结果。
-- 每个`Please Fix`结果都包含从触发条件到影响的现实执行路径。
-- `outcome: verified`仅表示在声明范围内检查了该问题且未发现相反证据。
-
-## 结果与状态
-
-- `outcome`记录覆盖结果：`reported`、`verified`或`insufficient_evidence`。
-- 仅当`outcome`为`reported`时包含`status`；允许值只有`Please Fix`、`Needs Judgment`和`Nit`。
-- `Please Fix`表示合并前应修正的具体缺陷或需求违反。
-- `Needs Judgment`表示需要人工决定或回答，无论问题面向开发者、审查者还是双方。
-- `Nit`表示不阻止合并的次要可选改进，不得用来替代`verified`。
-- 每个`Needs Judgment`必须包含`human_question.audience`和具体问题。
+- 每个`does_not_meet`结果都包含从触发条件到影响的现实执行路径。
 
 ## 评价尺度
 
 - 将已分配审查计划项的质量特性、子特性、关注点和PR特定问题复制到`rubric`。
 - 应用`REVIEW.md`定义的五级通用评价尺度：`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`或`not_assessable`。
 - 将所选等级和基于证据的简明理由写入`evaluation`。
-- 不得从`status`推断评价等级；评价等级表示对关注点的符合程度，`status`表示要求人工采取的行动。
-- 当`outcome`为`insufficient_evidence`时使用`evaluation.level: not_assessable`，在`evaluation.rationale`中说明原因，并将缺失证据记录到`result.missing_information`。
+- 本层不分配审查流程标签或要求人工采取的行动；后续验证层根据评价和证据作出判断。
+- 当等级为`not_assessable`时，在`evaluation.rationale`中说明原因，并将缺失证据记录到`assessment.missing_information`。
 
 ## 输出
 
@@ -80,7 +69,7 @@ runtime: false
     {
       "mediaType": "application/json",
       "data": {
-        "results": [
+        "result": [
           {
             "id": "RP-001",
             "rubric": {
@@ -89,17 +78,11 @@ runtime: false
               "criterion": "Recovery and consistency",
               "question": "Can retry after notification failure duplicate payment?"
             },
-            "outcome": "reported",
-            "status": "Please Fix | Needs Judgment | Nit",
             "evaluation": {
               "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
               "rationale": "Concise evidence-based reason for selecting this level"
             },
-            "human_question": {
-              "audience": "developer | reviewer | both",
-              "question": "Concrete question when status is Needs Judgment; otherwise empty"
-            },
-            "result": {
+            "assessment": {
               "conclusion": "One-sentence conclusion",
               "scenario": ["Trigger", "Code path", "Observable impact"],
               "evidence": [{"path": "path/to/file:line", "summary": "Material evidence"}],
