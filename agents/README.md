@@ -24,7 +24,7 @@ The three review agents can evaluate their assigned items in parallel.
 
 ## Completion requirements
 
-- Every review-plan item has a stable `review_item_id` that is preserved through review and verification.
+- Every review-plan item has a stable `id` that is preserved through review and verification.
 - Every agent receives its required inputs explicitly; agents do not infer orchestration state from the parent conversation.
 - Each review agent returns exactly one result per assigned item, using `insufficient_evidence` instead of omission.
 - `mechanical` must run repository-defined static analysis and unit tests when safe and applicable.

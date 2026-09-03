@@ -25,16 +25,16 @@ runtime: false
 6. Evidenceが結論を直接支えているか確認する。
 7. PR以前から存在する問題、CIが既に明確に報告する問題、推測的な懸念を除外する。
 8. 同じ根本原因を示す結果を統合する。
-9. 設計・仕様判断であれば`Needs Judgment`へ修正する。具体的な判断質問を作れない情報不足は`result: insufficient_evidence`のままとする。
-10. `result: verified`について、確認範囲を超えた安全保証になっていないか確認する。
+9. 設計・仕様判断であれば`Needs Judgment`へ修正する。具体的な判断質問を作れない情報不足は`outcome: insufficient_evidence`のままとする。
+10. `outcome: verified`について、確認範囲を超えた安全保証になっていないか確認する。
 11. 仕様に基づく結果について、RequirementまたはAcceptance Criterion、仕様の出典位置、実装位置、具体的な差分が示されているか確認する。
-12. 情報源が矛盾する場合は`Needs Judgment`、仕様が存在しないか参照先を取得できない場合は`result: insufficient_evidence`とし、コード不具合と断定しない。
+12. 情報源が矛盾する場合は`Needs Judgment`、仕様が存在しないか参照先を取得できない場合は`outcome: insufficient_evidence`とし、コード不具合と断定しない。
 
 Issueや収集済みコンテキストに含まれない情報源を新たに探索してはいけません。仕様由来の`Please Fix`をPRコメント候補にするには、Requirement IDまたはAcceptance Criterion ID、正確な出典、実装位置、現実的な失敗シナリオ、観測可能な影響が必要です。
 
 ## 完了条件
 
-- 計画内の全`review_item_id`を、検証済み結果、除外結果、未完了理由のいずれかで1回だけ処理する。
+- 計画内の全`id`を、検証済み結果、除外結果、未完了理由のいずれかで1回だけ処理する。
 - 入力されたレビュー結果にない新しい懸念を追加しない。
 - 同じ根本原因の結果を統合し、影響する全レビュー項目への追跡可能性を維持する。
 - 必須の層、入力、検証チェックが不足する場合はレビューを未完了とする。
@@ -47,7 +47,7 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
 - `Needs Judgment`: 人間の判断または回答が必要な項目。質問先が開発者、レビュワー、その両方のいずれでも使用する。
 - `Nit`: マージを妨げない、任意の軽微な改善。
 
-`Needs Judgment`では、具体的な`human_question`と質問先を維持します。`result: verified`や`result: insufficient_evidence`を`Nit`へ変換しないでください。
+`Needs Judgment`では、具体的な`human_question`と質問先を維持します。`outcome: verified`や`outcome: insufficient_evidence`を`Nit`へ変換しないでください。
 
 ## 出力
 
@@ -55,40 +55,48 @@ Issueや収集済みコンテキストに含まれない情報源を新たに探
 {
   "verified_results": [
     {
-      "review_item_ids": [
+      "ids": [
         "RP-001"
       ],
-      "quality_characteristic": "Reliability",
-      "subcharacteristic": "Recoverability",
-      "criterion": "Recovery and consistency",
+      "rubric": {
+        "category": "Reliability",
+        "subcategory": "Recoverability",
+        "criterion": "Recovery and consistency"
+      },
       "requirement_ids": [
 
       ],
       "acceptance_criterion_ids": [
 
       ],
-      "result": "reported",
+      "outcome": "reported",
       "status": "Please Fix | Needs Judgment | Nit",
-      "conclusion": "Concise validated conclusion",
       "human_question": {
         "audience": "developer | reviewer | both",
         "question": "Concrete question when status is Needs Judgment; otherwise empty"
       },
-      "failure_scenario": [
+      "result": {
+        "conclusion": "Concise validated conclusion",
+        "scenario": [
 
-      ],
-      "evidence": [
-        {
-          "location": "path/to/file:line",
-          "summary": "Evidence"
-        }
-      ],
-      "suggested_review_comment": "Proposed author comment when needed"
+        ],
+        "evidence": [
+          {
+            "path": "path/to/file:line",
+            "summary": "Evidence"
+          }
+        ],
+        "suggestion": "Proposed author comment when needed",
+        "reviewer": "comment",
+        "missing_information": [
+
+        ]
+      }
     }
   ],
   "rejected_results": [
     {
-      "review_item_ids": [
+      "ids": [
         "RP-002"
       ],
       "original_conclusion": "Rejected candidate",

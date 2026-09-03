@@ -281,7 +281,7 @@ Agent responsibilities and output contracts are defined under `agents/`:
 
 Keep orchestration and final-report rules in `skills/review/SKILL.md`.
 
-Give every review-plan item a stable `review_item_id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `insufficient_evidence` instead of silently omitting an assigned item.
+Give every review-plan item a stable `id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `insufficient_evidence` instead of silently omitting an assigned item.
 
 
 ## 7. Technical Details

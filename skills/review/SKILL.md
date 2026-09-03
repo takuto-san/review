@@ -128,7 +128,7 @@ primary layer, supporting layers, and expected evidence. Do not add generic
 review items merely for completeness.
 
 Every review agent must return exactly one result for every item assigned to
-it and preserve the item's `review_item_id`. Missing evidence must produce an
+it and preserve the item's `id`. Missing evidence must produce an
 `insufficient_evidence` result rather than omission.
 
 ## 6. Run the review layers
@@ -184,7 +184,7 @@ Only the comment agent's `verified_results` may be passed to the final report.
 Rejected results must not be presented as active findings. If required checks
 did not run, preserve the reason and mark the review as incomplete.
 
-The verifier must account for every `review_item_id` from the review plan. An
+The verifier must account for every `id` from the review plan. An
 item may be represented by a verified result, a rejected result, or an explicit
 incomplete reason, but it must not disappear silently.
 

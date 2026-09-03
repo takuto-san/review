@@ -31,7 +31,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 5. レビュー計画の作成
 
-オーケストレーターが`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`mechanical`、`structural`、`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`review_item_id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。各レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
+オーケストレーターが`REVIEW.md`の8品質特性を検討し、関係する観点だけをPR固有の問いへ変換して`mechanical`、`structural`、`contextual`へ割り当てます。各項目へ`RP-001`のような安定した`id`を付け、選択理由、補助レイヤー、期待する証拠とともに保持します。各レビューエージェントは割り当てられた項目ごとに必ず1件の結果を返し、証拠不足を省略せず`insufficient_evidence`とします。
 
 ## 6. 3層レビューの実行
 
@@ -47,7 +47,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 7. レビュー結果の検証
 
-`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、全結果、実行コマンド、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`review_item_id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
+`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、全結果、実行コマンド、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
 
 ## 8. 最終レポート
 

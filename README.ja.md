@@ -289,7 +289,7 @@ claude plugin validate /path/to/review --strict
 
 オーケストレーションと最終レポートの規則は`skills/review/SKILL.md`に保持します。
 
-各レビュー計画項目には`RP-001`形式の一意な`review_item_id`を付け、レビュー層からFinding検証まで維持します。各エージェントには必須入力を明示的に渡し、割り当て項目を証拠不足のまま省略せず`insufficient_evidence`として処理します。
+各レビュー計画項目には`RP-001`形式の一意な`id`を付け、レビュー層からFinding検証まで維持します。各エージェントには必須入力を明示的に渡し、割り当て項目を証拠不足のまま省略せず`insufficient_evidence`として処理します。
 
 
 <a id="7-technical-details"></a>
