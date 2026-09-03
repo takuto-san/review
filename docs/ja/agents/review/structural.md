@@ -48,6 +48,7 @@ runtime: false
 
 - 割り当てられたレビュー計画項目ごとに、必ず1件の結果を返す。
 - 対応する結果に、割り当てられたレビュー計画の`id`を維持する。
+- すべての結果を`REVIEW.md`の5段階共通評価尺度で評価する。
 - すべての`Please Fix`に、発生条件から影響までの現実的な実行経路を含める。
 - `outcome: verified`は、明示した範囲で問いを確認し、反証が見つからなかったことだけを意味する。
 
@@ -60,47 +61,62 @@ runtime: false
 - `Nit`: マージを妨げない、任意の軽微な改善。問題なしの代用にはしない。
 - `Needs Judgment`には必ず`human_question.audience`と具体的な質問を含める。
 
+## 評価尺度
+
+- 割り当てられたレビュー計画項目の品質特性、副特性、レビュー観点、PR固有の質問を`rubric`へ引き継ぐ。
+- `REVIEW.md`の5段階共通評価尺度、`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`、`not_assessable`のいずれかを適用する。
+- 選択した段階と、証拠に基づく簡潔な理由を`evaluation`へ格納する。
+- `status`から評価段階を推測しない。評価段階はレビュー観点への適合度、`status`は人間に求める対応を表す。
+- `outcome`が`insufficient_evidence`の場合は`evaluation.level: not_assessable`を使用し、`evaluation.rationale`で理由を説明して、不足する証拠を`result.missing_information`へ記録する。
+
 ## 出力
 
-`name: review.structural`、`metadata.schema: review/structural`を持つA2A互換Artifactを1つ返し、次のペイロードを`parts[0].data`へ格納します。
+次の構造のArtifactを1つだけ返す。
 
 ```json
 {
-  "results": [
+  "artifactId": "structural-<target-id>",
+  "name": "review.structural",
+  "parts": [
     {
-      "id": "RP-001",
-      "rubric": {
-        "category": "Reliability",
-        "subcategory": "Recoverability",
-        "criterion": "Recovery and consistency",
-        "question": "Can retry after notification failure duplicate payment?"
-      },
-      "outcome": "reported",
-      "status": "Please Fix | Needs Judgment | Nit",
-      "human_question": {
-        "audience": "developer | reviewer | both",
-        "question": "Concrete question when status is Needs Judgment; otherwise empty"
-      },
-      "result": {
-        "conclusion": "One-sentence conclusion",
-        "scenario": [
-          "Trigger",
-          "Code path",
-          "Observable impact"
-        ],
-        "evidence": [
+      "mediaType": "application/json",
+      "data": {
+        "results": [
           {
-            "path": "path/to/file:line",
-            "summary": "Material evidence"
+            "id": "RP-001",
+            "rubric": {
+              "category": "Reliability",
+              "subcategory": "Recoverability",
+              "criterion": "Recovery and consistency",
+              "question": "Can retry after notification failure duplicate payment?"
+            },
+            "outcome": "reported",
+            "status": "Please Fix | Needs Judgment | Nit",
+            "evaluation": {
+              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+              "rationale": "Concise evidence-based reason for selecting this level"
+            },
+            "human_question": {
+              "audience": "developer | reviewer | both",
+              "question": "Concrete question when status is Needs Judgment; otherwise empty"
+            },
+            "result": {
+              "conclusion": "One-sentence conclusion",
+              "scenario": ["Trigger", "Code path", "Observable impact"],
+              "evidence": [{"path": "path/to/file:line", "summary": "Material evidence"}],
+              "suggestion": "Possible resolution direction, or empty when uncertain",
+              "reviewer": "structural",
+              "missing_information": []
+            }
           }
-        ],
-        "suggestion": "Possible resolution direction, or empty when uncertain",
-        "reviewer": "structural",
-        "missing_information": [
-
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "schema": "review/structural",
+    "schemaVersion": "1.0",
+    "producer": "review:review:structural"
+  }
 }
 ```
