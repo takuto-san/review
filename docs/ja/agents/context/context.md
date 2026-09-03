@@ -73,8 +73,7 @@ PRレビューを始める人間のレビュワーと同じように、変更目
     "unknowns": [
       {
         "summary": "Missing, inaccessible, oversized, or conflicting information",
-        "source_uri": "Related resource URI when known",
-        "reason": "not_found | access_denied | conflicting | oversized"
+        "uri": "Related resource URI when known"
       }
     ]
   }

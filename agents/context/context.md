@@ -74,8 +74,7 @@ Return exactly one A2A-compatible Artifact using `name: review.context` and
     "unknowns": [
       {
         "summary": "Missing, inaccessible, oversized, or conflicting information",
-        "source_uri": "Related resource URI when known",
-        "reason": "not_found | access_denied | conflicting | oversized"
+        "uri": "Related resource URI when known"
       }
     ]
   }

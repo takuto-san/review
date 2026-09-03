@@ -72,8 +72,7 @@ runtime: false
     "unknowns": [
       {
         "summary": "Missing, inaccessible, oversized, or conflicting information",
-        "source_uri": "Related resource URI when known",
-        "reason": "not_found | access_denied | conflicting | oversized"
+        "uri": "Related resource URI when known"
       }
     ]
   }
