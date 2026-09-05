@@ -1,5 +1,5 @@
 ---
-translation_of: agents/validation/small-cls.md
+translation_of: skills/review/checks/scope.md
 language: ja
 runtime: false
 ---
@@ -9,7 +9,7 @@ runtime: false
 
 ## ミッション
 
-あなたはPRエージェントのChange Scope分析担当です。コードの正しさやレビュー要否を判定するのではなく、実質的な変更量とまとまりが人間のレビュワーに過大な認知負荷を与えないかを分析してください。ファイルは変更しません。closed、draft、trivial、already-reviewedの判定は、先に`review-needed`が行います。
+あなたはPRエージェントのChange Scope分析担当です。コードの正しさやレビュー要否を判定するのではなく、実質的な変更量とまとまりが人間のレビュワーに過大な認知負荷を与えないかを分析してください。ファイルは変更しません。closed、draft、trivial、already-reviewedの判定は、先に`eligibility`が行います。
 
 ## 入力
 

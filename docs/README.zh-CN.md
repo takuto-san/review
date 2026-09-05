@@ -42,9 +42,6 @@ review/
 ├── agents/
 │   ├── context/
 │   │   └── context.md
-│   ├── validation/
-│   │   ├── review-needed.md
-│   │   └── small-cls.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
@@ -54,7 +51,10 @@ review/
 │   └── README.md
 ├── skills/
 │   └── review/
-│       └── SKILL.md
+│       ├── SKILL.md
+│       └── checks/
+│           ├── eligibility.md
+│           └── scope.md
 ├── docs/
 │   ├── ja/
 │   ├── zh-CN/
@@ -69,21 +69,18 @@ review/
 ### 审查工作流
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "stepAfter"}}}%%
 flowchart TD
-    A[解析本地更改或PR] --> B{PR是否需要审查}
-    B -->|否| X[报告跳过原因]
-    B -->|是或本地更改| C[收集相关上下文]
-    C --> D[收集审查上下文]
-    D --> E[评估审查者负担]
-    E --> F[生成变更专属审查计划]
-    F --> G1[Mechanical review]
-    F --> G2[Structural review]
-    F --> G3[Contextual review]
-    G1 --> H[验证Finding并去重]
-    G2 --> H
-    G3 --> H
-    H --> I[生成最终报告]
+    A[Resolve target] --> B{Orchestrator: review needed?}
+    B -->|No| X[Report skip reason]
+    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| M[Mechanical checks]
+    C --> P[Orchestrator: scope and review plan]
+    P --> S[Structural review]
+    P --> T[Contextual review]
+    M --> V[Verify all results]
+    S --> V
+    T --> V
+    V --> R[Orchestrator: render report once]
 ```
 
 <a id="3-usage"></a>
@@ -268,8 +265,8 @@ claude plugin validate /path/to/review --strict
 代理职责和输出约定定义在`agents/`目录中：
 
 - `agents/context/context.md` — 精简审查上下文收集
-- `agents/validation/review-needed.md` — Pull Request审查必要性
-- `agents/validation/small-cls.md` — Change Scope和审查者负担
+- `skills/review/checks/eligibility.md` — Pull Request审查必要性
+- `skills/review/checks/scope.md` — Change Scope和审查者负担
 - `agents/review/mechanical.md` — 客观仓库检查
 - `agents/review/structural.md` — 代码和架构分析
 - `agents/review/contextual.md` — 意图和需求分析

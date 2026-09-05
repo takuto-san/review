@@ -9,8 +9,6 @@ runtime: false
 | エージェント | 責務 |
 |---|---|
 | `context` | 境界付き探索で判断を左右する情報だけを収集し、媒体非依存のコンテキストを作成する |
-| `review-needed` | closed、draft、trivial、already-reviewedのPRをskipする |
-| `small-cls` | 規模、Change Group、凝集性によるレビュワー負荷を判定する |
 | `mechanical` | CI相当のテスト、静的解析、客観的な検証を実行する |
 | `structural` | 設計、実行経路、状態、性能、セキュリティ、保守性を確認する |
 | `contextual` | 要求、意図、互換性、文書を仕様駆動で確認する |
@@ -18,15 +16,14 @@ runtime: false
 
 推奨順序：
 
-1. Reviewer modeでは`review-needed`
-2. `context`
-3. `small-cls`
-4. `skills/review/SKILL.md`がレビュー計画を作成
-5. `mechanical`、`structural`、`contextual`
-6. `comment`
-7. `skills/review/SKILL.md`が最終レポートを作成
+1. 親がレビュー要否を判定
+2. `mechanical`と`context`を並列開始
+3. 親がChange Scopeを分析し計画を作成
+4. `structural`と`contextual`を並列実行
+5. 全タスク完了後、`comment`が全結果を検証して構造化Artifactを返す
+6. 親が最終レポートを一度だけ生成
 
-機械的チェックと2つのレビューエージェントは並列実行できます。
+要否・スコープ判定は親が`skills/review/checks/`の手順で行います。通常5回の子エージェント呼び出しですが、バッチ分割で増える場合があります。
 
 ## エージェント成果物の契約
 

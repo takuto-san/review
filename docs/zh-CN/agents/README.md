@@ -9,8 +9,6 @@ runtime: false
 | 代理 | 职责 |
 |---|---|
 | `context` | 通过有边界的发现收集影响判断的信息，生成与来源无关的精简上下文 |
-| `review-needed` | 跳过已关闭、草稿、微不足道或已审查的PR |
-| `small-cls` | 评估规模、Change Group和内聚性是否造成过大审查负担 |
 | `mechanical` | 运行CI等效测试、静态分析和客观检查 |
 | `structural` | 审查设计、执行路径、状态、性能、安全和可维护性 |
 | `contextual` | 以规格驱动方式审查需求、意图、兼容性和文档 |
@@ -18,15 +16,14 @@ runtime: false
 
 推荐顺序：
 
-1. Reviewer mode下的`review-needed`
-2. `context`
-3. `small-cls`
-4. `skills/review/SKILL.md`生成审查计划
-5. `mechanical`、`structural`和`contextual`
-6. `comment`
-7. `skills/review/SKILL.md`生成最终报告
+1. 编排器判断审查必要性
+2. 并行启动`mechanical`和`context`
+3. 编排器分析Change Scope并生成计划
+4. 并行运行`structural`和`contextual`
+5. 全部任务结束后，`comment`验证所有结果并返回结构化Artifact
+6. 编排器仅生成一次最终报告
 
-机械检查和两个审查代理可以并行运行。
+必要性和范围检查由编排器按`skills/review/checks/`中的步骤执行。通常调用5次子代理，批次拆分可增加次数。
 
 ## 代理产物契约
 

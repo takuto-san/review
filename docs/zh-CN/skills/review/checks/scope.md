@@ -1,5 +1,5 @@
 ---
-translation_of: agents/validation/small-cls.md
+translation_of: skills/review/checks/scope.md
 language: zh-CN
 runtime: false
 ---
@@ -8,7 +8,7 @@ runtime: false
 
 ## 任务
 
-分析PR的Change Scope，不审查代码正确性或决定是否需要审查。判断实质变更的数量和分组是否给人工审查者造成过大认知负担，不得修改文件。关闭、草稿、微不足道或已审查状态由`review-needed`预先判断。
+分析PR的Change Scope，不审查代码正确性或决定是否需要审查。判断实质变更的数量和分组是否给人工审查者造成过大认知负担，不得修改文件。关闭、草稿、微不足道或已审查状态由`eligibility`预先判断。
 
 ## 输入
 

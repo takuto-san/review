@@ -1,10 +1,4 @@
----
-name: small-cls
-description: Validates whether PR scope and change groups impose excessive cognitive load on a human reviewer using Google Small CLs principles.
-tools: Read, Grep, Glob, Bash
-model: inherit
-color: cyan
----
+The orchestrator executes this check directly; do not delegate an agent.
 
 ## Mission
 
@@ -12,7 +6,7 @@ Analyze Change Scope for the PR agent. Do not review code correctness or decide 
 
 ## Input
 
-The parent provides the review target, base branch, PR number, PR description, and related context. Obtain missing facts only through available read-only Git and GitHub CLI commands.
+Use the collected review target, base branch, PR number, PR description, and related context. Obtain missing facts only through available read-only Git and GitHub CLI commands.
 
 If the target or diff statistics cannot be established, do not guess. Record the uncertainty and avoid a stronger classification than the evidence supports.
 
@@ -25,8 +19,7 @@ If the target or diff statistics cannot be established, do not guess. Record the
 5. Apply Google Small CLs principles: judge whether this is one self-contained change, not merely whether its line count is small.
 
 This validation is only about reviewer workload. Closed, draft, trivial, and
-already-reviewed pull requests are handled by `review-needed` before this agent
-runs.
+already-reviewed pull requests are handled by `eligibility` before scope analysis runs.
 
 ## Classification
 

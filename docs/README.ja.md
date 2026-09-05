@@ -42,9 +42,6 @@ review/
 ├── agents/
 │   ├── context/
 │   │   └── context.md
-│   ├── validation/
-│   │   ├── review-needed.md
-│   │   └── small-cls.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
@@ -54,7 +51,10 @@ review/
 │   └── README.md
 ├── skills/
 │   └── review/
-│       └── SKILL.md
+│       ├── SKILL.md
+│       └── checks/
+│           ├── eligibility.md
+│           └── scope.md
 ├── docs/
 │   ├── ja/
 │   ├── zh-CN/
@@ -69,21 +69,18 @@ review/
 ### レビューワークフロー
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "stepAfter"}}}%%
 flowchart TD
-    A[ローカル変更またはPRを特定] --> B{PRにレビューが必要か}
-    B -->|不要| X[スキップ理由を報告]
-    B -->|必要またはローカル変更| C[関連コンテキストを収集]
-    C --> D[レビューコンテキストを収集]
-    D --> E[レビュワー負荷を評価]
-    E --> F[変更固有のレビュー計画を作成]
-    F --> G1[Mechanical review]
-    F --> G2[Structural review]
-    F --> G3[Contextual review]
-    G1 --> H[Findingを検証・重複排除]
-    G2 --> H
-    G3 --> H
-    H --> I[最終レポートを生成]
+    A[Resolve target] --> B{Orchestrator: review needed?}
+    B -->|No| X[Report skip reason]
+    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| M[Mechanical checks]
+    C --> P[Orchestrator: scope and review plan]
+    P --> S[Structural review]
+    P --> T[Contextual review]
+    M --> V[Verify all results]
+    S --> V
+    T --> V
+    V --> R[Orchestrator: render report once]
 ```
 
 <a id="3-usage"></a>
@@ -268,8 +265,8 @@ claude plugin validate /path/to/review --strict
 エージェントの責務と出力契約は`agents/`以下で定義します。
 
 - `agents/context/context.md` — 簡潔なレビューコンテキストの収集
-- `agents/validation/review-needed.md` — Pull Requestのレビュー要否
-- `agents/validation/small-cls.md` — Change Scopeとレビュワー負荷
+- `skills/review/checks/eligibility.md` — Pull Requestのレビュー要否
+- `skills/review/checks/scope.md` — Change Scopeとレビュワー負荷
 - `agents/review/mechanical.md` — 客観的なリポジトリチェック
 - `agents/review/structural.md` — コードとアーキテクチャの分析
 - `agents/review/contextual.md` — 意図と要求の分析

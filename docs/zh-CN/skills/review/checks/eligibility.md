@@ -1,5 +1,5 @@
 ---
-translation_of: agents/validation/review-needed.md
+translation_of: skills/review/checks/eligibility.md
 language: zh-CN
 runtime: false
 ---
@@ -24,7 +24,7 @@ runtime: false
 4. `already_reviewed`：当前认证用户已对当前head SHA提交完成的审查，且此后没有推送需要审查的变更。旧head、pending review、自动检查或他人的审查均不满足条件。
 5. 其他情况为`review_required`。
 
-PR是否过大、是否内聚或是否易于审查只由`small-cls`判断。缺少明确的跳过证据时返回`review_required`并记录不确定性。
+PR是否过大、是否内聚或是否易于审查只由`scope`判断。缺少明确的跳过证据时返回`review_required`并记录不确定性。
 
 ## 完成条件
 

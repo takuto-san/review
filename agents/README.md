@@ -3,24 +3,24 @@
 | Agent | Responsibility |
 |---|---|
 | `context` | Uses bounded discovery to collect decision-shaping information and produces compact, source-independent context |
-| `review-needed` | Checks PR review eligibility and skips closed, draft, trivial, or already-reviewed PRs |
-| `small-cls` | Evaluates whether size, Change Groups, and cohesion create excessive reviewer workload |
 | `mechanical` | Runs CI-equivalent tests, static analysis, and other objective checks |
 | `structural` | Reviews design, execution paths, state, performance, security, and maintainability |
 | `contextual` | Performs specification-driven review of requirements, intent, compatibility, and documentation |
 | `comment` | Revalidates findings, removes speculation and duplicates, and produces PR comment candidates |
 
-Recommended order:
+Default workflow:
 
-1. `review-needed` in Reviewer mode
-2. `context`
-3. `small-cls`
-4. `skills/review/SKILL.md` builds the review plan
-5. `mechanical`, `structural`, and `contextual`
-6. `comment`
-7. `skills/review/SKILL.md` produces the final report
+1. The orchestrator checks eligibility using `../skills/review/checks/eligibility.md`.
+2. Start `mechanical` and `context` concurrently.
+3. The orchestrator analyzes scope using `../skills/review/checks/scope.md` and builds the review plan.
+4. Run `structural` and `contextual` batches while mechanical checks continue.
+5. Join all checks and review batches; `comment` verifies every result and returns structured data only.
+6. The orchestrator renders the final report once.
 
-The mechanical checks and the two review agents can run in parallel.
+The orchestrator uses `skills/review/checks/` for eligibility and scope;
+these documents are checks, not agent definitions. Normally five child invocations
+are used; structural/contextual batching can increase this count. Full evidence
+verification remains required, including results that report no problem.
 
 ## Agent artifact contract
 

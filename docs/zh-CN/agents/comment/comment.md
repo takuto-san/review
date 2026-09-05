@@ -24,9 +24,9 @@ runtime: false
 
 `fully_meets`通常对应`LGTM`；`mostly_meets`在缺口轻微且可选时对应`Nit`，需要人工决定时对应`Need Review`。`partially_meets`和`does_not_meet`只有在验证具体缺陷或需求违反后才对应`Please Fix`，产品或设计决定对应`Need Review`。`not_assessable`始终对应`Unable to Verify`并保留缺失信息。这不是通过数值阈值自动决定通过或失败。
 
-## 最终输出
+## 结构化输出
 
-仅使用验证结果，输出列为 `Review Layer | Review Item | Label | Result / Evidence` 的汇总表。包含实际执行的机械检查及结构、上下文项目，显示全部五种标签的计数（包括零）和 `Overall: <label>`。优先顺序为 `Please Fix`、`Need Review`、`Unable to Verify`、`Nit`、`LGTM`。保留证据、缺失信息和未完成原因，不在格式化阶段重新评价。明确说明结果仅辅助人工判断。
+不生成人工可读表格，只返回`review.verification` Artifact，由编排器生成一次报告。继续独立验证全部结果。`mechanical_results`保留实际执行检查及验证标签，`label_counts`包含全部5个标签的数量，`overall_label`包含考虑未完成状态的总体判断。合并结果按ID计数，排除结果不计入。未完成不得标记LGTM。
 
 ## 验证与完成条件
 
@@ -38,6 +38,9 @@ runtime: false
 
 ```json
 {
+  "mechanical_results": [],
+  "label_counts": {"Please Fix": 0, "Need Review": 0, "Unable to Verify": 0, "Nit": 0, "LGTM": 0},
+  "overall_label": "Please Fix | Need Review | Unable to Verify | Nit | LGTM",
   "verified_results": [
     {
       "ids": [

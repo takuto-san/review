@@ -39,9 +39,6 @@ review/
 ├── agents/
 │   ├── context/
 │   │   └── context.md
-│   ├── validation/
-│   │   ├── review-needed.md
-│   │   └── small-cls.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
@@ -51,7 +48,10 @@ review/
 │   └── README.md
 ├── skills/
 │   └── review/
-│       └── SKILL.md
+│       ├── SKILL.md
+│       └── checks/
+│           ├── eligibility.md
+│           └── scope.md
 ├── docs/
 │   ├── ja/
 │   ├── zh-CN/
@@ -65,21 +65,18 @@ review/
 ### Review Workflow
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "stepAfter"}}}%%
 flowchart TD
-    A[Resolve local changes or PR] --> B{PR needs review?}
+    A[Resolve target] --> B{Orchestrator: review needed?}
     B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Collect relevant context]
-    C --> D[Collect review context]
-    D --> E[Evaluate reviewer workload]
-    E --> F[Build change-specific review plan]
-    F --> G1[Mechanical review]
-    F --> G2[Structural review]
-    F --> G3[Contextual review]
-    G1 --> H[Verify and deduplicate findings]
-    G2 --> H
-    G3 --> H
-    H --> I[Produce final report]
+    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| M[Mechanical checks]
+    C --> P[Orchestrator: scope and review plan]
+    P --> S[Structural review]
+    P --> T[Contextual review]
+    M --> V[Verify all results]
+    S --> V
+    T --> V
+    V --> R[Orchestrator: render report once]
 ```
 
 ## 3. Usage
@@ -260,8 +257,8 @@ Only criteria applicable to the current change are selected.
 Agent responsibilities and output contracts are defined under `agents/`:
 
 - `agents/context/context.md` — compact review-context collection
-- `agents/validation/review-needed.md` — pull request review eligibility
-- `agents/validation/small-cls.md` — change scope and reviewer workload
+- `skills/review/checks/eligibility.md` — pull request review eligibility
+- `skills/review/checks/scope.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
 - `agents/review/contextual.md` — intent and requirement analysis

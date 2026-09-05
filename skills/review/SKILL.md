@@ -72,16 +72,31 @@ reconstruct them from conversation history.
 
 ## 2. Check whether review is needed
 
-In Reviewer mode, run `review:validation:review-needed` with the shared target
-context and review metadata. It must check the conditions in this order: closed
-or merged, draft, trivial, and already reviewed at the current head SHA by the
-current authenticated reviewer.
+In Reviewer mode, the orchestrator performs eligibility checking directly using
+already collected metadata and the decision procedure and payload contract in
+`skills/review/checks/eligibility.md`. Do not delegate a validation agent.
+Preserve the condition order: closed or merged, draft, trivial, and already
+reviewed at the current head SHA by the current authenticated reviewer.
+Obtain missing facts through read-only commands. An uncertain skip condition
+must result in continuing review with the uncertainty recorded. Produce
+`review.eligibility` using the existing Artifact contract.
 
 If `should_review` is `false`, stop before context collection and report the
-status and evidence concisely. Do not run `small-cls` or any review layer.
+status and evidence concisely. Do not collect context or run any review layer.
 
 In Developer mode, skip this validation and continue when reviewable local
 changes exist.
+
+### Start mechanical checks early
+
+Once eligibility passes (or reviewable local changes are found), start
+`review:review:mechanical` concurrently with context collection. Provide the
+repository root, target, base and head SHAs, changed files, CI status, and
+assigned Artifact IDs. Apply the Mechanical checks safety rules below before
+execution. Do not wait for context, scope analysis, or the review plan.
+Retain the task handle and its result or failure; never launch it a second time
+at the review-layer stage. Keep an isolated worktree available until all agents
+using it finish, including mechanical checks.
 
 ## 3. Collect and organize context
 
@@ -106,12 +121,13 @@ record the resulting limitation.
 
 ## 4. Analyze Change Scope
 
-Run `review:validation:small-cls` with the shared target context, PR metadata, changed
-files, diff statistics, and resolved SHAs.
-
-The agent must only analyze reviewer workload, Change Groups, scope
-classification, and uncertainties. It must not decide whether review is needed
-or produce code-quality findings.
+As part of planning, the orchestrator analyzes scope directly using the
+procedure and payload contract in `skills/review/checks/scope.md`. Do not
+delegate a scope agent. Reuse collected metadata and diff statistics, group
+substantive changes by purpose, account for all files, and assess cohesion and
+reviewer workload. Produce `review.scope` before `review.plan`, preserving
+uncertainties and the existing scope classifications. Scope analysis does not
+produce code-quality findings or change eligibility.
 
 If the result is `review_blocked`, continue only with checks that can still
 produce reliable evidence. The final report must state that the review is
@@ -153,9 +169,9 @@ for every item assigned to it and preserve the item's `id`. Each result contains
 
 ## 6. Run the review layers
 
-After the review plan is complete, run these agents in parallel:
+After the review plan is complete, run these agents in parallel while the
+already-started mechanical checks continue:
 
-- `review:review:mechanical`
 - `review:review:structural`
 - `review:review:contextual`
 
@@ -206,7 +222,8 @@ are only `passed` or `failed`.
 
 ## 7. Verify the review results
 
-After all review layers finish, run `review:comment:comment` with the shared target
+Wait for the early mechanical task and all structural/contextual batches to
+finish, preserving failures as incomplete prerequisites. Then run `review:comment:comment` with the shared target
 collected context, Change Scope result, complete review plan, the complete
 `review.structural`, `review.contextual`, and `review.mechanical` Artifacts, and
 the repository's `REVIEW.md`.
@@ -228,8 +245,9 @@ incomplete reason, but it must not disappear silently.
 ## 8. Produce the final report
 
 As the orchestrator, produce the final report using only the Change Scope
-result, review plan, the comment agent's `verified_results`, and
-`review_prerequisites`. Do not discover, add, remove, or re-evaluate
+result, review plan, and the comment agent's structured verification payload
+(including `verified_results`, `mechanical_results`, `label_counts`,
+`overall_label`, and `review_prerequisites`). Do not discover, add, remove, or re-evaluate
 findings during formatting.
 
 State that the labels and suggested fixes are advisory triage candidates for human review; they do not automatically authorize merge, rejection, or author requests.

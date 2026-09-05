@@ -21,7 +21,9 @@ runtime: false
 
 ## 2. 判断是否需要审查
 
-Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合并、草稿、微不足道，以及当前认证用户是否已审查当前head SHA。`should_review`为false时简要报告证据并停止，不运行`small-cls`或其他审查层。Developer mode跳过此验证。
+Reviewer mode由编排器直接执行`skills/review/checks/eligibility.md`中的判断步骤和Artifact契约，不启动单独代理。保持closed/merged、draft、trivial、当前认证用户对同一head SHA已审查的顺序。不确定时继续审查，跳过时不启动后续任务。Developer mode有可审查变更时继续。
+
+确认需要审查后立即并行启动`mechanical`和`context`。机械检查不等待计划，遵守安全条件且只运行一次。保留任务和失败信息，全部使用者结束前不得删除worktree。
 
 ## 3. 收集并整理上下文
 
@@ -29,9 +31,7 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 4. 分析Change Scope
 
-运行`review:validation:small-cls`，评估差异统计、Change Group、内聚性和可审查性。结果为`review_blocked`时只继续可靠检查，并标记最终审查未完成。
-
-`small-cls`只判断变更量和Change Group是否给审查者造成过大负担，不判断是否需要审查。
+编排器在生成计划时直接使用`skills/review/checks/scope.md`的步骤和契约，评估变更规模、内聚性和审查负担并生成`review.scope`。不启动单独代理。`review_blocked`时仅继续可靠检查并标记未完成。
 
 ## 5. 生成审查计划
 
@@ -39,9 +39,8 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 
 ## 6. 运行三层审查
 
-并行运行：
+计划完成后并行运行以下代理。已启动的mechanical继续运行，不重复启动：
 
-- `review:review:mechanical`
 - `review:review:structural`
 - `review:review:contextual`
 
@@ -50,6 +49,8 @@ Reviewer mode运行`review:validation:review-needed`，依次检查关闭或合�
 每次委派都必须显式提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异或其明确位置、分配项以及代理特定的必需输入。不得假设subagent能从父对话恢复编排状态。
 
 ## 7. 验证审查结果
+
+等待提前启动的mechanical和全部审查结束，失败作为未完成原因保留。comment继续独立验证所有结果，仅返回包含`mechanical_results`、`label_counts`、`overall_label`的结构化Artifact。人工可读报告仅由编排器生成一次。
 
 向`review:comment:comment`传递收集后的上下文、Change Scope、计划、结构和上下文审查结果、完整的`review.mechanical` Artifact以及`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
 

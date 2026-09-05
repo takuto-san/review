@@ -21,7 +21,9 @@ runtime: false
 
 ## 2. レビュー要否の判定
 
-Reviewer modeでは`review:validation:review-needed`を実行し、closedまたはmerged、draft、trivial、現在のhead SHAを現在の認証ユーザーがalready-reviewedの順に確認します。`should_review`がfalseなら、根拠を簡潔に報告して終了し、`small-cls`やレビュー層は実行しません。Developer modeではこの判定を行いません。
+Reviewer modeでは親が`skills/review/checks/eligibility.md`の判定手順とArtifact契約を直接使います。別エージェントは起動しません。closed/merged、draft、trivial、現在の認証ユーザーによる同じhead SHAのレビュー済み判定の順を保ち、不確実ならレビューを続行します。skip時は後続を起動しません。Developer modeではレビュー可能な変更があれば続行します。
+
+実施判断直後に`mechanical`と`context`を並列開始します。機械チェックは計画を待たず、安全条件を適用して1回だけ実行します。タスクと失敗を保持し、利用中のworktreeは全タスク完了まで削除しません。
 
 ## 3. コンテキストの収集と整理
 
@@ -29,9 +31,7 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 4. Change Scopeの分析
 
-`review:validation:small-cls`を実行し、変更統計、Change Group、凝集性、レビュー可能性を判定します。`review_blocked`なら信頼できる確認だけを続行し、最終結果を未完了とします。
-
-`small-cls`はレビュー要否ではなく、変更量とChange Groupがレビュワーに過大な負荷を与えないかだけを判定します。
+親が計画作成の一部として`skills/review/checks/scope.md`の手順と契約を直接使い、変更量・まとまり・レビュー負荷を評価して`review.scope`を生成します。別エージェントは起動しません。`review_blocked`なら信頼できる確認だけを続行し、未完了を明記します。
 
 ## 5. レビュー計画の作成
 
@@ -39,9 +39,8 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 
 ## 6. 3層レビューの実行
 
-次を並列実行します。
+計画完成後に次を並列実行します。先行開始したmechanicalは継続し、再起動しません。
 
-- `review:review:mechanical`
 - `review:review:structural`
 - `review:review:contextual`
 
@@ -50,6 +49,8 @@ Reviewer modeでは`review:validation:review-needed`を実行し、closedまた�
 各委譲では、リポジトリルート、レビュー対象、baseとheadのSHA、変更ファイル、完全な差分またはその明確な位置、割り当て項目、agent固有の必須入力を明示します。subagentが親会話からオーケストレーション状態を復元できるとは仮定しません。
 
 ## 7. レビュー結果の検証
+
+先行開始したmechanicalと全レビューの完了を待ち、失敗は未完了理由として保持します。commentは全結果の独立検証を維持し、`mechanical_results`、`label_counts`、`overall_label`を含む構造化Artifactだけを返します。人向けレポートは親が一度だけ生成します。
 
 `review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、構造・文脈レビュー結果、完全な`review.mechanical` Artifact、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
 

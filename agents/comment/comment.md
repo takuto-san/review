@@ -71,26 +71,29 @@ Determine the overall label using the highest-priority result present:
 
 ## Output
 
-Return the human-readable final result first, followed by exactly one A2A-compatible Artifact using `name: review.verification` and `metadata.schema: review/verification`.
+Return exactly one A2A-compatible Artifact using `name: review.verification`
+and `metadata.schema: review/verification`. Do not generate a human-readable
+report; the orchestrator renders it once.
 
-The human-readable result must contain one row for every executed Mechanical check and one row for every Structural and Contextual review-plan item. Use this exact column order:
-
-```markdown
-| Review Layer | Review Item | Label | Result / Evidence |
-|---|---|---|---|
-| Mechanical | 001: Static analysis | LGTM | Lint and type checks passed. |
-| Structural | 002: Error handling | Please Fix | `src/api.ts:42` suppresses the exception. |
-| Contextual | 003: Specification alignment | Unable to Verify | The Issue and acceptance criterion conflict, so conformance cannot be assessed. |
-```
-
-State with the human-readable results that labels and suggested fixes are advisory triage candidates for human review, not automatic merge gates or author requests. Humans decide priority and action using project context.
-
-After the results table, include a count table for all five labels and a single `Overall: <label>` line. Include labels with zero results in the count table. Do not omit `LGTM` or `Unable to Verify` items from the results table.
+Include `mechanical_results`: one record per executed check, preserving `name`,
+`command`, `status`, and `summary`, and adding the verified `label` and evidence.
+A passing check maps to `LGTM` only for its executed scope. A failed check needs
+evidence-based classification; an environment failure is `Unable to Verify`,
+not automatically a code defect. Preserve unstarted checks in incomplete reasons.
+Include `label_counts` for all five labels (including zero), counting one row
+per executed check and per verified review-plan ID; expand merged IDs for these
+counts. Rejected findings are not active rows. Include `overall_label`, using
+the priority above across these labels and `Unable to Verify` when prerequisites
+are incomplete. An incomplete review must never be summarized as `LGTM`.
+The orchestrator copies these labels and counts without re-evaluation.
 
 Put exactly the following payload in `parts[0].data` of the Artifact:
 
 ```json
 {
+  "mechanical_results": [],
+  "label_counts": {"Please Fix": 0, "Need Review": 0, "Unable to Verify": 0, "Nit": 0, "LGTM": 0},
+  "overall_label": "Please Fix | Need Review | Unable to Verify | Nit | LGTM",
   "verified_results": [
     {
       "ids": [

@@ -1,5 +1,5 @@
 ---
-translation_of: agents/validation/review-needed.md
+translation_of: skills/review/checks/eligibility.md
 language: ja
 runtime: false
 ---
@@ -25,7 +25,7 @@ PRに新しいレビューが必要かを判定します。コードレビュー
 4. `already_reviewed`: 現在の認証ユーザーが現在のhead SHAに対して完了済みレビューを提出しており、その後にレビュー対象の変更がpushされていない。古いhead、pending review、自動チェック、他者のレビューは該当しない。
 5. それ以外は`review_required`。
 
-PRが大きすぎるか、凝集しているか、レビューしやすいかは判定しません。これらは`small-cls`だけが扱います。skipに必要な証拠が不明確なら`review_required`として不確実性を記録します。
+PRが大きすぎるか、凝集しているか、レビューしやすいかは判定しません。これらは`scope`だけが扱います。skipに必要な証拠が不明確なら`review_required`として不確実性を記録します。
 
 ## 完了条件
 

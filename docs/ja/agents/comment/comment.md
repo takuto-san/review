@@ -25,9 +25,9 @@ runtime: false
 
 `fully_meets` は通常 `LGTM`、`mostly_meets` は限定的で任意の改善なら `Nit`、人間の判断が必要なら `Need Review` に対応します。`partially_meets` と `does_not_meet` は具体的な不具合・要件違反を検証した場合だけ `Please Fix`、設計・製品判断なら `Need Review` に対応します。`not_assessable` は常に `Unable to Verify` とし、不足情報を保持します。数値の閾値による自動合否判定ではありません。
 
-## 最終出力
+## 構造化出力
 
-検証エージェントの結果だけを使い、`Review Layer | Review Item | Label | Result / Evidence` の統合表を出力します。実行した機械的チェックと構造・文脈の各項目を含め、全5ラベルの件数（0件も含む）と `Overall: <label>` を表示します。優先順は `Please Fix`、`Need Review`、`Unable to Verify`、`Nit`、`LGTM` です。根拠、不足情報、未完了理由を保持し、整形時に再評価しません。結果が人間向けの判断補助であることを明記します。
+人向けの表は生成しません。`review.verification` Artifactだけを返し、親がレポートを一度だけ生成します。全結果の独立検証は維持します。`mechanical_results`に実行済みチェックと検証済みラベルを保持し、`label_counts`に全5ラベルの件数、`overall_label`に未完了状態も考慮した総合判定を格納します。統合した指摘はIDごとに件数を数え、除外指摘は件数に含めません。未完了をLGTMにしません。
 
 ## 検証と完了条件
 
@@ -35,10 +35,13 @@ runtime: false
 
 `Please Fix`には変更コードから影響までの現実的な経路が必要です。仕様由来なら要件・受け入れ条件のID、正確な出典、実装位置を保持します。収集済みコンテキストにない外部資料を探索しません。推測・無関係な既存問題・CIで説明済みの問題を除外し、同じ根本原因を統合します。計画の全IDを `verified_results`、`rejected_results`、`incomplete_reasons` のいずれかで追跡し、黙って落としません。必要な入力・層・チェックの不足は未完了とします。
 
-`Need Review`には具体的な `human_question` と質問先が必要です。仕様の矛盾・曖昧さで適合度を判断できない場合は `not_assessable` とし、`Unable to Verify`へ対応させます。人間向け出力の後に、以下のペイロードを持つ `review.verification` Artifactを1つ返します。
+`Need Review`には具体的な `human_question` と質問先が必要です。仕様の矛盾・曖昧さで適合度を判断できない場合は `not_assessable` とし、`Unable to Verify`へ対応させます。以下のペイロードを持つ `review.verification` Artifactを1つ返します。
 
 ```json
 {
+  "mechanical_results": [],
+  "label_counts": {"Please Fix": 0, "Need Review": 0, "Unable to Verify": 0, "Nit": 0, "LGTM": 0},
+  "overall_label": "Please Fix | Need Review | Unable to Verify | Nit | LGTM",
   "verified_results": [
     {
       "ids": [

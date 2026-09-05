@@ -1,10 +1,4 @@
----
-name: review-needed
-description: Checks if review is needed (skips closed, draft, trivial, or already-reviewed PRs).
-tools: Read, Grep, Glob, Bash
-model: inherit
-color: cyan
----
+The orchestrator executes this check directly; do not delegate an agent.
 
 ## Mission
 
@@ -17,7 +11,7 @@ Change Scope analysis when reviewable local changes exist.
 
 ## Input
 
-The parent provides the repository, pull request number, state, draft status,
+Use the collected repository, pull request number, state, draft status,
 base and head SHAs, changed files, diff statistics, and available review
 metadata. Obtain missing facts only through read-only Git and GitHub CLI
 commands.
@@ -42,7 +36,7 @@ Evaluate the conditions in this order and stop at the first matching condition:
 5. Otherwise, `review_required`.
 
 Do not evaluate whether the pull request is too large, cohesive, or easy to
-review. Those questions belong exclusively to `small-cls`.
+review. Those questions belong exclusively to `scope`.
 
 If the evidence required to skip is missing or ambiguous, return
 `review_required` and record the uncertainty. Skipping must be supported by
