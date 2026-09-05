@@ -9,7 +9,6 @@
   "agents": [
     "./agents/review/mechanical.md",
     "./agents/review/structural.md",
-    "./agents/review/contextual.md",
-    "./agents/verify/verify.md"
+    "./agents/review/contextual.md"
   ]
 }

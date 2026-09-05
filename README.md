@@ -19,14 +19,14 @@ Automated review for local changes and GitHub pull requests using specialized ag
 
 ## 1. Overview
 
-The Review Plugin gathers relevant context, evaluates whether a change is reviewable, builds a change-specific plan, and audits the implementation from mechanical, structural, and contextual perspectives. A separate verification stage removes speculative or duplicate findings before producing the final report.
+The Review PR Plugin gathers relevant context, evaluates whether a change is reviewable, builds a change-specific plan, and audits the implementation from mechanical, structural, and contextual perspectives. The orchestrator consolidates those results and checks the evidence of findings that may require a fix.
 
 It supports two modes:
 
 - **Developer mode** reviews commits and working-tree changes in the current repository.
 - **Reviewer mode** reviews a GitHub pull request identified by its number or URL.
 
-This is a clean-room implementation inspired by multi-stage review workflows. Context collection, planning, review, finding verification, and report generation are implemented entirely by this plugin.
+This is a clean-room implementation inspired by multi-stage review workflows. Context collection, planning, review, result consolidation, and report generation are implemented entirely by this plugin.
 
 ## 2. Architecture
 
@@ -41,8 +41,6 @@ review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
 │   │   └── contextual.md
-│   ├── verify/
-│   │   └── verify.md
 │   └── README.md
 ├── skills/
 │   └── review-pr/
@@ -66,10 +64,10 @@ flowchart TD
     C --> P[Orchestrator: scope and review plan]
     P --> S[Structural review]
     P --> T[Contextual review]
-    M --> V[Verify all results]
+    M --> V[Consolidate results]
     S --> V
     T --> V
-    V --> R[Orchestrator: render report once]
+    V --> R[Check Please Fix candidates and render report]
 ```
 
 ## 3. Usage
@@ -89,8 +87,8 @@ What it does:
    - Mechanical checks for tests, static analysis, and objective signals
    - Structural review for design, execution paths, state, security, performance, and maintainability
    - Contextual review for requirements, intent, compatibility, and documentation
-7. Revalidates candidate findings against the code and available evidence.
-8. Reports only verified findings, human decisions, and explicit limitations.
+7. Consolidates the results and checks the evidence of `Please Fix` candidates.
+8. Reports findings, human decisions, and explicit limitations.
 
 Usage:
 
@@ -117,7 +115,7 @@ A pull request URL is supported in a natural-language request, but not as a dire
 - Parallel mechanical, structural, and contextual review
 - Read-only context collection from explicitly referenced sources
 - Compact review context instead of raw source documents
-- Independent verification and deduplication of findings
+- Result consolidation, deduplication, and targeted evidence checks for `Please Fix` candidates
 - Explicit review coverage, evidence, and limitations
 
 ### Review Report Format
@@ -254,11 +252,10 @@ Agent responsibilities and output contracts are defined under `agents/`:
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
 - `agents/review/contextual.md` — intent and requirement analysis
-- `agents/verify/verify.md` — finding verification and deduplication
 
 Keep orchestration and final-report rules in `skills/review-pr/SKILL.md`.
 
-Give every review-plan item a stable `id` such as `001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
+Give every review-plan item a stable `id` such as `001` and preserve it through layer review and consolidation. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
 
 
 ## 7. Technical Details
@@ -270,8 +267,7 @@ Give every review-plan item a stable `id` such as `001` and preserve it through 
 - The orchestrator classifies cohesion and reviewer workload.
 - The review skill creates a target-specific review plan.
 - Mechanical checks start during preparation; structural and contextual review run in parallel after planning.
-- 1 verify agent verifies candidates and produces the verified result set.
-- The review skill formats the final report without adding or reevaluating findings.
+- The review skill consolidates results, checks `Please Fix` candidates, and formats the final report.
 
 ### Context handling
 
@@ -301,6 +297,6 @@ Licensed under the [MIT License](LICENSE).
 
 ## Review evaluation and batching
 
-Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item before verification. Three review layers can therefore require more than three agent invocations.
+Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item. Three review layers can therefore require more than three agent invocations.
 
-Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/verify/verify.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.
+Conformance has four levels plus a separate `not_assessable` state. The orchestrator maps evaluations to the five workflow labels in `REVIEW.md` and checks the evidence of every `Please Fix` candidate. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.

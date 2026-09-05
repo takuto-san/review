@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Review local code changes or a GitHub Pull Request using review-need validation, context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
+description: Review local code changes or a GitHub Pull Request using eligibility and scope checks, context collection, three specialized review layers, and evidence-based reporting. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
 argument-hint: "[PR number]"
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
 ---
@@ -283,35 +283,46 @@ The mechanical Artifact uses `name: review.mechanical`. Its payload contains a
 records its name, command, `status`, and observed summary. Statuses
 are only `passed` or `failed`.
 
-## 7. Verify the review results
+## 7. Consolidate the review results
 
 Wait for the early mechanical task and all structural/contextual batches to
-finish, preserving failures as incomplete prerequisites. Then run `review:verify:verify` with the shared target
-collected context, Change Scope result, complete review plan, the complete
-`review.structural`, `review.contextual`, and `review.mechanical` Artifacts, and
-the repository's `REVIEW.md`.
+finish. Preserve task failures and unavailable checks as incomplete reasons.
+The orchestrator then consolidates the complete `review.mechanical`,
+`review.structural`, and `review.contextual` Artifacts directly. Do not delegate
+this consolidation step.
 
-The verifier must not perform another general review. It verifies candidate
-findings against actual code, validates realistic failure paths and evidence,
-rejects speculation and unrelated pre-existing issues, removes duplicates,
-assigns the final five-label classification from each layer's `assessment.evaluation` and
-`assessment`, and confirms whether applicable static analysis and Unit tests ran.
+Validate artifact names, schemas, target IDs, batch coverage, and result shapes.
+Account for every review-plan ID exactly once. Merge results with the same root
+cause while retaining every affected ID. Reject only clearly inapplicable or
+pre-existing findings, and record the reason internally so an assigned ID never
+disappears silently.
 
-Only the verification agent's `verified_results` may be passed to the final report.
-Rejected results must not be presented as active findings. If required checks
-did not run, preserve the reason and mark the review as incomplete.
+Use these labels:
 
-The verifier must account for every `id` from the review plan. An
-item may be represented by a verified result, a rejected result, or an explicit
-incomplete reason, but it must not disappear silently.
+- `fully_meets` normally maps to `LGTM`.
+- `mostly_meets` normally maps to `Nit`; use `Need Review` when a concrete human
+  decision is required.
+- `partially_meets` and `does_not_meet` are candidates for `Please Fix`. Before
+  assigning that label, the orchestrator must inspect the cited changed code and
+  confirm a realistic trigger-to-impact path. For contextual results, also
+  confirm the cited requirement or acceptance criterion and its implementation
+  location. Use `Need Review` for product, design, or specification decisions.
+- `not_assessable` maps to `Unable to Verify` and preserves missing information.
+
+Do not re-review `LGTM` or `Nit` results. If a `Please Fix` candidate is not
+supported after the targeted check, reject it when it is inapplicable or
+pre-existing; otherwise classify it as `Unable to Verify` with the missing
+evidence. A passing mechanical check maps to `LGTM` only for its executed scope.
+A failed mechanical check maps to `Please Fix` only when its observed output
+demonstrates a defect introduced or exposed by the change; environment and
+execution failures map to `Unable to Verify`.
 
 ## 8. Produce the final report
 
-As the orchestrator, produce the final report using only the Change Scope
-result, review plan, and the verification agent's structured verification payload
-(including `verified_results`, `mechanical_results`, `label_counts`,
-`overall_label`, and `review_prerequisites`). Do not discover, add, remove, or re-evaluate
-findings during formatting.
+As the orchestrator, produce the final report directly from the Change Scope
+result, review plan, consolidated layer results, mechanical results, and
+incomplete reasons. Do not add new review concerns during consolidation or
+formatting.
 
 State that the labels and suggested fixes are advisory triage candidates for human review; they do not automatically authorize merge, rejection, or author requests.
 
@@ -319,8 +330,9 @@ Present one consolidated table with the columns `Review Layer`, `Review Item`,
 `Label`, and `Result / Evidence`. Include every executed Mechanical check and
 every Structural and Contextual review-plan item. Use only `Nit`, `LGTM`,
 `Please Fix`, `Need Review`, or `Unable to Verify` as labels. After the table,
-show counts for all five labels, including zero counts, and the overall label
-calculated by the verifier. Preserve concrete evidence and missing-information
+show counts for all five labels, including zero counts, and calculate the overall
+label using this priority: `Please Fix`, `Need Review`, `Unable to Verify`, `Nit`,
+then `LGTM`. Preserve concrete evidence and missing-information
 details, but do not expose intermediate Artifact data or rejected candidates.
 
 ## Completion requirements
@@ -330,8 +342,8 @@ Reviewer mode eligibility was confirmed,
 required context was collected or its limitations were recorded, Change Scope
 was evaluated, the review plan was generated from `REVIEW.md`, all applicable
 review layers completed, applicable static analysis and Unit tests ran or have
-justified limitations, candidate findings were independently verified, and the
-final report contains only verified results.
+justified limitations, every result was consolidated, and every `Please Fix`
+candidate received a targeted evidence check.
 
 If any requirement is missing, clearly mark the review as incomplete and state
 the reason.
