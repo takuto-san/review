@@ -22,7 +22,7 @@ runtime: false
 
 ## 任务
 
-只对`primary_layer: contextual`的项目进行规格驱动审查。把`context`代理收集的上下文与实现和测试对应起来，不得修改文件。
+只对`primary_layer: contextual`的项目进行规格驱动审查。把编排器收集的上下文与实现和测试对应起来，不得修改文件。
 
 ## 必需输入
 

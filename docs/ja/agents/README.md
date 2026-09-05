@@ -8,22 +8,21 @@ runtime: false
 
 | エージェント | 責務 |
 |---|---|
-| `context` | 境界付き探索で判断を左右する情報だけを収集し、媒体非依存のコンテキストを作成する |
 | `mechanical` | CI相当のテスト、静的解析、客観的な検証を実行する |
 | `structural` | 設計、実行経路、状態、性能、セキュリティ、保守性を確認する |
 | `contextual` | 要求、意図、互換性、文書を仕様駆動で確認する |
-| `comment` | Findingを再検証し、推測と重複を除き、PRコメント候補を作る |
+| `verify` | Findingを再検証し、推測と重複を除き、PRコメント候補を作る |
 
 推奨順序：
 
 1. 親がレビュー要否を判定
-2. `mechanical`と`context`を並列開始
+2. `mechanical`を開始し、親が並行して情報収集を実施
 3. 親がChange Scopeを分析し計画を作成
 4. `structural`と`contextual`を並列実行
-5. 全タスク完了後、`comment`が全結果を検証して構造化Artifactを返す
+5. 全タスク完了後、`verify`が全結果を検証して構造化Artifactを返す
 6. 親が最終レポートを一度だけ生成
 
-要否・スコープ判定は親が`skills/review/checks/`の手順で行います。通常5回の子エージェント呼び出しですが、バッチ分割で増える場合があります。
+要否・スコープ判定は親が`skills/review/checks/`の手順で行います。通常4回の子エージェント呼び出しですが、バッチ分割で増える場合があります。
 
 ## エージェント成果物の契約
 
@@ -43,7 +42,7 @@ runtime: false
     "targetId": "001",
     "schema": "review/context",
     "schemaVersion": "1.0",
-    "producer": "review:context"
+    "producer": "review:review"
   }
 }
 ```
@@ -76,7 +75,7 @@ IDはオーケストレーターが付け、エージェントへ明示的に渡
 - 構造・文脈レビューエージェントは割り当て項目ごとに必ず1件の結果を返し、省略せず`assessment.evaluation.level: not_assessable`を使用する。
 - `mechanical`は安全かつ適用可能な場合、リポジトリ定義の静的解析と単元テストを実行する。
 - 実行したすべての検証コマンドと結果を記録する。
-- `comment`は各レイヤーとチェックの完了を検証し、未完了レビューを完了扱いにしない。
+- `verify`は各レイヤーとチェックの完了を検証し、未完了レビューを完了扱いにしない。
 
 ## 評価と分割の共通方針
 

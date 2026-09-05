@@ -167,7 +167,7 @@ separately according to the result classifications below.
 
 ## Workflow labels
 
-After evidence verification, use `Please Fix`, `Need Review`, `Nit`, `LGTM`, or `Unable to Verify`. The conditional mapping and label definitions are maintained in [the verification agent](agents/comment/comment.md#status). `not_assessable` always maps to `Unable to Verify`; other levels require evidence and impact checks, not a numeric pass/fail threshold.
+After evidence verification, use `Please Fix`, `Need Review`, `Nit`, `LGTM`, or `Unable to Verify`. The conditional mapping and label definitions are maintained in [the verification agent](agents/verify/verify.md#status). `not_assessable` always maps to `Unable to Verify`; other levels require evidence and impact checks, not a numeric pass/fail threshold.
 
 Do not add inapplicable concerns to the plan. If an assigned item is found inapplicable during verification, record its ID and reason in `rejected_results` rather than silently dropping it or inventing a sixth label.
 
@@ -186,7 +186,7 @@ Explain what is wrong, why it matters, when it occurs, and a feasible resolution
 
 # Output format
 
-Follow [the verification agent's output contract](agents/comment/comment.md#output) and [the final-report procedure](skills/review/SKILL.md). Present the consolidated results table, counts for all five labels, and the verifier's overall label. Preserve evidence, missing information, and incomplete-review reasons. State that the results are advisory candidates for human review. Do not reclassify results during formatting.
+Follow [the verification agent's output contract](agents/verify/verify.md#output) and [the final-report procedure](skills/review/SKILL.md). Present the consolidated results table, counts for all five labels, and the verifier's overall label. Preserve evidence, missing information, and incomplete-review reasons. State that the results are advisory candidates for human review. Do not reclassify results during formatting.
 
 # Do not report
 

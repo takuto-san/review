@@ -23,11 +23,36 @@ runtime: false
 
 Reviewer modeでは親が`skills/review/checks/eligibility.md`の判定手順とArtifact契約を直接使います。別エージェントは起動しません。closed/merged、draft、trivial、現在の認証ユーザーによる同じhead SHAのレビュー済み判定の順を保ち、不確実ならレビューを続行します。skip時は後続を起動しません。Developer modeではレビュー可能な変更があれば続行します。
 
-実施判断直後に`mechanical`と`context`を並列開始します。機械チェックは計画を待たず、安全条件を適用して1回だけ実行します。タスクと失敗を保持し、利用中のworktreeは全タスク完了まで削除しません。
+実施判断直後に`mechanical`を開始し、親が並行して情報収集を実施します。機械チェックは計画を待たず、安全条件を適用して1回だけ実行します。タスクと失敗を保持し、利用中のworktreeは全タスク完了まで削除しません。
 
 ## 3. コンテキストの収集と整理
 
-`review:context:context`を実行します。関連Issueを特権的な入口にせず、ユーザー指定の情報源、PR関連成果物、変更に隣接するリポジトリ情報から境界付き検索アンカーを作ります。利用可能な場合はMCP読み取りツールを優先し、それ以外で取得した情報源も各resultのMCP Resource互換`source.uri`と正確な`source.locator`で識別します。生文書や内部取得計画は後続へ渡さず、変更目的、出典付きの`results`、`unknowns`だけを保持します。Requirement分類やレビュー質問作成は行いません。
+親が情報収集を直接行います。独立したcontextエージェントは起動しません。関連Issueを特権的な入口にせず、ユーザー指定の情報源、PR関連成果物、変更に隣接するリポジトリ情報から境界付き検索アンカーを作ります。利用可能な場合はMCP読み取りツールを優先し、それ以外で取得した情報源も各resultのMCP Resource互換`source.uri`と正確な`source.locator`で識別します。生文書や内部取得計画は後続へ渡さず、変更目的、出典付きの`results`、`unknowns`だけを保持します。Requirement分類やレビュー質問作成は行いません。
+
+親が`review.context` Artifact（schema: `review/context`）を作成し、次のペイロードを`parts[0].data`に格納します。
+
+```json
+{
+  "context": {
+    "purpose": "Problem solved by the change",
+    "result": [
+      {
+        "summary": "Fact that helps downstream agents understand the change",
+        "source": {
+          "uri": "Source-independent resource URI",
+          "locator": "Heading, block, line, or other precise location"
+        }
+      }
+    ],
+    "unknowns": [
+      {
+        "summary": "Missing, inaccessible, oversized, or conflicting information",
+        "uri": "Related resource URI when known"
+      }
+    ]
+  }
+}
+```
 
 ## 4. Change Scopeの分析
 
@@ -50,9 +75,9 @@ Reviewer modeでは親が`skills/review/checks/eligibility.md`の判定手順と
 
 ## 7. レビュー結果の検証
 
-先行開始したmechanicalと全レビューの完了を待ち、失敗は未完了理由として保持します。commentは全結果の独立検証を維持し、`mechanical_results`、`label_counts`、`overall_label`を含む構造化Artifactだけを返します。人向けレポートは親が一度だけ生成します。
+先行開始したmechanicalと全レビューの完了を待ち、失敗は未完了理由として保持します。verifyは全結果の独立検証を維持し、`mechanical_results`、`label_counts`、`overall_label`を含む構造化Artifactだけを返します。人向けレポートは親が一度だけ生成します。
 
-`review:comment:comment`へ収集済みコンテキスト、Change Scope、計画、構造・文脈レビュー結果、完全な`review.mechanical` Artifact、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
+`review:verify:verify`へ収集済みコンテキスト、Change Scope、計画、構造・文脈レビュー結果、完全な`review.mechanical` Artifact、`REVIEW.md`を渡します。失敗経路と証拠を再確認し、推測・既存問題・重複を除外します。検証済み結果だけを最終出力へ渡します。計画内の全`id`を検証済み結果、除外結果、明示的な未完了理由のいずれかで処理し、項目を黙って消失させません。
 
 ## 最終出力
 

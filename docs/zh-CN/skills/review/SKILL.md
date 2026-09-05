@@ -23,11 +23,36 @@ runtime: false
 
 Reviewer mode由编排器直接执行`skills/review/checks/eligibility.md`中的判断步骤和Artifact契约，不启动单独代理。保持closed/merged、draft、trivial、当前认证用户对同一head SHA已审查的顺序。不确定时继续审查，跳过时不启动后续任务。Developer mode有可审查变更时继续。
 
-确认需要审查后立即并行启动`mechanical`和`context`。机械检查不等待计划，遵守安全条件且只运行一次。保留任务和失败信息，全部使用者结束前不得删除worktree。
+确认需要审查后立即启动`mechanical`，编排器同时收集上下文。机械检查不等待计划，遵守安全条件且只运行一次。保留任务和失败信息，全部使用者结束前不得删除worktree。
 
 ## 3. 收集并整理上下文
 
-运行`review:context:context`。不再把关联Issue作为特权入口，而是从用户指定来源、PR关联产物以及与变更相邻的仓库信息构建有边界的搜索锚点。可用时优先使用MCP只读工具；其他工具取得的来源也必须用各result中的MCP Resource兼容`source.uri`和精确`source.locator`标识。不得把原始文档或内部获取计划传给后续代理，只保留变更目的、带来源的`results`和`unknowns`。此阶段不分类Requirement或创建审查问题。
+编排器直接收集上下文，不启动独立的context代理。不再把关联Issue作为特权入口，而是从用户指定来源、PR关联产物以及与变更相邻的仓库信息构建有边界的搜索锚点。可用时优先使用MCP只读工具；其他工具取得的来源也必须用各result中的MCP Resource兼容`source.uri`和精确`source.locator`标识。不得把原始文档或内部获取计划传给后续代理，只保留变更目的、带来源的`results`和`unknowns`。此阶段不分类Requirement或创建审查问题。
+
+编排器创建`review.context` Artifact（schema: `review/context`），将以下负载放入`parts[0].data`。
+
+```json
+{
+  "context": {
+    "purpose": "Problem solved by the change",
+    "results": [
+      {
+        "summary": "Fact that helps downstream agents understand the change",
+        "source": {
+          "uri": "Source-independent resource URI",
+          "locator": "Heading, block, line, or other precise location"
+        }
+      }
+    ],
+    "unknowns": [
+      {
+        "summary": "Missing, inaccessible, oversized, or conflicting information",
+        "uri": "Related resource URI when known"
+      }
+    ]
+  }
+}
+```
 
 ## 4. 分析Change Scope
 
@@ -50,9 +75,9 @@ Reviewer mode由编排器直接执行`skills/review/checks/eligibility.md`中的
 
 ## 7. 验证审查结果
 
-等待提前启动的mechanical和全部审查结束，失败作为未完成原因保留。comment继续独立验证所有结果，仅返回包含`mechanical_results`、`label_counts`、`overall_label`的结构化Artifact。人工可读报告仅由编排器生成一次。
+等待提前启动的mechanical和全部审查结束，失败作为未完成原因保留。verify继续独立验证所有结果，仅返回包含`mechanical_results`、`label_counts`、`overall_label`的结构化Artifact。人工可读报告仅由编排器生成一次。
 
-向`review:comment:comment`传递收集后的上下文、Change Scope、计划、结构和上下文审查结果、完整的`review.mechanical` Artifact以及`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
+向`review:verify:verify`传递收集后的上下文、Change Scope、计划、结构和上下文审查结果、完整的`review.mechanical` Artifact以及`REVIEW.md`。重新验证失败路径和证据，排除推测、既有问题和重复项。只有验证结果可进入最终报告。计划中的每个`id`必须归入验证结果、拒绝结果或明确的未完成原因，不得静默消失。
 
 ## 最终输出
 

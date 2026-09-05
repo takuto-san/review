@@ -40,14 +40,12 @@ review/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── agents/
-│   ├── context/
-│   │   └── context.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
 │   │   └── contextual.md
-│   ├── comment/
-│   │   └── comment.md
+│   ├── verify/
+│   │   └── verify.md
 │   └── README.md
 ├── skills/
 │   └── review/
@@ -72,7 +70,7 @@ review/
 flowchart TD
     A[Resolve target] --> B{Orchestrator: review needed?}
     B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| C[Orchestrator: collect context]
     B -->|Yes or local changes| M[Mechanical checks]
     C --> P[Orchestrator: scope and review plan]
     P --> S[Structural review]
@@ -264,13 +262,12 @@ claude plugin validate /path/to/review --strict
 
 エージェントの責務と出力契約は`agents/`以下で定義します。
 
-- `agents/context/context.md` — 簡潔なレビューコンテキストの収集
 - `skills/review/checks/eligibility.md` — Pull Requestのレビュー要否
 - `skills/review/checks/scope.md` — Change Scopeとレビュワー負荷
 - `agents/review/mechanical.md` — 客観的なリポジトリチェック
 - `agents/review/structural.md` — コードとアーキテクチャの分析
 - `agents/review/contextual.md` — 意図と要求の分析
-- `agents/comment/comment.md` — Findingの検証と重複排除
+- `agents/verify/verify.md` — Findingの検証と重複排除
 
 オーケストレーションと最終レポートの規則は`skills/review/SKILL.md`に保持します。
 
@@ -283,16 +280,16 @@ claude plugin validate /path/to/review --strict
 ### エージェント構成
 
 - 1つのeligibility agentがPull Requestにレビューが必要かを判定します。
-- 1つのcontext agentが明示的に参照された証拠を収集します。
+- 親が明示的に参照された証拠を収集します。
 - 1つのscope agentが凝集性とレビュワー負荷を分類します。
 - review skillが対象固有のレビュー計画を作成します。
 - 3つの専門エージェントがMechanical・Structural・Contextualの観点を並列レビューします。
-- 1つのcomment agentがFinding候補を検証し、検証済み結果を生成します。
+- 1つのverify agentがFinding候補を検証し、検証済み結果を生成します。
 - review skillがFindingを追加・再評価せずに最終レポートを整形します。
 
 ### コンテキストの扱い
 
-context agentはレビュー対象に関連付けられた参照だけをたどります。後続処理にはNotion、Confluence、Google Docs、GitHub、Web、リポジトリ内文書の生データではなく、簡潔なコンテキストを渡します。取得できない情報や情報源の矛盾は、コンテキストと最終カバレッジに明示します。
+親はレビュー対象に関連付けられた参照だけをたどります。後続処理にはNotion、Confluence、Google Docs、GitHub、Web、リポジトリ内文書の生データではなく、簡潔なコンテキストを渡します。取得できない情報や情報源の矛盾は、コンテキストと最終カバレッジに明示します。
 
 ### GitHub連携
 

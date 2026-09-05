@@ -2,23 +2,22 @@
 
 | Agent | Responsibility |
 |---|---|
-| `context` | Uses bounded discovery to collect decision-shaping information and produces compact, source-independent context |
 | `mechanical` | Runs CI-equivalent tests, static analysis, and other objective checks |
 | `structural` | Reviews design, execution paths, state, performance, security, and maintainability |
 | `contextual` | Performs specification-driven review of requirements, intent, compatibility, and documentation |
-| `comment` | Revalidates findings, removes speculation and duplicates, and produces PR comment candidates |
+| `verify` | Revalidates findings, removes speculation and duplicates, and produces PR comment candidates |
 
 Default workflow:
 
 1. The orchestrator checks eligibility using `../skills/review/checks/eligibility.md`.
-2. Start `mechanical` and `context` concurrently.
+2. Start `mechanical`; the orchestrator collects context concurrently.
 3. The orchestrator analyzes scope using `../skills/review/checks/scope.md` and builds the review plan.
 4. Run `structural` and `contextual` batches while mechanical checks continue.
-5. Join all checks and review batches; `comment` verifies every result and returns structured data only.
+5. Join all checks and review batches; `verify` verifies every result and returns structured data only.
 6. The orchestrator renders the final report once.
 
 The orchestrator uses `skills/review/checks/` for eligibility and scope;
-these documents are checks, not agent definitions. Normally five child invocations
+these documents are checks, not agent definitions. Normally four child invocations
 are used; structural/contextual batching can increase this count. Full evidence
 verification remains required, including results that report no problem.
 
@@ -42,7 +41,7 @@ in `parts[0].data`.
     "targetId": "001",
     "schema": "review/context",
     "schemaVersion": "1.0",
-    "producer": "review:context"
+    "producer": "review:review"
   }
 }
 ```
@@ -80,10 +79,10 @@ Requirement and acceptance-criterion IDs supplied by sources remain unchanged, e
 - Each structural and contextual review agent returns exactly one result per assigned item, using `assessment.evaluation.level: not_assessable` and `assessment.missing_information` instead of omission when evidence is insufficient.
 - `mechanical` must run repository-defined static analysis and unit tests when safe and applicable.
 - Every executed verification command and result must be recorded.
-- `comment` must verify layer and check completion and must not treat an incomplete review as complete.
+- `verify` must verify layer and check completion and must not treat an incomplete review as complete.
 
 ## Review evaluation and batching
 
 Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item before verification. Three review layers can therefore require more than three agent invocations.
 
-Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/comment/comment.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.
+Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/verify/verify.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.

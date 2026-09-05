@@ -1,5 +1,5 @@
 ---
-translation_of: agents/comment/comment.md
+translation_of: agents/verify/verify.md
 language: zh-CN
 runtime: false
 ---

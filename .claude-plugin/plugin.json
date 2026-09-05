@@ -7,10 +7,9 @@
   },
   "license": "MIT",
   "agents": [
-    "./agents/context/context.md",
     "./agents/review/mechanical.md",
     "./agents/review/structural.md",
     "./agents/review/contextual.md",
-    "./agents/comment/comment.md"
+    "./agents/verify/verify.md"
   ]
 }

@@ -1,6 +1,6 @@
 ---
-name: comment
-description: Verifies review findings, removes speculation and duplicates, and produces PR comment candidates without posting them. Use after all review layers finish.
+name: verify
+description: Verifies all review results, removes speculation and duplicates, and returns structured assessments for the orchestrator. Use after all review layers finish.
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: red

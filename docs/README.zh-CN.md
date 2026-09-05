@@ -40,14 +40,12 @@ review/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── agents/
-│   ├── context/
-│   │   └── context.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
 │   │   └── contextual.md
-│   ├── comment/
-│   │   └── comment.md
+│   ├── verify/
+│   │   └── verify.md
 │   └── README.md
 ├── skills/
 │   └── review/
@@ -72,7 +70,7 @@ review/
 flowchart TD
     A[Resolve target] --> B{Orchestrator: review needed?}
     B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| C[Orchestrator: collect context]
     B -->|Yes or local changes| M[Mechanical checks]
     C --> P[Orchestrator: scope and review plan]
     P --> S[Structural review]
@@ -264,13 +262,12 @@ claude plugin validate /path/to/review --strict
 
 代理职责和输出约定定义在`agents/`目录中：
 
-- `agents/context/context.md` — 精简审查上下文收集
 - `skills/review/checks/eligibility.md` — Pull Request审查必要性
 - `skills/review/checks/scope.md` — Change Scope和审查者负担
 - `agents/review/mechanical.md` — 客观仓库检查
 - `agents/review/structural.md` — 代码和架构分析
 - `agents/review/contextual.md` — 意图和需求分析
-- `agents/comment/comment.md` — Finding验证和去重
+- `agents/verify/verify.md` — Finding验证和去重
 
 编排和最终报告规则保存在`skills/review/SKILL.md`中。
 
@@ -283,16 +280,16 @@ claude plugin validate /path/to/review --strict
 ### 代理架构
 
 - 1个eligibility agent判断Pull Request是否需要审查。
-- 1个context agent收集明确引用的证据。
+- 编排器收集明确引用的证据。
 - 1个scope agent对内聚性和审查者负担进行分类。
 - review skill生成针对目标的审查计划。
 - 3个专业代理并行审查Mechanical、Structural和Contextual关注点。
-- 1个comment agent验证候选Finding并生成已验证结果集。
+- 1个verify agent验证候选Finding并生成已验证结果集。
 - review skill在不新增或重新评估Finding的情况下格式化最终报告。
 
 ### 上下文处理
 
-context agent只跟随与审查目标相关联的引用。后续阶段接收精简上下文，而不是Notion、Confluence、Google Docs、GitHub、Web或仓库文档的原始内容。缺失信息和来源冲突会明确保留在上下文和最终覆盖报告中。
+编排器只跟随与审查目标相关联的引用。后续阶段接收精简上下文，而不是Notion、Confluence、Google Docs、GitHub、Web或仓库文档的原始内容。缺失信息和来源冲突会明确保留在上下文和最终覆盖报告中。
 
 ### GitHub集成
 

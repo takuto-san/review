@@ -37,14 +37,12 @@ review/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── agents/
-│   ├── context/
-│   │   └── context.md
 │   ├── review/
 │   │   ├── mechanical.md
 │   │   ├── structural.md
 │   │   └── contextual.md
-│   ├── comment/
-│   │   └── comment.md
+│   ├── verify/
+│   │   └── verify.md
 │   └── README.md
 ├── skills/
 │   └── review/
@@ -68,7 +66,7 @@ review/
 flowchart TD
     A[Resolve target] --> B{Orchestrator: review needed?}
     B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Collect context]
+    B -->|Yes or local changes| C[Orchestrator: collect context]
     B -->|Yes or local changes| M[Mechanical checks]
     C --> P[Orchestrator: scope and review plan]
     P --> S[Structural review]
@@ -256,13 +254,12 @@ Only criteria applicable to the current change are selected.
 
 Agent responsibilities and output contracts are defined under `agents/`:
 
-- `agents/context/context.md` — compact review-context collection
 - `skills/review/checks/eligibility.md` — pull request review eligibility
 - `skills/review/checks/scope.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
 - `agents/review/contextual.md` — intent and requirement analysis
-- `agents/comment/comment.md` — finding verification and deduplication
+- `agents/verify/verify.md` — finding verification and deduplication
 
 Keep orchestration and final-report rules in `skills/review/SKILL.md`.
 
@@ -274,16 +271,16 @@ Give every review-plan item a stable `id` such as `001` and preserve it through 
 ### Agent architecture
 
 - 1 eligibility agent determines whether a pull request needs review.
-- 1 context agent gathers explicitly referenced evidence.
+- The orchestrator gathers source-backed evidence during preparation.
 - 1 scope agent classifies cohesion and reviewer workload.
 - The review skill creates a target-specific review plan.
 - 3 specialized agents review mechanical, structural, and contextual concerns in parallel.
-- 1 comment agent verifies candidates and produces the verified result set.
+- 1 verify agent verifies candidates and produces the verified result set.
 - The review skill formats the final report without adding or reevaluating findings.
 
 ### Context handling
 
-The context agent follows only references connected to the review target. Later stages receive compact context rather than raw Notion, Confluence, Google Docs, GitHub, web, or repository documents. Missing and conflicting sources remain explicit in the context and final coverage.
+The orchestrator follows only references connected to the review target. Later stages receive compact context rather than raw Notion, Confluence, Google Docs, GitHub, web, or repository documents. Missing and conflicting sources remain explicit in the context and final coverage.
 
 ### GitHub integration
 
@@ -311,4 +308,4 @@ Licensed under the [MIT License](LICENSE).
 
 Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item before verification. Three review layers can therefore require more than three agent invocations.
 
-Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/comment/comment.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.
+Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/verify/verify.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.
