@@ -136,8 +136,8 @@ A pull request URL is supported in a natural-language request, but not as a dire
 | Review Layer | Review Item | Label | Result / Evidence |
 |---|---|---|---|
 | Mechanical | Unit tests | LGTM | Existing unit tests passed. |
-| Structural | RP-001: Recovery | Please Fix | src/example.ts:42: a retry repeats a completed write without an idempotency guard. |
-| Contextual | RP-002: Date format | Unable to Verify | The supplied specifications conflict; authoritative precedence is missing. |
+| Structural | 001: Recovery | Please Fix | src/example.ts:42: a retry repeats a completed write without an idempotency guard. |
+| Contextual | 002: Date format | Unable to Verify | The supplied specifications conflict; authoritative precedence is missing. |
 
 | Label | Count |
 |---|---|
@@ -269,7 +269,7 @@ Agent responsibilities and output contracts are defined under `agents/`:
 
 Keep orchestration and final-report rules in `skills/review/SKILL.md`.
 
-Give every review-plan item a stable `id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
+Give every review-plan item a stable `id` such as `001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
 
 
 ## 7. Technical Details

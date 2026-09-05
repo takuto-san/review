@@ -19,6 +19,8 @@ explicitly requests it.
 Detailed review criteria are defined in `REVIEW.md`. Detailed responsibilities
 and output schemas are defined by the agents under `agents/`.
 
+Follow the [ID rules](../../agents/README.md#id-rules) when assigning target, item, batch, and output Artifact IDs. Pass assigned output IDs explicitly to each agent.
+
 ## 1. Resolve the review target
 
 Select one mode.
@@ -136,7 +138,7 @@ one primary review layer:
   migration decisions, and documentation
 
 When another layer provides useful evidence, record it as a supporting layer.
-Assign each selected item a stable identifier such as `RP-001`. Preserve the
+Assign each selected item a stable identifier such as `001`. Preserve the
 review item ID, selected criterion, concrete question, selection reason,
 primary layer, supporting layers, and expected evidence. Do not add generic
 review items merely for completeness.
@@ -172,8 +174,9 @@ at most five related items before delegation. Prefer three to five items when
 available; allow smaller batches and never add irrelevant items to fill a batch.
 Each invocation evaluates only its batch and returns one result per assigned ID.
 Give every batch the required shared context and a target-local unique batch ID
-such as `B-001`. Batch Artifact IDs use `<layer>-<target-id>-<batch-id>`;
-the consolidated Artifact uses `<layer>-<target-id>`. Before verification, consolidate
+such as `"001"`. Assign numeric-string Artifact IDs using the ID rules in `agents/README.md`.
+Store `targetId`, `batchId`, and `layer` in metadata. The consolidated
+Artifact receives a new `artifactId` and omits `batchId`. Before verification, consolidate
 batch results into one Artifact per layer using the existing layer schema, and
 check that every assigned ID appears exactly once with no missing or extra IDs.
 

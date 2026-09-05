@@ -78,9 +78,9 @@ The human-readable result must contain one row for every executed Mechanical che
 ```markdown
 | Review Layer | Review Item | Label | Result / Evidence |
 |---|---|---|---|
-| Mechanical | RP-001: Static analysis | LGTM | Lint and type checks passed. |
-| Structural | RP-002: Error handling | Please Fix | `src/api.ts:42` suppresses the exception. |
-| Contextual | RP-003: Specification alignment | Unable to Verify | The Issue and acceptance criterion conflict, so conformance cannot be assessed. |
+| Mechanical | 001: Static analysis | LGTM | Lint and type checks passed. |
+| Structural | 002: Error handling | Please Fix | `src/api.ts:42` suppresses the exception. |
+| Contextual | 003: Specification alignment | Unable to Verify | The Issue and acceptance criterion conflict, so conformance cannot be assessed. |
 ```
 
 State with the human-readable results that labels and suggested fixes are advisory triage candidates for human review, not automatic merge gates or author requests. Humans decide priority and action using project context.
@@ -94,7 +94,7 @@ Put exactly the following payload in `parts[0].data` of the Artifact:
   "verified_results": [
     {
       "ids": [
-        "RP-001"
+        "001"
       ],
       "rubric": {
         "category": "Reliability",
@@ -139,7 +139,7 @@ Put exactly the following payload in `parts[0].data` of the Artifact:
   "rejected_results": [
     {
       "ids": [
-        "RP-002"
+        "002"
       ],
       "original_conclusion": "Rejected candidate",
       "reason": "Reason for rejection"

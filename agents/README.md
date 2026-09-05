@@ -30,7 +30,7 @@ in `parts[0].data`.
 
 ```json
 {
-  "artifactId": "context-<target-id>",
+  "artifactId": "001",
   "name": "review.context",
   "parts": [
     {
@@ -39,6 +39,7 @@ in `parts[0].data`.
     }
   ],
   "metadata": {
+    "targetId": "001",
     "schema": "review/context",
     "schemaVersion": "1.0",
     "producer": "review:context"
@@ -52,6 +53,23 @@ and `review.verification` as artifact names for the corresponding data and
 stages. The orchestrator passes required inputs in these Artifact envelopes,
 and each receiver reads the typed payload from `parts[0].data`. No stage may
 infer missing payload fields from conversation history.
+
+## ID rules
+
+The orchestrator assigns IDs and passes them explicitly to agents. Generated IDs are strings containing only decimal digits, starting at `"001"`, then `"002"`; use at least three digits (`"999"` is followed by `"1000"`). Do not encode a type, layer, or target in an ID. These IDs are local to one review run, not global identifiers.
+
+| Field | Meaning | Numbering scope |
+|---|---|---|
+| `metadata.targetId` | The PR or local change set being reviewed | Unique within the run; map it to the repository, PR when applicable, base/head SHAs, and diff in the shared target context |
+| Result `id` | One review-plan item | Unique within the target across all layers and batches |
+| `metadata.batchId` | A group of at most five items delegated together | Unique within the target across structural and contextual layers |
+| `artifactId` | One output Artifact | Unique across all stages and targets in the run, including consolidated outputs |
+
+Each numbering scope starts at `"001"` independently. A repeated value in different fields is valid. Keep assigned IDs unchanged through review and verification; do not restart item numbering for each batch. The orchestrator supplies each invocation's output `artifactId`, `targetId`, and applicable `batchId`; agents copy them rather than generating IDs. A new output Artifact receives a new ID, including a repeated invocation or consolidation.
+
+Review outputs also carry `metadata.layer`: `mechanical` means command-based checks, `structural` means design and execution-path review, and `contextual` means requirements and specification review. Mechanical and consolidated outputs omit `batchId`; all Artifacts carry `targetId`. For example, batch Artifacts `"004"` and `"005"` may be consolidated into Artifact `"006"` for the same target and layer. The examples in individual files are independent, not a shared sequence.
+
+Requirement and acceptance-criterion IDs supplied by sources remain unchanged, even if they contain letters or hyphens. Their source locations must also be preserved.
 
 ## Completion requirements
 

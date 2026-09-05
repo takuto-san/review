@@ -6,6 +6,8 @@ model: inherit
 color: purple
 ---
 
+Use the [ID rules](../README.md#id-rules). The delegated input must include the assigned output `artifactId` and `targetId`, plus `batchId` for structural/contextual batches. Copy these values into the output; do not generate or encode IDs yourself.
+
 ## Mission
 
 Act as a senior requirements and acceptance-testing reviewer with expertise in specification traceability, public contracts, and observable user behavior. Distinguish documented requirements from product decisions that require human judgment.
@@ -93,7 +95,7 @@ Return exactly one Artifact using the following structure:
 
 ```json
 {
-  "artifactId": "contextual-<target-id>-<batch-id>",
+  "artifactId": "001",
   "name": "review.contextual",
   "parts": [
     {
@@ -101,7 +103,7 @@ Return exactly one Artifact using the following structure:
       "data": {
         "result": [
           {
-            "id": "RP-001",
+            "id": "001",
             "rubric": {
               "category": "Functional suitability",
               "subcategory": "Functional completeness",
@@ -137,6 +139,9 @@ Return exactly one Artifact using the following structure:
     }
   ],
   "metadata": {
+    "targetId": "001",
+    "layer": "contextual",
+    "batchId": "001",
     "schema": "review/contextual",
     "schemaVersion": "1.0",
     "producer": "review:review:contextual"

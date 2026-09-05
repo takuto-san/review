@@ -6,6 +6,8 @@ model: inherit
 color: green
 ---
 
+Use the [ID rules](../README.md#id-rules). The delegated input must include the assigned output `artifactId` and `targetId`, plus `batchId` for structural/contextual batches. Copy these values into the output; do not generate or encode IDs yourself.
+
 ## Mission
 
 Run the repository's existing verification commands and return the observed results. Do not review architecture, interpret requirements, create findings, or modify files.
@@ -35,7 +37,7 @@ Return exactly one A2A Artifact with the following structure:
 
 ```json
 {
-  "artifactId": "mechanical-<target-id>",
+  "artifactId": "001",
   "name": "review.mechanical",
   "parts": [
     {
@@ -53,6 +55,8 @@ Return exactly one A2A Artifact with the following structure:
     }
   ],
   "metadata": {
+    "targetId": "001",
+    "layer": "mechanical",
     "schema": "review/mechanical",
     "schemaVersion": "1.0",
     "producer": "review:review:mechanical"

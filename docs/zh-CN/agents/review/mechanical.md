@@ -6,6 +6,8 @@ runtime: false
 
 # 机械检查代理
 
+遵循[ID规则](../README.md#id规则)。委派输入必须包含输出的 `artifactId` 和 `targetId`，结构和上下文批次还须包含 `batchId`。原样输出这些值，不要自行生成或组合ID。
+
 ## 任务
 
 运行仓库已有的验证命令并返回实际观察到的结果。不得审查架构、解释需求、创建Finding或修改文件。
@@ -35,7 +37,7 @@ runtime: false
 
 ```json
 {
-  "artifactId": "mechanical-<target-id>",
+  "artifactId": "001",
   "name": "review.mechanical",
   "parts": [
     {
@@ -53,6 +55,8 @@ runtime: false
     }
   ],
   "metadata": {
+    "targetId": "001",
+    "layer": "mechanical",
     "schema": "review/mechanical",
     "schemaVersion": "1.0",
     "producer": "review:review:mechanical"

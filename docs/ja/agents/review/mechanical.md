@@ -7,6 +7,8 @@ runtime: false
 > [!NOTE]
 > この文書は人間向け日本語訳です。実行時には英語版を使用します。
 
+[IDルール](../README.md#idルール)に従います。委譲入力には出力用の`artifactId`と`targetId`、構造・文脈レビューでは`batchId`も含めます。受け取った値をそのまま出力し、IDを独自に生成・組み立てしません。
+
 ## ミッション
 
 リポジトリに既存の検証コマンドを実行し、観測した結果を返します。アーキテクチャのレビュー、要件の解釈、Findingの作成、ファイルの変更は行いません。
@@ -36,7 +38,7 @@ runtime: false
 
 ```json
 {
-  "artifactId": "mechanical-<target-id>",
+  "artifactId": "001",
   "name": "review.mechanical",
   "parts": [
     {
@@ -54,6 +56,8 @@ runtime: false
     }
   ],
   "metadata": {
+    "targetId": "001",
+    "layer": "mechanical",
     "schema": "review/mechanical",
     "schemaVersion": "1.0",
     "producer": "review:review:mechanical"
