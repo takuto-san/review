@@ -45,7 +45,7 @@ review/
 │   │   └── verify.md
 │   └── README.md
 ├── skills/
-│   └── review/
+│   └── review-pr/
 │       ├── SKILL.md
 │       └── checks/
 │           ├── eligibility.md
