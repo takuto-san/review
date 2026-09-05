@@ -72,9 +72,10 @@ reconstruct them from conversation history.
 
 ## 2. Check whether review is needed
 
-In Reviewer mode, the orchestrator performs eligibility checking directly using
-already collected metadata and the decision procedure and payload contract in
-`skills/review-pr/checks/eligibility.md`. Do not delegate a validation agent.
+The orchestrator performs eligibility checking directly using the decision
+procedures and payload contract in `skills/review-pr/checks/eligibility.md`.
+Do not delegate a validation agent. In Reviewer mode, first use the collected
+metadata to determine whether the review should run.
 Preserve the condition order: closed or merged, draft, trivial, and already
 reviewed at the current head SHA by the current authenticated reviewer.
 Obtain missing facts through read-only commands. An uncertain skip condition
@@ -89,14 +90,20 @@ changes exist.
 
 ### Start mechanical checks early
 
-Once eligibility passes (or reviewable local changes are found), start
-`review:review:mechanical` concurrently with context collection. Provide the
-repository root, target, base and head SHAs, changed files, CI status, and
-assigned Artifact IDs. Apply the Mechanical checks safety rules below before
-execution. Do not wait for context, scope analysis, or the review plan.
-Retain the task handle and its result or failure; never launch it a second time
-at the review-layer stage. Keep an isolated worktree available until all agents
-using it finish, including mechanical checks.
+Once review eligibility passes (or reviewable local changes are found), apply
+the agent eligibility procedure to `mechanical`. Inspect repository-defined
+commands and their required runtimes, installed dependencies, configuration,
+permissions, and services without executing repository-controlled commands.
+
+If its status is `ready` or `partial`, start `review:review:mechanical`
+concurrently with context collection and pass only the runnable checks. Also
+provide the repository root, target, base and head SHAs, changed files, CI
+status, eligibility evidence, and assigned Artifact IDs. If its status is
+`unavailable` or `not_applicable`, do not delegate it; preserve the reason and
+affected checks for the final report. Do not wait for context, scope analysis,
+or the review plan. Retain any task handle and its result or failure; never
+launch it a second time. Keep an isolated worktree available until all agents
+using it finish.
 
 ## 3. Collect and organize context
 
@@ -225,15 +232,23 @@ review items merely for completeness.
 Package the completed review plan as an A2A-compatible Artifact named
 `review.plan` with `metadata.schema: review/plan` before delegating review work.
 
-Every structural and contextual review agent must return exactly one result
-for every item assigned to it and preserve the item's `id`. Each result contains
+Every delegated structural and contextual review agent must return exactly one
+result for every item assigned to it and preserve the item's `id`. Items assigned
+to an unavailable agent are recorded as `Unable to Verify`. Each result contains
 `assessment.evaluation`; missing evidence must produce
 `assessment.evaluation.level: not_assessable` rather than omission.
 
 ## 6. Run the review layers
 
-After the review plan is complete, run these agents in parallel while the
-already-started mechanical checks continue:
+After the review plan is complete, apply the agent eligibility procedure in
+`skills/review-pr/checks/eligibility.md` to `structural` and `contextual`.
+Check each agent's definition, tools, required inputs, and assigned review-plan
+items without running a review. Do not delegate an agent with no assigned items
+or missing prerequisites. Preserve unavailable assigned IDs as `Unable to
+Verify` with the concrete reason.
+
+Run eligible agents in parallel while any already-started mechanical checks
+continue:
 
 - `review:review:structural`
 - `review:review:contextual`
@@ -244,9 +259,9 @@ and applicable repository guidance. Give the collected context to the contextual
 reviewer; do not give it raw source documents or permission to expand the
 retrieval scope.
 
-Additionally, give CI and check status to the mechanical reviewer, the full
-diff and codebase context to the structural reviewer, and PR descriptions,
-issues, requirements, and documentation to the contextual reviewer.
+Give the full diff and codebase context to the structural reviewer, and PR
+descriptions, issues, requirements, and documentation to the contextual
+reviewer.
 
 Partition each structural and contextual layer's assigned items into batches of
 at most five related items before delegation. Prefer three to five items when
@@ -255,9 +270,10 @@ Each invocation evaluates only its batch and returns one result per assigned ID.
 Give every batch the required shared context and a target-local unique batch ID
 such as `"001"`. Assign numeric-string Artifact IDs using the ID rules in `agents/README.md`.
 Store `targetId`, `batchId`, and `layer` in metadata. The consolidated
-Artifact receives a new `artifactId` and omits `batchId`. Before verification, consolidate
-batch results into one Artifact per layer using the existing layer schema, and
-check that every assigned ID appears exactly once with no missing or extra IDs.
+Artifact receives a new `artifactId` and omits `batchId`. Combine batch results
+into one Artifact per layer using the existing layer schema before the final
+result consolidation, and check that every delegated ID appears exactly once
+with no missing or extra IDs.
 
 Do not ask an agent to perform another layer's primary responsibility.
 
@@ -269,8 +285,8 @@ the parent conversation.
 
 ### Mechanical checks
 
-The mechanical reviewer must discover and run the repository's existing
-commands for applicable static analysis, lint, type checking, compilation,
+The mechanical reviewer must run the repository commands classified as runnable
+by eligibility for applicable static analysis, lint, type checking, compilation,
 Unit tests, and safe build or integration checks. Prefer commands used by CI.
 
 Do not install dependencies, add tools, change configuration, or execute
@@ -286,7 +302,9 @@ are only `passed` or `failed`.
 ## 7. Consolidate the review results
 
 Wait for the early mechanical task and all structural/contextual batches to
-finish. Preserve task failures and unavailable checks as incomplete reasons.
+finish. Include agents that were not delegated because of eligibility in the
+coverage accounting. Preserve task failures, unavailable checks, and unavailable
+assigned IDs as incomplete reasons and `Unable to Verify` results.
 The orchestrator then consolidates the complete `review.mechanical`,
 `review.structural`, and `review.contextual` Artifacts directly. Do not delegate
 this consolidation step.
@@ -338,7 +356,7 @@ details, but do not expose intermediate Artifact data or rejected candidates.
 ## Completion requirements
 
 Present the review as complete only when the target was resolved unambiguously,
-Reviewer mode eligibility was confirmed,
+review and agent eligibility was confirmed,
 required context was collected or its limitations were recorded, Change Scope
 was evaluated, the review plan was generated from `REVIEW.md`, all applicable
 review layers completed, applicable static analysis and Unit tests ran or have

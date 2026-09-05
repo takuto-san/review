@@ -57,17 +57,22 @@ review/
 
 ```mermaid
 flowchart TD
-    A[Resolve target] --> B{Orchestrator: review needed?}
-    B -->|No| X[Report skip reason]
-    B -->|Yes or local changes| C[Orchestrator: collect context]
-    B -->|Yes or local changes| M[Mechanical checks]
-    C --> P[Orchestrator: scope and review plan]
-    P --> S[Structural review]
-    P --> T[Contextual review]
-    M --> V[Consolidate results]
+    A[Orchestrator: load PR or local changes] --> B{Orchestrator: should the review run?}
+    B -->|No| X[Orchestrator: explain why the review was skipped]
+    B -->|Yes| C[Orchestrator: collect change intent and supporting context]
+    B -->|Yes| E{Orchestrator: can mechanical checks run?}
+    E -->|Yes| M[Mechanical: run eligible tests and static checks]
+    E -->|No| U[Orchestrator: record work that could not run]
+    C --> P[Orchestrator: assess scope and build the review plan]
+    P --> L{Orchestrator: can each planned review run?}
+    L -->|Structural| S[Structural: review code behavior and design]
+    L -->|Contextual| T[Contextual: compare the implementation with requirements]
+    L -->|Unavailable| U
+    M --> V[Orchestrator: combine results and check fix candidates]
     S --> V
     T --> V
-    V --> R[Check Please Fix candidates and render report]
+    U --> V
+    V --> R[Orchestrator: present the final review report]
 ```
 
 ## 3. Usage
@@ -80,13 +85,13 @@ What it does:
 
 1. Resolves local changes or the requested pull request.
 2. In Reviewer mode, checks whether review is needed and skips closed, draft, trivial, or already-reviewed pull requests.
-3. Collects only context explicitly connected to the review target.
+3. Checks whether mechanical commands can run, then starts only runnable checks while collecting context.
 4. Evaluates whether the change creates excessive reviewer workload.
 5. Builds a review plan from the change and `REVIEW.md`.
-6. Runs three specialized review layers in parallel:
-   - Mechanical checks for tests, static analysis, and objective signals
-   - Structural review for design, execution paths, state, security, performance, and maintainability
-   - Contextual review for requirements, intent, compatibility, and documentation
+6. Checks the inputs and assigned work for structural and contextual review, then runs only eligible agents in parallel while mechanical checks continue:
+   - Mechanical checks run tests, static analysis, and other objective checks.
+   - Structural review examines design, execution paths, state, security, performance, and maintainability.
+   - Contextual review compares the implementation with requirements, intent, compatibility expectations, and documentation.
 7. Consolidates the results and checks the evidence of `Please Fix` candidates.
 8. Reports findings, human decisions, and explicit limitations.
 
@@ -247,7 +252,7 @@ Only criteria applicable to the current change are selected.
 
 Agent responsibilities and output contracts are defined under `agents/`:
 
-- `skills/review-pr/checks/eligibility.md` — pull request review eligibility
+- `skills/review-pr/checks/eligibility.md` — review and agent execution eligibility
 - `skills/review-pr/checks/scope.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
@@ -262,11 +267,11 @@ Give every review-plan item a stable `id` such as `001` and preserve it through 
 
 ### Agent architecture
 
-- The orchestrator determines whether a pull request needs review.
+- The orchestrator determines whether a pull request needs review and whether each agent can run.
 - The orchestrator gathers source-backed evidence during preparation.
 - The orchestrator classifies cohesion and reviewer workload.
 - The review skill creates a target-specific review plan.
-- Mechanical checks start during preparation; structural and contextual review run in parallel after planning.
+- Runnable mechanical checks start during preparation; eligible structural and contextual review run in parallel after planning.
 - The review skill consolidates results, checks `Please Fix` candidates, and formats the final report.
 
 ### Context handling

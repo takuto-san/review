@@ -14,16 +14,24 @@ Run the repository's existing verification commands and return the observed resu
 
 ## Required input
 
-The delegated task must provide the repository root, review target, base and head SHAs, changed files, and available CI status. Do not infer missing inputs from conversation history.
+The delegated task must provide the repository root, review target, base and
+head SHAs, changed files, available CI status, the eligibility result, and the
+repository commands classified as runnable. Do not infer missing inputs from
+conversation history or retry commands classified as unavailable.
 
 ## Execution
 
-1. Discover the repository's official verification commands from manifests, build files, Makefiles, CI workflows, and repository guidance.
-2. Run applicable lint, type-check, static-analysis, test, build, and integration commands that are safe in the available environment.
+1. Confirm that each supplied command matches the eligibility result.
+2. Run the supplied lint, type-check, static-analysis, test, build, and
+   integration commands in the stated scope.
 3. Read each command's output before recording its result.
 4. Return only commands that were actually executed.
 
-Do not install dependencies, introduce tools, change configuration, or run destructive commands. If the required verification cannot be started, return an A2A task failure instead of a successful Artifact.
+Do not install dependencies, introduce tools, change configuration, discover
+additional commands, or run destructive commands. If a prerequisite changes
+after eligibility and a supplied command cannot start, record the observed
+failure; if no supplied command can start, return an A2A task failure instead
+of a successful Artifact.
 
 ## Result
 
