@@ -12,7 +12,7 @@ runtime: false
 
 ## 必需输入
 
-必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异以及分配的审查计划项。输入缺失时不得猜测，对受影响项使用`evaluation.level: not_assessable`。
+必须提供仓库根目录、审查目标、base和head SHA、变更文件、完整差异以及分配的审查计划项。输入缺失时不得猜测，对受影响项使用`assessment.evaluation.level: not_assessable`。
 
 ## 调查方法
 
@@ -40,7 +40,7 @@ runtime: false
 - 不得仅凭命名推测运行时问题。
 - 没有现实执行路径时不得将关注点评价为`does_not_meet`。
 - 不得报告个人风格偏好。
-- 当代码无法确定设计策略或必要实现、资料不可用时，使用`evaluation.level: not_assessable`。
+- 当代码无法确定设计策略或必要实现、资料不可用时，使用`assessment.evaluation.level: not_assessable`。
 
 ## 完成条件
 
@@ -53,9 +53,9 @@ runtime: false
 
 - 将已分配审查计划项的质量特性、子特性、关注点和PR特定问题复制到`rubric`。
 - 应用`REVIEW.md`定义的五级通用评价尺度：`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`或`not_assessable`。
-- 将所选等级和基于证据的简明理由写入`evaluation`。
+- 将所选等级和基于证据的简明理由写入`assessment.evaluation`。
 - 本层不分配审查流程标签或要求人工采取的行动；后续验证层根据评价和证据作出判断。
-- 当等级为`not_assessable`时，在`evaluation.rationale`中说明原因，并将缺失证据记录到`assessment.missing_information`。
+- 当等级为`not_assessable`时，在`assessment.evaluation.reason`中说明原因，并将缺失证据记录到`assessment.missing_information`。
 
 ## 输出
 
@@ -78,12 +78,12 @@ runtime: false
               "criterion": "Recovery and consistency",
               "question": "Can retry after notification failure duplicate payment?"
             },
-            "evaluation": {
-              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-              "rationale": "Concise evidence-based reason for selecting this level"
-            },
             "assessment": {
               "conclusion": "One-sentence conclusion",
+              "evaluation": {
+                "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+                "reason": "Concise evidence-based reason for selecting this level"
+              },
               "scenario": ["Trigger", "Code path", "Observable impact"],
               "evidence": [{"path": "path/to/file:line", "summary": "Material evidence"}],
               "suggestion": "Possible resolution direction, or empty when uncertain",

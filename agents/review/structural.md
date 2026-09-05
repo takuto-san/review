@@ -12,7 +12,7 @@ Evaluate only review items whose `primary_layer` is `structural`, using the diff
 
 ## Required input
 
-The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; use `evaluation.level: not_assessable` for the affected items.
+The delegated task must provide the repository root, review target, base and head SHAs, changed files, complete diff, and the review-plan items assigned to this agent. If required input is missing, do not guess; use `assessment.evaluation.level: not_assessable` for the affected items.
 
 ## Investigation method
 
@@ -40,7 +40,7 @@ The delegated task must provide the repository root, review target, base and hea
 - Do not infer runtime problems from naming alone.
 - Do not evaluate a concern as `does_not_meet` without a realistic execution path.
 - Do not report personal style preferences.
-- Use `evaluation.level: not_assessable` when code cannot establish a design policy or required implementation or material is unavailable.
+- Use `assessment.evaluation.level: not_assessable` when code cannot establish a design policy or required implementation or material is unavailable.
 
 ## Completion criteria
 
@@ -53,9 +53,9 @@ The delegated task must provide the repository root, review target, base and hea
 
 - Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
 - Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
-- Put the selected level and a concise evidence-based rationale in `evaluation`.
+- Put the selected level and a concise evidence-based reason in `assessment.evaluation`.
 - Do not assign review workflow labels or requested actions in this layer. The downstream verification layer decides those from the evaluation and evidence.
-- When the level is `not_assessable`, explain why in `evaluation.rationale` and record the missing evidence in `assessment.missing_information`.
+- When the level is `not_assessable`, explain why in `assessment.evaluation.reason` and record the missing evidence in `assessment.missing_information`.
 
 ## Output
 
@@ -78,12 +78,12 @@ Return exactly one Artifact using the following structure:
               "criterion": "Recovery and consistency",
               "question": "Can retry after notification failure duplicate payment?"
             },
-            "evaluation": {
-              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-              "rationale": "Concise evidence-based reason for selecting this level"
-            },
             "assessment": {
               "conclusion": "One-sentence conclusion",
+              "evaluation": {
+                "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+                "reason": "Concise evidence-based reason for selecting this level"
+              },
               "scenario": [
                 "Trigger",
                 "Code path",

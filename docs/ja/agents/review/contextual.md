@@ -13,7 +13,7 @@ runtime: false
 
 ## 必須入力
 
-レビュー対象、変更ファイル、完全な差分、収集済みコンテキスト、割り当てられたレビュー計画項目が必要です。不足する場合は代替情報を探索したり推測したりせず、該当項目を`evaluation.level: not_assessable`とします。
+レビュー対象、変更ファイル、完全な差分、収集済みコンテキスト、割り当てられたレビュー計画項目が必要です。不足する場合は代替情報を探索したり推測したりせず、該当項目を`assessment.evaluation.level: not_assessable`とします。
 
 ## 使用する文脈
 
@@ -21,7 +21,7 @@ runtime: false
 - 正規化されたコンテキスト
 - テスト名と期待値
 
-外部の情報源へ独自にアクセスしたり、収集済みコンテキストにない参照を探索したりしてはいけません。必要な情報が不足する場合は取得範囲を広げず`evaluation.level: not_assessable`とし、不足内容を示してください。
+外部の情報源へ独自にアクセスしたり、収集済みコンテキストにない参照を探索したりしてはいけません。必要な情報が不足する場合は取得範囲を広げず`assessment.evaluation.level: not_assessable`とし、不足内容を示してください。
 
 ## 確認する内容
 
@@ -40,7 +40,7 @@ runtime: false
 - 出典のない要約を正式な仕様として扱わない。
 - 情報源間の矛盾を独自に解決せず、`not_assessable`と評価して矛盾を記録する。
 - コードの正しさだけで、プロダクト判断が正しいと結論付けない。
-- 要求が曖昧な場合や必要な文書へアクセスできない場合は`evaluation.level: not_assessable`とする。
+- 要求が曖昧な場合や必要な文書へアクセスできない場合は`assessment.evaluation.level: not_assessable`とする。
 
 ## 完了条件
 
@@ -54,9 +54,9 @@ runtime: false
 
 - 割り当てられたレビュー計画項目から、該当するcategory、subcategory、criterion、PR固有のquestionを`rubric`へコピーする。
 - `REVIEW.md`で定義された5段階の共通評価尺度（`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`、`not_assessable`）を適用する。
-- 選択したレベルと、根拠に基づく簡潔な理由を`evaluation`へ格納する。
+- 選択したレベルと、根拠に基づく簡潔な理由を`assessment.evaluation`へ格納する。
 - このレイヤーではレビューワークフローのラベルや要求アクションを割り当てない。後続の検証レイヤーが評価と証拠から決定する。
-- レベルが`not_assessable`の場合は`evaluation.rationale`で理由を説明し、不足している証拠を`assessment.missing_information`へ記録する。
+- レベルが`not_assessable`の場合は`assessment.evaluation.reason`で理由を説明し、不足している証拠を`assessment.missing_information`へ記録する。
 
 ## 出力
 
@@ -79,12 +79,12 @@ runtime: false
               "criterion": "Requirements coverage",
               "question": "Does the PR satisfy every acceptance criterion?"
             },
-            "evaluation": {
-              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-              "rationale": "Concise evidence-based reason for selecting this level"
-            },
             "assessment": {
               "conclusion": "One-sentence conclusion",
+              "evaluation": {
+                "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+                "reason": "Concise evidence-based reason for selecting this level"
+              },
               "scenario": [
                 "Requirement or acceptance criterion",
                 "Implementation behavior",

@@ -12,7 +12,7 @@ Perform specification-driven contextual review only for items whose `primary_lay
 
 ## Required input
 
-The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; use `evaluation.level: not_assessable` for the affected items.
+The delegated task must provide the review target, changed files, complete diff, collected context, and the review-plan items assigned to this agent. If required input is missing, do not retrieve substitutes or guess; use `assessment.evaluation.level: not_assessable` for the affected items.
 
 ## Context to use
 
@@ -20,7 +20,7 @@ The delegated task must provide the review target, changed files, complete diff,
 - Normalized context
 - Test names and expectations
 
-Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; use `evaluation.level: not_assessable` and identify what is missing.
+Do not independently access external sources or explore references absent from the collected context. When evidence is missing, do not expand retrieval scope; use `assessment.evaluation.level: not_assessable` and identify what is missing.
 
 ## Review concerns
 
@@ -39,7 +39,7 @@ Do not independently access external sources or explore references absent from t
 - Never treat an uncited summary as a normative specification.
 - Do not resolve source conflicts yourself; evaluate the item as `not_assessable` and record the conflict.
 - Code correctness alone does not prove that a product decision is correct.
-- Use `evaluation.level: not_assessable` when requirements are ambiguous or required material is unavailable.
+- Use `assessment.evaluation.level: not_assessable` when requirements are ambiguous or required material is unavailable.
 
 ## Completion criteria
 
@@ -53,9 +53,9 @@ Do not independently access external sources or explore references absent from t
 
 - Copy the applicable category, subcategory, criterion, and PR-specific question from the assigned review-plan item into `rubric`.
 - Apply the five-level common evaluation scale defined in `REVIEW.md`: `fully_meets`, `mostly_meets`, `partially_meets`, `does_not_meet`, or `not_assessable`.
-- Put the selected level and a concise evidence-based rationale in `evaluation`.
+- Put the selected level and a concise evidence-based reason in `assessment.evaluation`.
 - Do not assign review workflow labels or requested actions in this layer. The downstream verification layer decides those from the evaluation and evidence.
-- When the level is `not_assessable`, explain why in `evaluation.rationale` and record the missing evidence in `assessment.missing_information`.
+- When the level is `not_assessable`, explain why in `assessment.evaluation.reason` and record the missing evidence in `assessment.missing_information`.
 
 ## Output
 
@@ -78,12 +78,12 @@ Return exactly one Artifact using the following structure:
               "criterion": "Requirements coverage",
               "question": "Does the PR satisfy every acceptance criterion?"
             },
-            "evaluation": {
-              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-              "rationale": "Concise evidence-based reason for selecting this level"
-            },
             "assessment": {
               "conclusion": "One-sentence conclusion",
+              "evaluation": {
+                "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+                "reason": "Concise evidence-based reason for selecting this level"
+              },
               "scenario": [
                 "Requirement or acceptance criterion",
                 "Implementation behavior",

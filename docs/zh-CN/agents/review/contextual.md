@@ -12,7 +12,7 @@ runtime: false
 
 ## 必需输入
 
-必须提供审查目标、变更文件、完整差异、收集后的上下文以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项使用`evaluation.level: not_assessable`。
+必须提供审查目标、变更文件、完整差异、收集后的上下文以及分配的审查计划项。输入缺失时不得搜索替代资料或猜测，对受影响项使用`assessment.evaluation.level: not_assessable`。
 
 ## 使用的上下文
 
@@ -20,7 +20,7 @@ runtime: false
 - 规范化上下文
 - 测试名称和期望
 
-不得独自访问外部来源或探索收集后的上下文以外的引用；信息不足时不得扩大获取范围，应使用`evaluation.level: not_assessable`并指出缺失内容。
+不得独自访问外部来源或探索收集后的上下文以外的引用；信息不足时不得扩大获取范围，应使用`assessment.evaluation.level: not_assessable`并指出缺失内容。
 
 ## 审查内容
 
@@ -39,7 +39,7 @@ runtime: false
 - 不得将无出处摘要视为规范性规格。
 - 不得自行解决来源冲突；将该项评估为`not_assessable`并记录冲突。
 - 仅代码正确并不能证明产品决策正确。
-- 当需求含糊或必要资料不可用时，使用`evaluation.level: not_assessable`。
+- 当需求含糊或必要资料不可用时，使用`assessment.evaluation.level: not_assessable`。
 
 ## 完成条件
 
@@ -53,9 +53,9 @@ runtime: false
 
 - 将已分配审查计划项中的适用category、subcategory、criterion和PR特定question复制到`rubric`中。
 - 应用`REVIEW.md`中定义的五级通用评价尺度：`fully_meets`、`mostly_meets`、`partially_meets`、`does_not_meet`或`not_assessable`。
-- 将所选级别及简洁、基于证据的理由放入`evaluation`。
+- 将所选级别及简洁、基于证据的理由放入`assessment.evaluation`。
 - 本层不得分配审查工作流标签或请求的操作。下游验证层根据评价和证据作出决定。
-- 当级别为`not_assessable`时，在`evaluation.rationale`中说明原因，并在`assessment.missing_information`中记录缺失证据。
+- 当级别为`not_assessable`时，在`assessment.evaluation.reason`中说明原因，并在`assessment.missing_information`中记录缺失证据。
 
 ## 输出
 
@@ -78,12 +78,12 @@ runtime: false
               "criterion": "Requirements coverage",
               "question": "Does the PR satisfy every acceptance criterion?"
             },
-            "evaluation": {
-              "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-              "rationale": "Concise evidence-based reason for selecting this level"
-            },
             "assessment": {
               "conclusion": "One-sentence conclusion",
+              "evaluation": {
+                "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+                "reason": "Concise evidence-based reason for selecting this level"
+              },
               "scenario": [
                 "Requirement or acceptance criterion",
                 "Implementation behavior",

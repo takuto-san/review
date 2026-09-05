@@ -21,13 +21,13 @@ The delegated task must provide the collected context, Change Scope result, comp
 3. Confirm completion of every applicable review layer.
 4. Confirm that the mechanical Artifact's `result` contains a record for every executed check and that each entry's `status` agrees with its summary.
 5. Confirm that the structural and contextual Artifacts each use `result` and contain exactly one record for every review-plan item assigned to that layer.
-6. For every structural and contextual record, validate that `evaluation.level` agrees with `evaluation.rationale` and `assessment` under the five-level scale in `REVIEW.md`.
+6. For every structural and contextual record, validate that `assessment.evaluation.level` agrees with `assessment.evaluation.reason` and `assessment` under the five-level scale in `REVIEW.md`.
 7. For every candidate that may become `Please Fix`, verify a realistic path from changed code to failure. For contextual candidates, require a realistic requirement-to-impact path.
 8. Confirm that `assessment.evidence` directly supports `assessment.conclusion`.
 9. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
 10. Merge results with the same root cause.
 11. Classify product, design, or specification choices that have sufficient code facts but still require a human decision as `Need Review` and preserve a concrete decision question and audience.
-12. Classify `evaluation.level: not_assessable`, including conflicting, ambiguous, or unavailable specifications, as `Unable to Verify`; preserve `evaluation.rationale` and `assessment.missing_information`.
+12. Classify `assessment.evaluation.level: not_assessable`, including conflicting, ambiguous, or unavailable specifications, as `Unable to Verify`; preserve `assessment.evaluation.reason` and `assessment.missing_information`.
 13. Ensure that `LGTM` does not claim safety beyond the inspected scope.
 14. For specification results classified as `Please Fix`, require a requirement or acceptance criterion, its source location, implementation location, a realistic failure scenario, and observable impact.
 
@@ -50,7 +50,7 @@ Use exactly one label for every review-plan item:
 - `LGTM`: The item was checked and no actionable concern was found within the inspected scope.
 - `Unable to Verify`: The item could not be judged because required evidence, input, or an applicable check was unavailable.
 
-Structural and contextual layers do not supply these labels. Assign them only after validating their `evaluation` and `assessment`:
+Structural and contextual layers do not supply these labels. Assign them only after validating their `assessment.evaluation` and `assessment`:
 
 - `fully_meets` normally maps to `LGTM`.
 - `mostly_meets` normally maps to `Nit` when the remaining gap is confirmed, optional, and low impact; otherwise use `Need Review` if a human decision is required.
@@ -104,10 +104,6 @@ Put exactly the following payload in `parts[0].data` of the Artifact:
 
       ],
       "source_layer": "structural | contextual",
-      "evaluation": {
-        "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
-        "rationale": "Validated evidence-based reason for the evaluation"
-      },
       "label": "Please Fix | Need Review | Nit | LGTM | Unable to Verify",
       "human_question": {
         "audience": "developer | reviewer | both",
@@ -115,6 +111,10 @@ Put exactly the following payload in `parts[0].data` of the Artifact:
       },
       "assessment": {
         "conclusion": "Concise validated conclusion",
+        "evaluation": {
+          "level": "fully_meets | mostly_meets | partially_meets | does_not_meet | not_assessable",
+          "reason": "Validated evidence-based reason for the evaluation"
+        },
         "scenario": [
 
         ],
