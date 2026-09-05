@@ -57,22 +57,22 @@ review/
 
 ```mermaid
 flowchart TD
-    A[Orchestrator: load PR or local changes] --> B{Orchestrator: should the review run?}
-    B -->|No| X[Orchestrator: explain why the review was skipped]
-    B -->|Yes| C[Orchestrator: collect change intent and supporting context]
-    B -->|Yes| E{Orchestrator: can mechanical checks run?}
-    E -->|Yes| M[Mechanical: run eligible tests and static checks]
-    E -->|No| U[Orchestrator: record work that could not run]
-    C --> P[Orchestrator: assess scope and build the review plan]
-    P --> L{Orchestrator: can each planned review run?}
-    L -->|Structural| S[Structural: review code behavior and design]
-    L -->|Contextual| T[Contextual: compare the implementation with requirements]
+    A[Load PR or local changes] --> B{Should the review run?}
+    B -->|No| X[Explain why the review was skipped]
+    B -->|Yes| C[Collect change intent and supporting context]
+    B -->|Yes| E{Can automated checks run?}
+    E -->|Yes| M[Run eligible tests and static checks]
+    E -->|No| U[Record work that could not run]
+    C --> P[Assess scope and build the review plan]
+    P --> L{Can each planned review run?}
+    L --> S[Review code behavior and design]
+    L --> T[Compare the implementation with requirements]
     L -->|Unavailable| U
-    M --> V[Orchestrator: combine results and check fix candidates]
+    M --> V[Combine results and check fix candidates]
     S --> V
     T --> V
     U --> V
-    V --> R[Orchestrator: present the final review report]
+    V --> R[Present the final review report]
 ```
 
 ## 3. Usage
