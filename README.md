@@ -50,11 +50,6 @@ review/
 │       └── checks/
 │           ├── eligibility.md
 │           └── scope.md
-├── docs/
-│   ├── ja/
-│   ├── zh-CN/
-│   ├── README.ja.md
-│   └── README.zh-CN.md
 ├── REVIEW.md
 ├── README.md
 └── LICENSE
