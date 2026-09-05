@@ -109,7 +109,7 @@ Like a human reviewer beginning a PR review, collect the change purpose and a sh
 
 ### Required input
 
-Use the already collected the review target, change description, changed files, complete diff, related Issues when available, repository guidance, user-named sources, and known specification or decision references. If required input is missing, record the limitation instead of guessing.
+Use the already collected review target, change description, changed files, complete diff, related Issues when available, repository guidance, user-named sources, and known specification or decision references. If required input is missing, record the limitation instead of guessing.
 
 ### Source principles
 

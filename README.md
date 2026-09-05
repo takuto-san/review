@@ -249,14 +249,14 @@ Only criteria applicable to the current change are selected.
 
 Agent responsibilities and output contracts are defined under `agents/`:
 
-- `skills/review/checks/eligibility.md` — pull request review eligibility
-- `skills/review/checks/scope.md` — change scope and reviewer workload
+- `skills/review-pr/checks/eligibility.md` — pull request review eligibility
+- `skills/review-pr/checks/scope.md` — change scope and reviewer workload
 - `agents/review/mechanical.md` — objective repository checks
 - `agents/review/structural.md` — code and architecture analysis
 - `agents/review/contextual.md` — intent and requirement analysis
 - `agents/verify/verify.md` — finding verification and deduplication
 
-Keep orchestration and final-report rules in `skills/review/SKILL.md`.
+Keep orchestration and final-report rules in `skills/review-pr/SKILL.md`.
 
 Give every review-plan item a stable `id` such as `001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
 
@@ -265,11 +265,11 @@ Give every review-plan item a stable `id` such as `001` and preserve it through 
 
 ### Agent architecture
 
-- 1 eligibility agent determines whether a pull request needs review.
+- The orchestrator determines whether a pull request needs review.
 - The orchestrator gathers source-backed evidence during preparation.
-- 1 scope agent classifies cohesion and reviewer workload.
+- The orchestrator classifies cohesion and reviewer workload.
 - The review skill creates a target-specific review plan.
-- 3 specialized agents review mechanical, structural, and contextual concerns in parallel.
+- Mechanical checks start during preparation; structural and contextual review run in parallel after planning.
 - 1 verify agent verifies candidates and produces the verified result set.
 - The review skill formats the final report without adding or reevaluating findings.
 
