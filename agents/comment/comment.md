@@ -16,12 +16,14 @@ The delegated task must provide the collected context, Change Scope result, comp
 
 ## Verification procedure
 
+Apply the evaluation policy in `REVIEW.md`. Independently inspect evidence supporting and contradicting each proposed result before accepting its level. Do not use the upstream score, explanation length, presentation order, author, or generating model as proof. Preserve insufficient evidence as `not_assessable` rather than inventing a failure path.
+
 1. Confirm that each result's `rubric` maps to a category, subcategory, and criterion in `REVIEW.md`.
 2. Confirm that the collected context, Change Scope, and review plan are present.
 3. Confirm completion of every applicable review layer.
 4. Confirm that the mechanical Artifact's `result` contains a record for every executed check and that each entry's `status` agrees with its summary.
 5. Confirm that the structural and contextual Artifacts each use `result` and contain exactly one record for every review-plan item assigned to that layer.
-6. For every structural and contextual record, validate that `assessment.evaluation.level` agrees with `assessment.evaluation.reason` and `assessment` under the five-level scale in `REVIEW.md`.
+6. For every structural and contextual record, validate that `assessment.evaluation.level` agrees with `assessment.evaluation.reason` and `assessment` under the four conformance levels plus separate `not_assessable` state in `REVIEW.md`.
 7. For every candidate that may become `Please Fix`, verify a realistic path from changed code to failure. For contextual candidates, require a realistic requirement-to-impact path.
 8. Confirm that `assessment.evidence` directly supports `assessment.conclusion`.
 9. Reject pre-existing issues, problems already explained by CI, and speculative concerns.
@@ -80,6 +82,8 @@ The human-readable result must contain one row for every executed Mechanical che
 | Structural | RP-002: Error handling | Please Fix | `src/api.ts:42` suppresses the exception. |
 | Contextual | RP-003: Specification alignment | Unable to Verify | The Issue and acceptance criterion conflict, so conformance cannot be assessed. |
 ```
+
+State with the human-readable results that labels and suggested fixes are advisory triage candidates for human review, not automatic merge gates or author requests. Humans decide priority and action using project context.
 
 After the results table, include a count table for all five labels and a single `Overall: <label>` line. Include labels with zero results in the count table. Do not omit `LGTM` or `Unable to Verify` items from the results table.
 

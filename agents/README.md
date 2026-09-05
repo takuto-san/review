@@ -63,3 +63,9 @@ infer missing payload fields from conversation history.
 - `mechanical` must run repository-defined static analysis and unit tests when safe and applicable.
 - Every executed verification command and result must be recorded.
 - `comment` must verify layer and check completion and must not treat an incomplete review as complete.
+
+## Review evaluation and batching
+
+Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item before verification. Three review layers can therefore require more than three agent invocations.
+
+Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/comment/comment.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.

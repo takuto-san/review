@@ -133,36 +133,24 @@ A pull request URL is supported in a natural-language request, but not as a dire
 ### Review Report Format
 
 ```text
-## Review Summary
-
-Potential problems: 1
-Human decisions: 1
-Verified concerns: 6
-Could not verify: 1
-
-## Change Scope
-
-Focused — one self-contained change
-
-## Needs Your Attention
-
-1. Potential problem: retry can duplicate the write operation
-   Evidence: src/example.ts:42
-   Confirm: whether the external operation is idempotent
-
-## Review Coverage
-
-| Subcharacteristic | Concern | Result | Evidence |
+| Review Layer | Review Item | Label | Result / Evidence |
 |---|---|---|---|
-| Recoverability | Recovery and consistency | Retry path inspected | src/example.ts:35 |
+| Mechanical | Unit tests | LGTM | Existing unit tests passed. |
+| Structural | RP-001: Recovery | Please Fix | src/example.ts:42: a retry repeats a completed write without an idempotency guard. |
+| Contextual | RP-002: Date format | Unable to Verify | The supplied specifications conflict; authoritative precedence is missing. |
+
+| Label | Count |
+|---|---|
+| Please Fix | 1 |
+| Need Review | 0 |
+| Unable to Verify | 1 |
+| Nit | 0 |
+| LGTM | 1 |
+
+Overall: Please Fix
+
+Advisory triage candidates for human review; not automatic merge gates or author requests.
 ```
-
-#### Result Classifications
-
-- **Potential problem**: changed code, a realistic trigger, and observable impact indicate a possible defect.
-- **Human decision**: code facts are known, but product, design, or business judgment is required.
-- **Verified by AI**: the applicable scope was inspected and no issue was found for that concern.
-- **Could not verify**: required specifications, measurements, permissions, or execution evidence are unavailable.
 
 #### False Positives Filtered
 
@@ -230,7 +218,7 @@ claude plugin validate /path/to/review --strict
 # Make changes in a local repository
 /review:review
 
-# Inspect Needs Your Attention and Review Coverage
+# Inspect the consolidated results, label counts, and limitations
 # Fix confirmed problems and rerun the review
 ```
 
@@ -281,7 +269,7 @@ Agent responsibilities and output contracts are defined under `agents/`:
 
 Keep orchestration and final-report rules in `skills/review/SKILL.md`.
 
-Give every review-plan item a stable `id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `insufficient_evidence` instead of silently omitting an assigned item.
+Give every review-plan item a stable `id` such as `RP-001` and preserve it through layer review and finding verification. Pass required inputs explicitly to each agent, and represent missing evidence as `assessment.evaluation.level: not_assessable` instead of silently omitting an assigned item.
 
 
 ## 7. Technical Details
@@ -321,3 +309,9 @@ takuto-san
 0.1.0
 
 Licensed under the [MIT License](LICENSE).
+
+## Review evaluation and batching
+
+Structural and contextual work is split into batches of at most five related items per invocation (prefer three to five; smaller batches are valid). The orchestrator assigns unique batch Artifact IDs and consolidates results with exactly one result per assigned item before verification. Three review layers can therefore require more than three agent invocations.
+
+Conformance has four levels plus a separate `not_assessable` state. The verification agent checks evidence and maps evaluations to the five workflow labels defined in `agents/comment/comment.md`. Labels and suggested fixes support human triage; they do not automatically authorize author requests or merge decisions.

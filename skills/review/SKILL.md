@@ -146,8 +146,8 @@ Package the completed review plan as an A2A-compatible Artifact named
 
 Every structural and contextual review agent must return exactly one result
 for every item assigned to it and preserve the item's `id`. Each result contains
-`evaluation` and `assessment`; missing evidence must produce
-`evaluation.level: not_assessable` rather than omission.
+`assessment.evaluation`; missing evidence must produce
+`assessment.evaluation.level: not_assessable` rather than omission.
 
 ## 6. Run the review layers
 
@@ -166,6 +166,16 @@ retrieval scope.
 Additionally, give CI and check status to the mechanical reviewer, the full
 diff and codebase context to the structural reviewer, and PR descriptions,
 issues, requirements, and documentation to the contextual reviewer.
+
+Partition each structural and contextual layer's assigned items into batches of
+at most five related items before delegation. Prefer three to five items when
+available; allow smaller batches and never add irrelevant items to fill a batch.
+Each invocation evaluates only its batch and returns one result per assigned ID.
+Give every batch the required shared context and a target-local unique batch ID
+such as `B-001`. Batch Artifact IDs use `<layer>-<target-id>-<batch-id>`;
+the consolidated Artifact uses `<layer>-<target-id>`. Before verification, consolidate
+batch results into one Artifact per layer using the existing layer schema, and
+check that every assigned ID appears exactly once with no missing or extra IDs.
 
 Do not ask an agent to perform another layer's primary responsibility.
 
@@ -201,7 +211,7 @@ the repository's `REVIEW.md`.
 The verifier must not perform another general review. It verifies candidate
 findings against actual code, validates realistic failure paths and evidence,
 rejects speculation and unrelated pre-existing issues, removes duplicates,
-assigns the final five-label classification from each layer's `evaluation` and
+assigns the final five-label classification from each layer's `assessment.evaluation` and
 `assessment`, and confirms whether applicable static analysis and Unit tests ran.
 
 Only the comment agent's `verified_results` may be passed to the final report.
@@ -218,6 +228,8 @@ As the orchestrator, produce the final report using only the Change Scope
 result, review plan, the comment agent's `verified_results`, and
 `review_prerequisites`. Do not discover, add, remove, or re-evaluate
 findings during formatting.
+
+State that the labels and suggested fixes are advisory triage candidates for human review; they do not automatically authorize merge, rejection, or author requests.
 
 Present one consolidated table with the columns `Review Layer`, `Review Item`,
 `Label`, and `Result / Evidence`. Include every executed Mechanical check and
