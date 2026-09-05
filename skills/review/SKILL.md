@@ -74,7 +74,7 @@ reconstruct them from conversation history.
 
 In Reviewer mode, the orchestrator performs eligibility checking directly using
 already collected metadata and the decision procedure and payload contract in
-`skills/review/checks/eligibility.md`. Do not delegate a validation agent.
+`skills/review-pr/checks/eligibility.md`. Do not delegate a validation agent.
 Preserve the condition order: closed or merged, draft, trivial, and already
 reviewed at the current head SHA by the current authenticated reviewer.
 Obtain missing facts through read-only commands. An uncertain skip condition
@@ -185,7 +185,7 @@ belong to the subsequent review-plan stage.
 ## 4. Analyze Change Scope
 
 As part of planning, the orchestrator analyzes scope directly using the
-procedure and payload contract in `skills/review/checks/scope.md`. Do not
+procedure and payload contract in `skills/review-pr/checks/scope.md`. Do not
 delegate a scope agent. Reuse collected metadata and diff statistics, group
 substantive changes by purpose, account for all files, and assess cohesion and
 reviewer workload. Produce `review.scope` before `review.plan`, preserving
