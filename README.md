@@ -74,7 +74,7 @@ flowchart TD
 
 ## 3. Usage
 
-### Command: `/review:review`
+### Command: `/review-pr`
 
 Performs an evidence-based review of local changes or a GitHub pull request.
 
@@ -95,8 +95,8 @@ What it does:
 Usage:
 
 ```text
-/review:review
-/review:review <PR number>
+/review-pr
+/review-pr <PR number>
 ```
 
 Natural-language requests are also supported:
@@ -107,7 +107,7 @@ Review PR 123
 Review this PR: https://github.com/owner/repository/pull/123
 ```
 
-A pull request URL is supported in a natural-language request, but not as a direct `/review:review` argument.
+A pull request URL is supported in a natural-language request, but not as a direct `/review-pr` argument.
 
 ### Features
 
@@ -177,7 +177,7 @@ claude plugin validate /path/to/review --strict
 
 ## 5. Usage Guide
 
-### Best Practices for `/review:review`
+### Best Practices for `/review-pr`
 
 - Keep pull request descriptions focused on intent, behavior, and constraints.
 - Link relevant issues, specifications, and decisions explicitly.
@@ -206,7 +206,7 @@ claude plugin validate /path/to/review --strict
 
 ```text
 # Make changes in a local repository
-/review:review
+/review-pr
 
 # Inspect the consolidated results, label counts, and limitations
 # Fix confirmed problems and rerun the review
@@ -216,7 +216,7 @@ claude plugin validate /path/to/review --strict
 
 ```text
 # Review by pull request number
-/review:review 123
+/review-pr 123
 
 # Or review by URL through natural language
 Review this PR: https://github.com/owner/repository/pull/123
