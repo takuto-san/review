@@ -1,5 +1,5 @@
 ---
-name: review
+name: review-pr
 description: Review local code changes or a GitHub Pull Request using review-need validation, context collection, scope validation, three specialized review layers, and evidence-based finding verification. Use automatically whenever the user asks to review code, review local changes, inspect a PR, provides a PR number for review, or includes a GitHub pull-request URL with review intent, even without a slash command.
 argument-hint: "[PR number]"
 allowed-tools: Read, Glob, Grep, Bash(git:*), Bash(gh:*), Agent
